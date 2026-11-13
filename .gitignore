@@ -1,0 +1,40 @@
+# Python byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Data, media uploads and generated outputs
+uploads/*
+!uploads/.gitkeep
+uploads/temp/*
+!uploads/temp/.gitkeep
+outputs/*
+!outputs/.gitkeep
+
+# Windows / OS artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Node / Scratch temp
+temp_chrome_profile/
+node_modules/
+*.log
+
+# Scratch scripts
+check_raw.py
+inspect_opus.py
+save_opus_shot.py
+test_gui_shot.js

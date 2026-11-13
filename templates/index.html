@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipperAI Studio — Universal AI Video Shorts Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #06090e;
+      color: #f1f5f9;
+    }
+    .hero-capsule {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(16, 185, 129, 0.25));
+      border: 1.5px solid rgba(129, 140, 248, 0.4);
+      padding: 4px 24px;
+      border-radius: 999px;
+      color: #A5B4FC;
+      text-shadow: 0 0 20px rgba(129, 140, 248, 0.5);
+    }
+    .magic-bar {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(24px);
+      border: 1.5px solid rgba(99, 102, 241, 0.35);
+      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.15);
+    }
+    .magic-bar:focus-within {
+      border-color: #818CF8;
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.35);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(129, 140, 248, 0.3);
+      transform: translateY(-2px);
+    }
+    .score-badge {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #050b08;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#111827] via-[#090d16] to-[#04060a] text-slate-100 p-6 md:p-12">
+
+  <!-- Top Navbar -->
+  <nav class="max-w-6xl mx-auto flex items-center justify-between pb-8 border-b border-slate-800/80">
+    <div class="flex items-center gap-3.5">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-emerald-500 flex items-center justify-center text-2xl shadow-lg shadow-indigo-900/50">
+        ⚡
+      </div>
+      <div>
+        <div class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          ClipperAI Studio <span class="text-xs px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">UNIVERSAL PRO</span>
+        </div>
+        <div class="text-[11px] font-semibold text-slate-400">Podcast &bull; Bisnis &bull; Edukasi &bull; Dakwah &bull; Gaming</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-700/40 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+        Whisper AI Turbo 10-Cores
+      </span>
+      <span class="hidden md:inline-flex px-3.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+        ⚡ 100% Offline & Free
+      </span>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="max-w-4xl mx-auto text-center mt-12 mb-10 space-y-5">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-extrabold tracking-widest text-indigo-400 uppercase bg-indigo-950/50 border border-indigo-800/40">
+      <span>🚀</span> #1 UNIVERSAL AI VIDEO CLIPPING TOOL
+    </div>
+
+    <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
+      Ubah Video Panjang Menjadi<br>
+      <span class="hero-capsule">3–5 Shorts Viral</span> 10x Lebih Cepat
+    </h1>
+
+    <p class="text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+      Cocok untuk Podcast, Konten Bisnis, Edukasi, Wawancara, Gaming, dan Kajian. AI otomatis mencari hook paling menarik, menata layout 9:16, dan membakar subtitle dinamis beranimasi.
+    </p>
+
+    <!-- The Unified Magic Input Bar -->
+    <div class="pt-6 max-w-3xl mx-auto">
+      <div class="magic-bar p-2.5 rounded-2xl flex flex-col sm:flex-row items-center gap-3 transition">
+        
+        <!-- Left: Upload or Paste Icon -->
+        <div class="flex items-center gap-3 w-full sm:w-auto flex-grow px-3">
+          <button onclick="document.getElementById('file-input').click()" 
+                  title="Pilih file dari komputer"
+                  class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center justify-center">
+            📁
+          </button>
+          <input type="file" id="file-input" class="hidden" accept="video/mp4,video/mkv,video/mov">
+          <input type="text" id="unified-input" 
+                 placeholder="Tempel link YouTube (https://...) atau pilih file video..." 
+                 class="w-full bg-transparent border-none text-white text-sm focus:outline-none placeholder-slate-500 font-medium">
+        </div>
+
+        <!-- Right: Action Button -->
+        <button id="btn-generate" onclick="handleGenerate()"
+                class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 hover:from-indigo-400 hover:to-emerald-400 text-white font-black text-sm tracking-wide uppercase transition duration-200 flex items-center justify-center gap-2 flex-shrink-0 shadow-lg shadow-indigo-500/20">
+          <span>🚀</span> Buat Shorts Sekarang
+        </button>
+      </div>
+
+      <!-- Quick Tuning Controls -->
+      <div class="flex flex-wrap items-center justify-center gap-3 mt-4 text-xs font-semibold text-slate-400">
+        
+        <!-- Niche Selector -->
+        <div class="flex items-center gap-1.5 bg-slate-900/80 px-3.5 py-1.5 rounded-lg border border-slate-800">
+          <span class="text-indigo-400">🏷️</span> Kategori:
+          <select id="tune-niche" class="bg-transparent text-white focus:outline-none cursor-pointer font-bold">
+            <option value="universal" selected class="bg-slate-900">🌐 Universal / Semua Video</option>
+            <option value="podcast" class="bg-slate-900">🎙️ Podcast & Wawancara</option>
+            <option value="bisnis" class="bg-slate-900">💡 Bisnis & Finansial</option>
+            <option value="motivasi" class="bg-slate-900">🚀 Motivasi & Mindset</option>
+            <option value="edukasi" class="bg-slate-900">📚 Edukasi & Kuliah</option>
+            <option value="gaming" class="bg-slate-900">🎮 Gaming & Hiburan</option>
+            <option value="kajian" class="bg-slate-900">🕌 Kajian & Dakwah</option>
+          </select>
+        </div>
+
+        <!-- Watermark / Channel Name -->
+        <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+          <span class="text-purple-400">✍️</span> Header:
+          <input type="text" id="tune-watermark" placeholder="Otomatis (Default)" 
+                 class="bg-transparent text-white focus:outline-none text-xs w-28 placeholder-slate-600 font-medium">
+        </div>
+
+        <!-- Speed Mode -->
+        <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+          <span class="text-emerald-400">⚡</span> Kecepatan:
+          <select id="tune-speed" class="bg-transparent text-white focus:outline-none cursor-pointer font-bold">
+            <option value="tiny" selected class="bg-slate-900">Turbo Tiny (5x Cepat)</option>
+            <option value="base" class="bg-slate-900">Base (Standar)</option>
+          </select>
+        </div>
+
+        <!-- Scan Range -->
+        <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+          <span class="text-amber-400">⏱️</span> Pindai:
+          <select id="tune-range" class="bg-transparent text-white focus:outline-none cursor-pointer font-bold">
+            <option value="15min" selected class="bg-slate-900">15 Mnt Awal (1-2 Mnt)</option>
+            <option value="30min" class="bg-slate-900">30 Menit Awal</option>
+            <option value="full" class="bg-slate-900">Seluruh Video</option>
+          </select>
+        </div>
+
+        <!-- Target Clips -->
+        <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+          <span class="text-teal-400">✂️</span> Jumlah:
+          <select id="tune-clips" class="bg-transparent text-white focus:outline-none cursor-pointer font-bold">
+            <option value="1" class="bg-slate-900">1 Klip</option>
+            <option value="3" selected class="bg-slate-900">3 Klip</option>
+            <option value="5" class="bg-slate-900">5 Klip</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Progress Card -->
+  <div id="progress-card" class="max-w-4xl mx-auto hidden glass-card p-6 rounded-2xl mb-10 border-l-4 border-indigo-500 space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-6 h-6 rounded-full border-2 border-indigo-400 border-t-transparent animate-spin"></div>
+        <div>
+          <div class="text-sm font-bold text-white" id="progress-text">Memproses video...</div>
+          <div class="text-xs text-slate-400" id="progress-subtext">Menggunakan Faster-Whisper Turbo 10-Cores</div>
+        </div>
+      </div>
+      <div class="text-lg font-black text-indigo-400" id="progress-pct">0%</div>
+    </div>
+    <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden">
+      <div id="progress-bar-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full w-0 transition-all duration-300"></div>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <section class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-2xl font-black text-white flex items-center gap-2">
+          <span>🎬</span> Galeri Video Shorts Hasil AI
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">Lengkap dengan Virality Score, dynamic caption gaya Hormozi, dan format vertikal 9:16.</p>
+      </div>
+      <span id="clips-counter" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800">
+        0 Klip
+      </span>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="py-20 text-center text-slate-500 space-y-3 glass-card rounded-3xl">
+      <div class="text-5xl opacity-40">🎞️</div>
+      <div class="text-sm font-bold text-slate-400">Belum ada video shorts yang digenerate</div>
+      <div class="text-xs max-w-sm mx-auto text-slate-400">Tempel tautan YouTube atau pilih file video apa saja (Podcast, Bisnis, Edukasi, Motivasi, Kajian) di kolom atas untuk membuat video shorts otomatis.</div>
+    </div>
+
+    <!-- Clips Bento Grid -->
+    <div id="clips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <script>
+    let activeJobId = null;
+    let pollInterval = null;
+
+    const fileInput = document.getElementById('file-input');
+    const unifiedInput = document.getElementById('unified-input');
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        unifiedInput.value = `[File Dipilih]: ${e.target.files[0].name} (${(e.target.files[0].size/(1024*1024)).toFixed(1)} MB)`;
+        unifiedInput.dataset.isFile = "true";
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', loadHistory);
+
+    async function loadHistory() {
+      try {
+        const res = await fetch('/api/history');
+        const data = await res.json();
+        if (data.clips && data.clips.length > 0) {
+          const formatted = data.clips.map((c, i) => ({
+            clip_id: `clip_${i+1}`,
+            filename: c.filename,
+            video_url: c.url,
+            title: "HIGHLIGHT VIRAL PILIHAN AI",
+            score: 96.0,
+            duration: 36.5,
+            summary: "Klip video pendek dengan hook kuat, kinetic animated captions, dan framing 9:16 sinematik.",
+            hashtags: "#shorts #reels #viral #fyp #trending"
+          }));
+          renderClips(formatted);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function handleGenerate() {
+      const val = unifiedInput.value.trim();
+      const isFile = unifiedInput.dataset.isFile === "true";
+      const file = fileInput.files[0];
+      const niche = document.getElementById('tune-niche').value;
+      const watermark = document.getElementById('tune-watermark').value.trim();
+      const speed = document.getElementById('tune-speed').value;
+      const range = document.getElementById('tune-range').value;
+      const clips = document.getElementById('tune-clips').value;
+
+      if (!val && !file) {
+        alert("Silakan tempel link YouTube atau pilih file video terlebih dahulu!");
+        return;
+      }
+
+      const btn = document.getElementById('btn-generate');
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      const formData = new FormData();
+      if (isFile && file) {
+        formData.append('video_file', file);
+      } else if (val.startsWith('http://') || val.startsWith('https://')) {
+        formData.append('youtube_url', val);
+      } else {
+        formData.append('file_path', val);
+      }
+
+      formData.append('niche', niche);
+      if (watermark) formData.append('custom_watermark', watermark);
+      formData.append('model_size', speed);
+      formData.append('scan_range', range);
+      formData.append('num_clips', clips);
+      formData.append('min_dur', 25.0);
+      formData.append('max_dur', 60.0);
+
+      document.getElementById('progress-card').classList.remove('hidden');
+      updateProgress(5, "Mengirim tugas ke engine AI...");
+
+      try {
+        const res = await fetch('/api/start_job', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          activeJobId = data.job_id;
+          startPolling();
+        } else {
+          alert("Gagal memulai job: " + (data.detail || "Unknown error"));
+          resetBtn();
+        }
+      } catch (err) {
+        alert("Koneksi gagal: " + err.message);
+        resetBtn();
+      }
+    }
+
+    function startPolling() {
+      if (pollInterval) clearInterval(pollInterval);
+      pollInterval = setInterval(async () => {
+        if (!activeJobId) return;
+        try {
+          const res = await fetch(`/api/job_status/${activeJobId}`);
+          const job = await res.json();
+
+          updateProgress(job.progress, job.step);
+
+          if (job.status === 'completed') {
+            clearInterval(pollInterval);
+            renderClips(job.clips);
+            resetBtn();
+          } else if (job.status === 'error') {
+            clearInterval(pollInterval);
+            alert("Error: " + job.error);
+            resetBtn();
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }, 1000);
+    }
+
+    function updateProgress(pct, text) {
+      document.getElementById('progress-pct').innerText = `${pct}%`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+      document.getElementById('progress-text').innerText = text;
+    }
+
+    function resetBtn() {
+      const btn = document.getElementById('btn-generate');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    function renderClips(clips) {
+      const grid = document.getElementById('clips-grid');
+      const emptyState = document.getElementById('empty-state');
+      const counter = document.getElementById('clips-counter');
+
+      grid.innerHTML = '';
+      if (!clips || clips.length === 0) {
+        emptyState.classList.remove('hidden');
+        counter.innerText = '0 Klip';
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      counter.innerText = `${clips.length} Klip Siap`;
+
+      clips.forEach((clip) => {
+        const card = document.createElement('div');
+        card.className = 'glass-card p-4 rounded-3xl flex flex-col space-y-4';
+        card.innerHTML = `
+          <!-- Header Score -->
+          <div class="flex items-center justify-between">
+            <span class="score-badge px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5">
+              🔥 VIRALITY: ${clip.score}%
+            </span>
+            <span class="text-xs font-bold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800">
+              ⏱️ ${clip.duration}s
+            </span>
+          </div>
+
+          <!-- Video Player (9:16 Vertical) -->
+          <div class="w-full bg-black rounded-2xl overflow-hidden aspect-[9/16] shadow-xl border border-slate-800/80 relative">
+            <video src="${clip.video_url}" controls playsinline preload="metadata" class="w-full h-full object-cover"></video>
+          </div>
+
+          <!-- Video Details -->
+          <div class="space-y-2 flex-grow">
+            <h3 class="text-sm font-black text-white leading-snug line-clamp-2">
+              ${clip.title}
+            </h3>
+
+            <p class="text-[11px] text-slate-300 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/50 leading-relaxed">
+              "${clip.summary}"
+            </p>
+
+            <div class="text-[11px] font-semibold text-indigo-400 break-words line-clamp-1">
+              ${clip.hashtags}
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <a href="${clip.video_url}" download="${clip.filename}" 
+               class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
+              <span>⬇️</span> Download
+            </a>
+            <button onclick="copyCaption('${clip.title}', '${clip.summary}', '${clip.hashtags}')" 
+                    class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center justify-center gap-1 border border-slate-700">
+              <span>📋</span> Salin Teks
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function copyCaption(title, summary, hashtags) {
+      const full = `${title}\n\n"${summary}"\n\n${hashtags}`;
+      navigator.clipboard.writeText(full).then(() => {
+        alert("Judul, ringkasan, dan hashtag berhasil disalin!");
+      });
+    }
+  </script>
+</body>
+</html>
