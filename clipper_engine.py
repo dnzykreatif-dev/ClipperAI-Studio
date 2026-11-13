@@ -226,7 +226,8 @@ def extract_audio(video_path: str, audio_out_path: str, max_duration: Optional[f
 def transcribe_audio_with_progress(
     audio_path: str,
     total_audio_dur: float,
-    model_size: str = "tiny",
+    model_size: str = "base",
+    niche: str = "universal",
     progress_callback: Optional[Callable[[int, str], None]] = None
 ) -> Dict[str, Any]:
     if not FASTER_WHISPER_AVAILABLE:
@@ -240,10 +241,14 @@ def transcribe_audio_with_progress(
         num_workers=2
     )
 
+    init_prompt = DEFAULT_PROMPTS.get(niche, DEFAULT_PROMPTS["universal"])
+    beam = 3 if model_size in ["base", "small", "medium"] else 2
+
     segments_generator, info = model.transcribe(
         audio_path,
         language="id",
-        beam_size=1,
+        beam_size=beam,
+        initial_prompt=init_prompt,
         word_timestamps=True,
         vad_filter=True,
         vad_parameters=dict(min_silence_duration_ms=400)
@@ -257,21 +262,23 @@ def transcribe_audio_with_progress(
         words = []
         if hasattr(seg, "words") and seg.words:
             for w in seg.words:
+                corrected_word = apply_phonetic_corrections(w.word.strip())
                 words.append({
-                    "word": w.word.strip(),
+                    "word": corrected_word,
                     "start": round(w.start, 3),
                     "end": round(w.end, 3),
                     "probability": round(w.probability, 3)
                 })
 
+        corrected_seg_text = apply_phonetic_corrections(seg.text.strip())
         segments.append({
             "id": seg.id,
             "start": round(seg.start, 3),
             "end": round(seg.end, 3),
-            "text": seg.text.strip(),
+            "text": corrected_seg_text,
             "words": words
         })
-        full_text_list.append(seg.text.strip())
+        full_text_list.append(corrected_seg_text)
 
         if progress_callback and effective_dur > 0:
             current_sec = seg.end
@@ -434,12 +441,65 @@ def generate_catchy_title(opening_sentence: str, full_clip_text: str, niche: str
     return f"{prefix}{base}"
 
 
+DEFAULT_PROMPTS = {
+    "kajian": (
+        "Transkripsi ceramah agama Islam, kajian dakwah, sejarah Nabi dan sahabat, "
+        "Perang Uhud, Perang Badar, kaum muslimin, Rasulullah shallallahu 'alaihi wasallam, "
+        "para syuhada, sahabat Nabi, jasad, Quraisy, Bukit Rumat, Sayyidina Hamzah, indikasi, "
+        "dalil, syariat, telinga dipotong, dimutilasi, pahala, surga, neraka, shalat, zakat."
+    ),
+    "bisnis": (
+        "Transkripsi podcast bisnis, keuangan, investasi saham, omset, modal, cashflow, ROI, "
+        "strategi marketing, entrepreneur, valuasi, margin, profit, eksekusi, founder, startup."
+    ),
+    "podcast": (
+        "Transkripsi podcast dan wawancara bahasa Indonesia yang rapi dengan tanda baca, koma, "
+        "titik, tanda tanya, dan kosakata percakapan yang jelas."
+    ),
+    "motivasi": (
+        "Transkripsi motivasi dan pengembangan diri, mindset, kebiasaan, disiplin, fokus, "
+        "produktivitas, impian, kegagalan, kesuksesan, inspirasi."
+    ),
+    "edukasi": (
+        "Transkripsi materi edukasi, kuliah, sains, wawasan pengetahuan, sejarah, teknologi, fakta ilmiah."
+    ),
+    "gaming": (
+        "Transkripsi gameplay dan gaming highlight, clutch, win, epic moment, streaming, pro player."
+    ),
+    "universal": (
+        "Transkripsi video bahasa Indonesia dengan ejaan yang akurat, huruf kapital, dan tanda baca tepat."
+    )
+}
+
+PHONETIC_CORRECTIONS = [
+    (r"\bkomus limit\b", "kaum muslimin"),
+    (r"\btemusikin\b", "kaum muslimin"),
+    (r"\bperanggung hud\b", "Perang Uhud"),
+    (r"\bperang hud\b", "Perang Uhud"),
+    (r"\bjahas rapitu\b", "jasad para syuhada"),
+    (r"\bjahas\b", "jasad"),
+    (r"\bhidika asi\b", "indikasi"),
+    (r"\brosululloh\b", "Rasulullah"),
+    (r"\balloh\b", "Allah"),
+    (r"\bsholat\b", "shalat"),
+    (r"\bkealahan\b", "kekalahan"),
+    (r"\bpenyalangan\b", "penyerangan"),
+]
+
+
+def apply_phonetic_corrections(text: str) -> str:
+    res = text
+    for pattern, replacement in PHONETIC_CORRECTIONS:
+        res = re.sub(pattern, replacement, res, flags=re.IGNORECASE)
+    return res
+
+
 def create_ass_subtitles(
     words: List[Dict[str, Any]],
     clip_start_time: float,
     ass_path: str,
     font_name: str = "Arial",
-    font_size: int = 56
+    font_size: int = 66
 ) -> str:
     header = f"""[Script Info]
 ScriptType: v4.00+
@@ -449,7 +509,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{font_name},{font_size},&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,5,4,2,60,60,340,1
+Style: Hormozi,{font_name},{font_size},&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,8,4,2,60,60,650,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -462,7 +522,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         secs = sec % 60
         return f"{hrs:d}:{mins:02d}:{secs:05.2f}"
 
-    CHUNK_SIZE = 4
+    # Fast 2-3 words per line for snappy Hormozi pacing
+    CHUNK_SIZE = 3
     events = []
 
     i = 0
@@ -473,24 +534,28 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         for idx, active_word in enumerate(chunk):
             w_start = max(0.0, active_word["start"] - clip_start_time)
-            w_end = max(w_start + 0.25, active_word["end"] - clip_start_time)
+            w_end = max(w_start + 0.28, active_word["end"] - clip_start_time)
 
             line_parts = []
             for j, w in enumerate(chunk):
-                raw_w = w["word"].upper()
-                clean_lower = re.sub(r"[^\w]", "", w["word"].lower())
+                raw_corrected = apply_phonetic_corrections(w["word"]).upper()
+                clean_lower = re.sub(r"[^\w]", "", raw_corrected.lower())
 
-                display_w = EMOJI_MAP.get(clean_lower, raw_w)
+                display_w = EMOJI_MAP.get(clean_lower, raw_corrected)
 
                 if j == idx:
-                    # Highlight active word in neon yellow/green with slight pop scale
-                    line_parts.append(r"{\c&H0000F5FF&\b1\fscx108\fscy108}" + display_w + r"{\r}")
+                    # Pop-bounce transform: active word pops up 120% and settles back
+                    line_parts.append(
+                        r"{\t(0,80,\fscx120\fscy120)\t(80,160,\fscx100\fscy100)\c&H0000F5FF&\b1}"
+                        + display_w
+                        + r"{\r}"
+                    )
                 else:
                     line_parts.append(r"{\c&H00FFFFFF&\b1}" + display_w)
 
             dialogue_text = " ".join(line_parts)
             events.append(
-                f"Dialogue: 0,{format_ass_time(w_start)},{format_ass_time(w_end)},Default,,0,0,0,,{dialogue_text}"
+                f"Dialogue: 0,{format_ass_time(w_start)},{format_ass_time(w_end)},Hormozi,,0,0,0,,{dialogue_text}"
             )
 
         i += CHUNK_SIZE
@@ -509,6 +574,7 @@ def render_clip_to_9_16(
 ) -> str:
     start_sec = clip_info["start_time"]
     end_sec = clip_info["end_time"]
+    duration = max(1.0, end_sec - start_sec)
     hook_title = clip_info.get("hook_title", "HIGHLIGHT VIRAL")
     words = clip_info.get("words", [])
 
@@ -521,23 +587,33 @@ def render_clip_to_9_16(
     create_ass_subtitles(words, start_sec, str(ass_path))
 
     relative_ass = f"uploads/temp/{ass_filename}"
-    clean_title = hook_title.replace("'", "").replace(":", " -")
-    sfx_whoosh = "static/sfx/whoosh_fast.wav"
+    clean_title = apply_phonetic_corrections(hook_title).replace("'", "").replace(":", " -")
 
     niche_cfg = NICHE_CONFIGS.get(niche, NICHE_CONFIGS["universal"])
     top_header_text = custom_watermark if custom_watermark and custom_watermark.strip() else niche_cfg["header_tag"]
-    box_color = niche_cfg["header_color"]
-    border_color = niche_cfg["border_color"]
+    # Clean non-alphanumeric chars for drawtext safety on Windows
+    clean_header = re.sub(r"[^\w\s\-\&]", "", top_header_text).strip()
 
-    filter_complex = (
-        f"[0:v]split=2[bg_in][fg_in];"
-        f"[bg_in]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5,eq=brightness=-0.12[bg];"
-        f"[fg_in]scale=1080:-2[fg];"
-        f"[bg][fg]overlay=(W-w)/2:(H-h)/2[vid];"
-        f"[vid]drawbox=x=60:y=120:w=960:h=180:color={box_color}@0.92:t=fill,"
-        f"drawbox=x=60:y=120:w=960:h=180:color={border_color}@1:t=4,"
-        f"drawtext=text='{top_header_text}':font='Segoe UI':fontsize=28:fontcolor=0xFBBF24:x=100:y=145,"
-        f"drawtext=text='{clean_title}':font='Segoe UI':fontsize=40:fontcolor=0xFFFFFF:x=100:y=195,"
+    sfx_whoosh = base_dir / "static/sfx/whoosh_fast.wav"
+    sfx_pop = base_dir / "static/sfx/pop_clean.wav"
+    sfx_chime = base_dir / "static/sfx/chime_gold.wav"
+
+    # 1. Video Filter:
+    # - Blurred pillarbox background
+    # - Dynamic camera punch-in every 4s (wide 1.0x vs punch 1.22x)
+    # - Top animated neon green progress bar
+    # - Sliding Hook Badge overlay at t=0-4s (no broken emoji glyphs)
+    # - Dynamic pop-bounce Hormozi subtitles at chest level (MarginV=650)
+    filter_v = (
+        "[0:v]split=2[bg_in][fg_in];"
+        "[bg_in]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5,eq=brightness=-0.15[bg];"
+        "[fg_in]crop=w='if(between(mod(t,8),0,4), in_w, in_w/1.22)':h='if(between(mod(t,8),0,4), in_h, in_h/1.22)':x='(in_w-out_w)/2':y='(in_h-out_h)/3',scale=1080:-2[fg];"
+        "[bg][fg]overlay=(W-w)/2:(H-h)/2[base_vid];"
+        f"[base_vid]drawbox=x=0:y=0:w='1080*(t/{duration:.2f})':h=12:color=0x10B981@1:t=fill[prog_vid];"
+        f"[prog_vid]drawbox=x='if(lt(t,0.4), -500+1400*t, 80)':y=160:w=920:h=90:color=0x0F172A@0.92:t=fill:enable='between(t,0,4)',"
+        f"drawbox=x='if(lt(t,0.4), -500+1400*t, 80)':y=160:w=920:h=90:color=0xF59E0B@1:t=3:enable='between(t,0,4)',"
+        f"drawtext=text='{clean_header}':font='Segoe UI':fontsize=28:fontcolor=0xFBBF24:x='if(lt(t,0.4), -470+1400*t, 110)':y=175:enable='between(t,0,4)',"
+        f"drawtext=text='{clean_title}':font='Segoe UI':fontsize=36:fontcolor=0xFFFFFF:x='if(lt(t,0.4), -470+1400*t, 110)':y=205:enable='between(t,0,4)',"
         f"subtitles=filename='{relative_ass}'[outv]"
     )
 
@@ -548,17 +624,40 @@ def render_clip_to_9_16(
         "-i", source_video
     ]
 
-    has_sfx = add_sfx and (base_dir / sfx_whoosh).exists()
-    if has_sfx:
+    has_all_sfx = add_sfx and sfx_whoosh.exists() and sfx_pop.exists() and sfx_chime.exists()
+
+    if has_all_sfx:
         cmd.extend([
-            "-i", str(base_dir / sfx_whoosh),
-            "-filter_complex", filter_complex + ";[0:a][1:a]amix=inputs=2:duration=first:weights=1 0.4[outa]",
+            "-i", str(sfx_whoosh),
+            "-i", str(sfx_pop),
+            "-i", str(sfx_chime)
+        ])
+
+        # Multi-track audio: Whoosh on every camera cut (every 4s), Pop on badge (0.5s), Chime on conclusion
+        audio_filters = []
+        cut_times = [t for t in range(0, int(duration), 4)]
+        for idx, ct in enumerate(cut_times):
+            ms = ct * 1000
+            audio_filters.append(f"[1:a]adelay={ms}|{ms},volume=0.35[sfx_w{idx}]")
+
+        audio_filters.append("[2:a]adelay=500|500,volume=0.30[sfx_pop]")
+
+        chime_ms = max(500, int((duration - 1.5) * 1000))
+        audio_filters.append(f"[3:a]adelay={chime_ms}|{chime_ms},volume=0.35[sfx_chime]")
+
+        mix_inputs = ["[0:a]"] + [f"[sfx_w{i}]" for i in range(len(cut_times))] + ["[sfx_pop]", "[sfx_chime]"]
+        total_mix = len(mix_inputs)
+        audio_filters.append(f"{''.join(mix_inputs)}amix=inputs={total_mix}:duration=first:dropout_transition=0[outa]")
+
+        filter_complex = f"{filter_v};{';'.join(audio_filters)}"
+        cmd.extend([
+            "-filter_complex", filter_complex,
             "-map", "[outv]",
             "-map", "[outa]"
         ])
     else:
         cmd.extend([
-            "-filter_complex", filter_complex,
+            "-filter_complex", filter_v,
             "-map", "[outv]",
             "-map", "0:a"
         ])

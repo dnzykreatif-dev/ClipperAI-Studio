@@ -49,7 +49,7 @@ def process_video_pipeline(
     youtube_url: Optional[str] = None,
     niche: str = "universal",
     custom_watermark: Optional[str] = None,
-    model_size: str = "tiny",
+    model_size: str = "base",
     target_clips: int = 3,
     scan_range: str = "15min",
     min_dur: float = 25.0,
@@ -106,6 +106,7 @@ def process_video_pipeline(
             audio_path=audio_path,
             total_audio_dur=effective_dur,
             model_size=model_size,
+            niche=niche,
             progress_callback=on_transcribe_progress
         )
         job["transcript"] = transcript
@@ -197,7 +198,7 @@ async def start_job(
     youtube_url: Optional[str] = Form(None),
     niche: str = Form("universal"),
     custom_watermark: Optional[str] = Form(None),
-    model_size: str = Form("tiny"),
+    model_size: str = Form("base"),
     scan_range: str = Form("15min"),
     num_clips: int = Form(3),
     min_dur: float = Form(25.0),
