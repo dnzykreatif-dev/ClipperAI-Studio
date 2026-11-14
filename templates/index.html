@@ -119,7 +119,7 @@
           </button>
           <input type="file" id="file-input" class="hidden" accept="video/mp4,video/mkv,video/mov">
           <input type="text" id="unified-input" 
-                 placeholder="Tempel link YouTube (https://...) atau pilih file video..." 
+                 placeholder="Tempel link YouTube, Google Drive, atau pilih file video PC..." 
                  class="w-full bg-transparent border-none text-white text-sm focus:outline-none placeholder-slate-500 font-medium">
         </div>
 
@@ -254,15 +254,18 @@
       </div>
 
       <!-- Modal Tabs -->
-      <div class="flex border-b border-slate-800/80 bg-slate-950/40 text-xs font-bold px-6">
-        <button id="tab-btn-seo" onclick="switchModalTab('seo')" class="py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition">
+      <div class="flex border-b border-slate-800/80 bg-slate-950/40 text-xs font-bold px-6 overflow-x-auto">
+        <button id="tab-btn-seo" onclick="switchModalTab('seo')" class="py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition flex-shrink-0">
           <span>✨</span> Metadata & Upload
         </button>
-        <button id="tab-btn-research" onclick="switchModalTab('research')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition">
+        <button id="tab-btn-cloud" onclick="switchModalTab('cloud')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
+          <span>☁️</span> Impor Google Drive / URL
+        </button>
+        <button id="tab-btn-research" onclick="switchModalTab('research')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
           <span>🔎</span> Riset Tren Kata Kunci
         </button>
-        <button id="tab-btn-setup" onclick="switchModalTab('setup')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition">
-          <span>⚙️</span> Koneksi Channel & Panduan
+        <button id="tab-btn-setup" onclick="switchModalTab('setup')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
+          <span>⚙️</span> Koneksi Channel
         </button>
       </div>
 
@@ -271,6 +274,24 @@
 
         <!-- TAB 1: METADATA & UPLOAD -->
         <div id="tab-content-seo" class="space-y-4">
+
+          <!-- Format Mode Selector (Shorts vs Long Video) -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
+            <div>
+              <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                <span>🎯</span> Format Video YouTube:
+              </span>
+              <span class="text-[10px] text-slate-400">Pilih format untuk menyesuaikan panjang judul, deskripsi, dan timestamps.</span>
+            </div>
+            <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+              <button type="button" id="btn-mode-shorts" onclick="setVideoUploadMode('shorts')" class="px-3 py-1 rounded-lg text-xs font-black bg-indigo-600 text-white transition flex items-center gap-1">
+                <span>📱</span> Shorts (9:16)
+              </button>
+              <button type="button" id="btn-mode-long" onclick="setVideoUploadMode('long_form')" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition flex items-center gap-1">
+                <span>🎬</span> Video Panjang (16:9 / Full)
+              </button>
+            </div>
+          </div>
           
           <!-- Viral Title Section -->
           <div class="space-y-1.5">
@@ -358,6 +379,41 @@
                 • <strong>Prime Time 1</strong>: 11:30 - 13:00 WIB (Waktu Istirahat)<br>
                 • <strong>Prime Time 2</strong>: 17:30 - 20:30 WIB (Puncak Retensi Malam)
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: CLOUD IMPORT (GOOGLE DRIVE / DIRECT LINK) -->
+        <div id="tab-content-cloud" class="hidden space-y-4">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-3.5">
+            <div class="flex items-center gap-2.5">
+              <span class="text-2xl">☁️</span>
+              <div>
+                <div class="font-extrabold text-white text-sm">Impor Video dari Google Drive / Dropbox / Link Web Langsung</div>
+                <div class="text-[11px] text-slate-400">Video Anda ada di Google Drive? Tempel tautannya di bawah ini untuk mengunduh dan menganalisis otomatis.</div>
+              </div>
+            </div>
+            
+            <div class="space-y-1.5 pt-1">
+              <label class="text-xs font-bold text-slate-300">Tautan Berbagi Google Drive / URL Video:</label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="gdrive-url-input" 
+                       placeholder="https://drive.google.com/file/d/1A2B3C.../view?usp=sharing" 
+                       class="flex-grow bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white font-medium text-xs focus:outline-none focus:border-indigo-500">
+                <button onclick="handleCloudImport()" id="btn-cloud-import" 
+                        class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 hover:from-indigo-400 hover:to-emerald-400 text-white font-black text-xs uppercase tracking-wide transition flex items-center justify-center gap-1.5 flex-shrink-0 shadow-md">
+                  <span>📥</span> Unduh & Buat SEO
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-300 space-y-1">
+              <div class="font-bold text-indigo-300 flex items-center gap-1">
+                <span>💡</span> Tips Link Google Drive:
+              </div>
+              <p class="leading-relaxed">
+                Pastikan izin berbagi file di Google Drive Anda diatur ke <strong>"Anyone with the link can view" (Siapa saja yang memiliki link)</strong> agar sistem ClipperAI Studio dapat mengunduh video secara otomatis.
+              </p>
             </div>
           </div>
         </div>
@@ -858,16 +914,104 @@
       document.getElementById('yt-modal').classList.add('hidden');
     }
 
+    let currentVideoUploadMode = 'shorts';
+
+    function setVideoUploadMode(mode) {
+      currentVideoUploadMode = mode;
+      const btnShorts = document.getElementById('btn-mode-shorts');
+      const btnLong = document.getElementById('btn-mode-long');
+
+      if (mode === 'long_form') {
+        btnLong.className = 'px-3 py-1 rounded-lg text-xs font-black bg-indigo-600 text-white transition flex items-center gap-1';
+        btnShorts.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition flex items-center gap-1';
+      } else {
+        btnShorts.className = 'px-3 py-1 rounded-lg text-xs font-black bg-indigo-600 text-white transition flex items-center gap-1';
+        btnLong.className = 'px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-slate-200 transition flex items-center gap-1';
+      }
+      updateTitleCount();
+
+      if (currentClipFilename) {
+        regenerateSEOForCurrentMode();
+      }
+    }
+
+    async function regenerateSEOForCurrentMode() {
+      const niche = document.getElementById('tune-niche').value;
+      const formData = new FormData();
+      formData.append('file_path', currentClipFilename);
+      formData.append('niche', niche);
+      formData.append('mode', currentVideoUploadMode);
+
+      try {
+        const res = await fetch('/api/youtube/prepare_pc_video', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          populateModalSEO(data.seo);
+        }
+      } catch (err) {
+        console.error("Failed to regenerate SEO for mode:", err);
+      }
+    }
+
+    async function handleCloudImport() {
+      const input = document.getElementById('gdrive-url-input');
+      const url = input.value.trim();
+      if (!url) {
+        alert("Silakan tempel link Google Drive atau URL video terlebih dahulu!");
+        return;
+      }
+
+      const btn = document.getElementById('btn-cloud-import');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div> Mengunduh...`;
+
+      document.getElementById('modal-video-label').innerText = `Cloud: ${url.slice(0, 35)}... (Mengunduh...)`;
+      switchModalTab('seo');
+      document.getElementById('modal-title').value = "Mengunduh file cloud & menganalisis audio...";
+      document.getElementById('modal-desc').value = "Menyusun deskripsi SEO lengkap...";
+      document.getElementById('modal-tags').value = "Menyiapkan tags...";
+
+      const niche = document.getElementById('tune-niche').value;
+      const formData = new FormData();
+      formData.append('file_path', url);
+      formData.append('niche', niche);
+      formData.append('mode', currentVideoUploadMode);
+
+      try {
+        const res = await fetch('/api/youtube/prepare_pc_video', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          currentClipFilename = data.video_path;
+          document.getElementById('modal-video-label').innerText = `Cloud: ${data.filename}`;
+          populateModalSEO(data.seo);
+        } else {
+          alert("Gagal mengunduh file cloud: " + (data.detail || "Error"));
+        }
+      } catch (err) {
+        alert("Kesalahan koneksi cloud: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>📥</span> Unduh & Buat SEO`;
+      }
+    }
+
     function switchModalTab(tab) {
-      const tabs = ['seo', 'research', 'setup'];
+      const tabs = ['seo', 'cloud', 'research', 'setup'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-btn-${t}`);
         const content = document.getElementById(`tab-content-${t}`);
+        if (!btn || !content) return;
         if (t === tab) {
-          btn.className = 'py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition font-extrabold';
+          btn.className = 'py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition font-extrabold flex-shrink-0';
           content.classList.remove('hidden');
         } else {
-          btn.className = 'py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition';
+          btn.className = 'py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0';
           content.classList.add('hidden');
         }
       });
@@ -876,9 +1020,10 @@
     function updateTitleCount() {
       const title = document.getElementById('modal-title').value;
       const countEl = document.getElementById('title-char-count');
-      countEl.innerText = `${title.length}/60`;
-      if (title.length > 60) {
-        countEl.className = 'font-bold text-amber-400';
+      const maxLimit = (currentVideoUploadMode === 'long_form') ? 100 : 60;
+      countEl.innerText = `${title.length}/${maxLimit}`;
+      if (title.length > maxLimit) {
+        countEl.className = 'font-bold text-red-400';
       } else {
         countEl.className = 'font-bold text-emerald-400';
       }

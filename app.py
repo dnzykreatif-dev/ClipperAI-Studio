@@ -71,17 +71,17 @@ def process_video_pipeline(
 ):
     job = JOBS[job_id]
     try:
-        # Step 0: Download YouTube video if requested
+        # Step 0: Download YouTube / Google Drive / Web video if requested
         if youtube_url and youtube_url.strip():
             job["status"] = "processing"
-            job["step"] = "Mengunduh video dari YouTube via yt-dlp..."
+            job["step"] = "Mengunduh video dari sumber online (YouTube / Google Drive / Web)..."
             job["progress"] = 5
 
             def on_yt_progress(pct: int, msg: str):
                 job["progress"] = pct
                 job["step"] = msg
 
-            downloaded_video = clipper_engine.download_youtube_video(
+            downloaded_video = clipper_engine.download_remote_video(
                 url=youtube_url.strip(),
                 output_dir=str(UPLOADS_DIR),
                 progress_callback=on_yt_progress
@@ -246,10 +246,10 @@ async def start_job(
         target_path = str(save_dest)
     elif file_path and os.path.exists(file_path):
         target_path = file_path
-    elif youtube_url and ("youtube.com" in youtube_url or "youtu.be" in youtube_url):
+    elif youtube_url and (youtube_url.startswith("http://") or youtube_url.startswith("https://")):
         target_path = None
     else:
-        raise HTTPException(status_code=400, detail="Pilih file video, masukkan link YouTube, atau ketik path file lokal yang valid.")
+        raise HTTPException(status_code=400, detail="Pilih file video, masukkan link (YouTube / Google Drive / Web), atau ketik path file lokal yang valid.")
 
     JOBS[job_id] = {
         "job_id": job_id,
@@ -425,11 +425,12 @@ async def youtube_upload(payload: YouTubeUploadPayload):
 async def prepare_pc_video(
     video_file: Optional[UploadFile] = File(None),
     file_path: Optional[str] = Form(None),
-    niche: str = Form("universal")
+    niche: str = Form("universal"),
+    mode: str = Form("shorts")
 ):
     """
-    Analyzes an existing video file from PC (custom edited or raw)
-    and generates an automated viral SEO package without running full video re-render.
+    Analyzes an existing video file from PC or cloud link (Google Drive / Web)
+    and generates an automated viral SEO package (Shorts or Long Video) without cutting.
     """
     target_path = None
     if video_file and video_file.filename:
@@ -439,20 +440,25 @@ async def prepare_pc_video(
             shutil.copyfileobj(video_file.file, f)
         target_path = str(save_dest)
         display_name = video_file.filename
+    elif file_path and (file_path.startswith("http://") or file_path.startswith("https://")):
+        # Remote link (Google Drive / Dropbox / Direct Web)
+        downloaded = clipper_engine.download_remote_video(file_path.strip(), str(UPLOADS_DIR))
+        target_path = downloaded
+        display_name = Path(downloaded).name
     elif file_path and os.path.exists(file_path):
         target_path = file_path
         display_name = Path(file_path).name
     else:
-        raise HTTPException(status_code=400, detail="File video lokal dari PC tidak ditemukan.")
+        raise HTTPException(status_code=400, detail="File video lokal dari PC atau link cloud (Google Drive / Web) tidak ditemukan.")
 
     # Extract quick audio for transcription
     audio_path = str(UPLOADS_DIR / f"temp_pc_{uuid.uuid4().hex[:6]}.wav")
     try:
-        clipper_engine.extract_audio(target_path, audio_path, max_duration=90.0)
+        clipper_engine.extract_audio(target_path, audio_path, max_duration=120.0)
         # Fast transcription with base model
         transcript = clipper_engine.transcribe_audio_with_progress(
             audio_path=audio_path,
-            total_audio_dur=90.0,
+            total_audio_dur=120.0,
             model_size="base",
             niche=niche,
             progress_callback=lambda p, m: None
@@ -467,17 +473,19 @@ async def prepare_pc_video(
             except Exception:
                 pass
 
-    # Generate viral SEO package
+    # Generate viral SEO package (Shorts or Long-Form)
     seo_pkg = yt_seo_engine.generate_shorts_seo_package(
         transcript_text=full_text,
         title_hint=Path(display_name).stem.replace("_", " ").title(),
-        niche=niche
+        niche=niche,
+        mode=mode
     )
 
     return {
         "ok": True,
         "video_path": target_path,
         "filename": display_name,
+        "mode": mode,
         "seo": seo_pkg
     }
 

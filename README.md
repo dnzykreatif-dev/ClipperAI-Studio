@@ -21,21 +21,22 @@ Bukan sekadar potong video monoton! ClipperAI Studio dilengkapi:
 2. **Audio Jernih Siar (0 dB)**: Suara pembicara 100% jernih tanpa gangguan kresek-kresek atau suara mengecil, dipadukan dengan efek suara whoosh lembut.
 3. **Floating B-Roll Cards**: Kartu visual intisari/hikmah otomatis muncul di menit penting video.
 4. **Subtitle Pop-Bounce Gaya Alex Hormozi**: Teks kinetik beranimasi kata-demi-kata dengan highlight kontras tinggi.
-5. **YouTube Shorts Automation & Upload**: 1-klik upload langsung ke channel YouTube via official YouTube Data API v3, lengkap dengan riset kata kunci trending live dan penulisan deskripsi SEO otomatis.
+5. **YouTube Automation & SEO (Shorts & Video Panjang)**: 1-klik upload langsung ke channel YouTube via official YouTube Data API v3, lengkap dengan riset kata kunci trending live, pembuat timestamps/chapters, dan penulisan deskripsi SEO otomatis.
+6. **Multi-Source Ingestion (Google Drive, Dropbox, YouTube, PC)**: Mendukung unduhan video langsung dari Google Drive, YouTube, atau folder PC lokal.
 
 ---
 
 ## ✨ Fitur Unggulan
 
-### 1. 🚀 Otomatisasi Upload YouTube & Generator SEO Viral
-- **1-Click Auto Upload**: Unggah video vertikal 9:16 langsung ke YouTube channel Anda via Google OAuth2.
-- **Viral Title Generator (< 60 Karakter)**: Judul hook pendek dengan emoji dan `#Shorts` yang optimal untuk layar handphone tanpa terpotong.
+### 1. 🚀 Otomatisasi Upload YouTube (Shorts & Video Panjang)
+- **Dukungan 2 Format Konten**:
+  - 📱 **YouTube Shorts (9:16)**: Judul hook < 60 karakter, `#Shorts`, deskripsi vertikal ringkas.
+  - 🎬 **Video Panjang (Full 16:9)**: Upload video utuh tanpa dipotong, judul sampai 100 karakter, lengkap dengan **Timestamps / Chapters** otomatis (`00:00 - Pembuka`, `02:15 - Inti`, dst.) serta rangkuman mendalam.
+- **1-Click Auto Upload**: Unggah video langsung ke channel YouTube Anda via Google OAuth2.
+- **Multi-Source Cloud Ingestion**: Masukkan tautan **Google Drive** publik (`drive.google.com/file/d/...`), Dropbox, atau YouTube — video langsung diunduh dan diproses.
+- **Upload Langsung dari PC Tanpa Render Ulang**: Punya video jadi di PC? Tinggal pilih file, AI otomatis buatkan metadata & langsung upload.
+- **Viral Title & Hook Generator**: Judul optimal sesuai format (Shorts atau Video Panjang).
 - **Multiple Hook Variations**: Pilihan angle judul instan (⚡ Curiosity, ❓ Pertanyaan, ⚠️ Peringatan, 💎 Rahasia).
-- **Struktur Deskripsi SEO Standar Industri**:
-  - 2 Baris pertama sebagai hook penarik sebelum lipatan *"Show More"*.
-  - 3 Poin hikmah/intisari berpeluru emoji.
-  - Call to Action (CTA) ajakan subscribe dan berdiskusi di komentar.
-  - 6–10 Hashtag viral relevan.
 - **Manajemen Tags Ketat (< 500 Karakter)**: Menjamin tags tidak melebihi batas sistem YouTube.
 - **Jadwal Posting Rekomendasi (WIB)**: Memberikan panduan jam tayang prime time (11:30–13:00 WIB & 17:30–20:30 WIB).
 - **Opsi Instan Studio Web**: Tombol 1-klik salin seluruh metadata ke clipboard jika Anda ingin mengunggah via web browser secara manual.

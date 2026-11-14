@@ -164,6 +164,52 @@ def run_command(cmd: List[str], cwd: Optional[str] = None) -> subprocess.Complet
     )
 
 
+def download_remote_video(url: str, output_dir: str, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
+    """
+    Universally downloads video from YouTube, Google Drive, Dropbox, or direct web URLs.
+    """
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    clean_url = url.strip()
+
+    # 1. Google Drive
+    if "drive.google.com" in clean_url or "docs.google.com" in clean_url:
+        if progress_callback:
+            progress_callback(10, "Menghubungkan ke Google Drive & mengunduh video...")
+        try:
+            import gdown
+            out_file = str(Path(output_dir) / f"gdrive_{uuid.uuid4().hex[:6]}.mp4")
+            downloaded = gdown.download(url=clean_url, output=out_file, quiet=False, fuzzy=True)
+            if downloaded and os.path.exists(downloaded):
+                return downloaded
+            else:
+                raise RuntimeError("File gagal diunduh atau link Google Drive tidak valid.")
+        except Exception as e:
+            raise RuntimeError(f"Gagal mengunduh dari Google Drive: {str(e)}. Pastikan link diatur ke 'Anyone with the link' (Siapa saja yang memiliki link).")
+
+    # 2. YouTube
+    if "youtube.com" in clean_url or "youtu.be" in clean_url:
+        return download_youtube_video(clean_url, output_dir, progress_callback)
+
+    # 3. Dropbox
+    if "dropbox.com" in clean_url:
+        clean_url = clean_url.replace("?dl=0", "?dl=1")
+        if "?dl=" not in clean_url:
+            clean_url += "?dl=1"
+
+    # 4. Direct / Generic HTTP/HTTPS URL
+    if clean_url.startswith("http://") or clean_url.startswith("https://"):
+        if progress_callback:
+            progress_callback(15, "Mengunduh video dari tautan web langsung...")
+        import urllib.request
+        out_file = str(Path(output_dir) / f"web_{uuid.uuid4().hex[:6]}.mp4")
+        req = urllib.request.Request(clean_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as resp, open(out_file, 'wb') as out:
+            shutil.copyfileobj(resp, out)
+        return out_file
+
+    raise ValueError(f"Tautan tidak dikenali: {clean_url}")
+
+
 def download_youtube_video(url: str, output_dir: str, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
     if not YT_DLP_AVAILABLE:
         raise RuntimeError("yt-dlp is not installed.")

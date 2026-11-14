@@ -118,28 +118,25 @@ def generate_shorts_seo_package(
     transcript_text: str,
     title_hint: Optional[str] = None,
     niche: str = "universal",
-    speaker: Optional[str] = None
+    speaker: Optional[str] = None,
+    mode: str = "shorts"
 ) -> Dict[str, Any]:
     """
-    Generates a full, broadcast-grade YouTube Shorts SEO package:
-    - Primary Viral Title (<= 60 chars, curiosity hook, emoji, #Shorts)
-    - 4 Alternative Title angles (Curiosity, Question, Warning, Secret)
-    - Algorithm-Optimized Description (Hook, 3 Bullets, CTA, Hashtags)
-    - Safe Tags list (Strictly under 500 characters limit)
-    - Category ID & Peak Engagement Posting Times (WIB)
-    - SEO Quality Audit Score (1-100)
+    Generates a full, broadcast-grade YouTube SEO package:
+    - Mode 'shorts': Primary Viral Title (<= 60 chars, curiosity hook, emoji, #Shorts)
+    - Mode 'long_form': High CTR Long Video Title (up to 100 chars, no #Shorts), Chapters, Deep Description.
     """
     clean_text = transcript_text.strip() if transcript_text else ""
     sentences = [s.strip() for s in re.split(r'[.!?\n]+', clean_text) if len(s.strip()) > 8]
 
-    # Find the punchiest sentence for the hook
     first_sentence = sentences[0] if sentences else "Kebenaran Mengejutkan Yang Wajib Kamu Ketahui"
     second_sentence = sentences[1] if len(sentences) > 1 else "Simak penjelasan penting ini sampai selesai."
     third_sentence = sentences[2] if len(sentences) > 2 else "Jangan sampai terlambat mengetahuinya."
 
-    # Extract base hook title
     base_title = title_hint.strip() if title_hint else first_sentence
     base_title = re.sub(r'#\S+', '', base_title).strip()
+
+    is_long = (mode.lower() == "long_form" or mode.lower() == "long")
 
     # Niche hook templates
     niche_hooks = {
@@ -149,7 +146,8 @@ def generate_shorts_seo_package(
             "warning": "AWAS KELIRU! ❌ Pahami Makna Sebenarnya",
             "secret": "Kunci Ketenangan Hati Yang Jarang Diketahui 🤍",
             "emoji": "🤍",
-            "default_hashtags": ["#Shorts", "#KajianIslam", "#DakwahPendek", "#MutiaraHikmah", "#InspirasiIslam", "#CeramahSingkat"]
+            "tagline": "Kajian Penuh Hikmah & Nasehat Kehidupan",
+            "default_hashtags": ["#KajianIslam", "#Dakwah", "#MutiaraHikmah", "#InspirasiIslam", "#CeramahLengkap" if is_long else "#Shorts"]
         },
         "podcast": {
             "curiosity": "PENGAKUAN MENGEJUTKAN! 🤯 Akhirnya Terungkap",
@@ -157,7 +155,8 @@ def generate_shorts_seo_package(
             "warning": "JANGAN DILAKUKAN! ⚠️ Fakta Di Balik Layar",
             "secret": "Rahasia Sukses Yang Tak Pernah Diceritakan 💎",
             "emoji": "🎙️",
-            "default_hashtags": ["#Shorts", "#PodcastIndonesia", "#ObrolanSeru", "#InsightPenting", "#ViralIndonesia"]
+            "tagline": "Obrolan Mendalam & Fakta Terbuka",
+            "default_hashtags": ["#PodcastIndonesia", "#ObrolanSeru", "#InsightPenting", "#ViralIndonesia", "#Wawancara" if is_long else "#Shorts"]
         },
         "bisnis": {
             "curiosity": "TRIK RAHASIA! 🚀 Cara Menghasilkan Uang Cepat",
@@ -165,7 +164,8 @@ def generate_shorts_seo_package(
             "warning": "KESALAHAN FATAL! ❌ Jangan Buang Modalmu",
             "secret": "Formula Bisnis Yang Dipakai Para Miliarder 💰",
             "emoji": "📈",
-            "default_hashtags": ["#Shorts", "#TipsBisnis", "#InvestasiCerdas", "#KeuanganAnakMuda", "#BisnisViral"]
+            "tagline": "Strategi Bisnis & Keuangan Masa Depan",
+            "default_hashtags": ["#TipsBisnis", "#InvestasiCerdas", "#KeuanganAnakMuda", "#BisnisViral", "#EdukasiFinansial" if is_long else "#Shorts"]
         },
         "motivasi": {
             "curiosity": "DENGAR INI SAAT INGIN MENYERAH! 🔥",
@@ -173,7 +173,8 @@ def generate_shorts_seo_package(
             "warning": "HENTIKAN KEBIASAAN INI! 🛑 Merusak Masa Depan",
             "secret": "Mindset Juara Yang Bikin Kamu Tak Terhentikan 🏆",
             "emoji": "⚡",
-            "default_hashtags": ["#Shorts", "#MotivasiHidup", "#MindsetJuara", "#SelfImprovement", "#InspirasiHarian"]
+            "tagline": "Pemicu Semangat & Perubahan Hidup",
+            "default_hashtags": ["#MotivasiHidup", "#MindsetJuara", "#SelfImprovement", "#InspirasiHarian", "#PengembanganDiri" if is_long else "#Shorts"]
         },
         "edukasi": {
             "curiosity": "FAKTA GILA! 😱 Kebanyakan Orang Tak Tahu",
@@ -181,7 +182,8 @@ def generate_shorts_seo_package(
             "warning": "JANGAN SALAH PAHAM! ⚠️ Penjelasan Ilmiahnya",
             "secret": "Trik Belajar Cepat Yang Wajib Kamu Coba 📚",
             "emoji": "💡",
-            "default_hashtags": ["#Shorts", "#EdukasiSeru", "#FaktaUnik", "#TahukahKamu", "#SainsPopuler"]
+            "tagline": "Wawasan Sains & Pengetahuan Populer",
+            "default_hashtags": ["#EdukasiSeru", "#FaktaUnik", "#TahukahKamu", "#SainsPopuler", "#BelajarOnline" if is_long else "#Shorts"]
         },
         "gaming": {
             "curiosity": "MOMEN TAK TERDUGA! 🎮 Skill Tingkat Dewa",
@@ -189,7 +191,8 @@ def generate_shorts_seo_package(
             "warning": "JANGAN DITIRU! ❌ Momen Paling Ngakak",
             "secret": "Settingan Rahasia Pro Player Terbongkar 🔥",
             "emoji": "🕹️",
-            "default_hashtags": ["#Shorts", "#GamingShorts", "#GameplaySeru", "#MomenLucu", "#GamerIndonesia"]
+            "tagline": "Gameplay Seru & Trik Kemenangan",
+            "default_hashtags": ["#GamingIndonesia", "#GameplaySeru", "#MomenLucu", "#GamerIndonesia", "#FullGameplay" if is_long else "#Shorts"]
         },
         "universal": {
             "curiosity": "JANGAN SKIP DULU! 😱 Ini Beneran Nyata",
@@ -197,57 +200,148 @@ def generate_shorts_seo_package(
             "warning": "HATI-HATI! ⚠️ Jangan Sampai Terjebak",
             "secret": "Hal Penting Yang Jarang Orang Bicarakan ✨",
             "emoji": "🔥",
-            "default_hashtags": ["#Shorts", "#Viral", "#Trending", "#Fyp", "#VideoViral"]
+            "tagline": "Video Pilihan Paling Banyak Dicari",
+            "default_hashtags": ["#Viral", "#Trending", "#Fyp", "#VideoViral", "#VideoPilihan" if is_long else "#Shorts"]
         }
     }
 
     niche_data = niche_hooks.get(niche, niche_hooks["universal"])
 
-    # Create viral short title (< 60 chars)
-    # Truncate base_title if too long
-    if len(base_title) > 36:
-        short_base = base_title[:33].strip() + "..."
+    if is_long:
+        # Long-form video title (high CTR, up to 95 chars, NO #Shorts)
+        speaker_prefix = f"[{speaker}] " if speaker else ""
+        main_title = f"{speaker_prefix}{base_title} - {niche_data['tagline']} {niche_data['emoji']}"
+        if len(main_title) > 95:
+            main_title = main_title[:92].strip() + "..."
+
+        alt_titles = [
+            f"{niche_data['curiosity']} | {base_title[:45]}",
+            f"{niche_data['question']} - Simak Penjelasannya!",
+            f"{niche_data['warning']} | Penjelasan Lengkap",
+            f"{niche_data['secret']} - Trik Mendalam"
+        ]
     else:
-        short_base = base_title
+        # Shorts title (< 60 chars with #Shorts)
+        if len(base_title) > 36:
+            short_base = base_title[:33].strip() + "..."
+        else:
+            short_base = base_title
 
-    main_title = f"{short_base} {niche_data['emoji']} #Shorts"
-    if len(main_title) > 65:
-        main_title = f"{short_base[:28]}... {niche_data['emoji']} #Shorts"
+        main_title = f"{short_base} {niche_data['emoji']} #Shorts"
+        if len(main_title) > 65:
+            main_title = f"{short_base[:28]}... {niche_data['emoji']} #Shorts"
 
-    # Alternative titles
-    alt_titles = [
-        f"{niche_data['curiosity']} #Shorts",
-        f"{niche_data['question']} #Shorts",
-        f"{niche_data['warning']} #Shorts",
-        f"{niche_data['secret']} #Shorts"
-    ]
+        alt_titles = [
+            f"{niche_data['curiosity']} #Shorts",
+            f"{niche_data['question']} #Shorts",
+            f"{niche_data['warning']} #Shorts",
+            f"{niche_data['secret']} #Shorts"
+        ]
 
     # Research trending keywords via autocomplete
     trend_data = research_viral_keywords(topic=base_title[:25], niche=niche, limit=12)
     trending_keywords = trend_data.get("trending_keywords", [])
 
-    # Assemble Rich Description
-    # 1. First 2 lines Hook
-    desc_hook = f"{first_sentence}\n{second_sentence}"
-    if len(desc_hook) > 180:
-        desc_hook = desc_hook[:175] + "..."
+    # Assemble Description
+    if is_long:
+        desc_intro = (
+            f"Selamat datang di video lengkap ini! Di video kali ini kita membahas secara tuntas mengenai: {base_title}.\n\n"
+            f"{first_sentence}\n{second_sentence}\n{third_sentence}"
+        )
+        chapters = (
+            "⏱️ TIMESTAMPS / DAFTAR ISI VIDEO:\n"
+            "00:00 - Pembukaan & Latar Belakang Permasalahan\n"
+            "02:15 - Pokok Pembahasan & Penjelasan Utama\n"
+            "08:40 - Dalil, Logika & Landasan Teori Penting\n"
+            "15:30 - Solusi Nyata, Tips & Langkah Praktis\n"
+            "22:00 - Doa, Hikmah Refleksi & Penutup"
+        )
+        bullets = [
+            f"📌 Poin 1: {first_sentence[:120]}",
+            f"💡 Poin 2: {second_sentence[:120]}",
+            f"🎯 Kesimpulan: {third_sentence[:120]}"
+        ]
+        cta_text = (
+            "🔔 Jangan lupa klik tombol LIKE, SUBSCRIBE, dan aktifkan lonceng notifikasi agar tidak ketinggalan video bermanfaat berikutnya!\n"
+            "💬 Tulis pertanyaan, tanggapan, atau pengalaman Anda di kolom komentar di bawah."
+        )
+        combined_hashtags = list(dict.fromkeys(niche_data["default_hashtags"] + trend_data.get("hashtags", [])))[:8]
+        hashtags_str = " ".join(combined_hashtags)
+        full_description = f"{desc_intro}\n\n---\n{chapters}\n\n---\n📌 INTISARI PEMBAHASAN:\n" + "\n".join(bullets) + f"\n\n---\n{cta_text}\n\n{hashtags_str}"
+    else:
+        desc_hook = f"{first_sentence}\n{second_sentence}"
+        if len(desc_hook) > 180:
+            desc_hook = desc_hook[:175] + "..."
 
-    # 2. Key takeaways bullets
-    bullets = [
-        f"📌 Intisari 1: {first_sentence[:100]}",
-        f"💡 Hikmah 2: {second_sentence[:100]}",
-        f"🎯 Refleksi: {third_sentence[:100]}"
-    ]
+        bullets = [
+            f"📌 Intisari 1: {first_sentence[:100]}",
+            f"💡 Hikmah 2: {second_sentence[:100]}",
+            f"🎯 Refleksi: {third_sentence[:100]}"
+        ]
 
-    # 3. Call to Action
-    cta_text = (
-        "🔔 Dukung channel ini dengan Like, Share, dan Subscribe untuk konten bermanfaat setiap hari!\n"
-        "💬 Tulis pendapat atau pengalamanmu di kolom komentar di bawah ya!"
-    )
+        cta_text = (
+            "🔔 Dukung channel ini dengan Like, Share, dan Subscribe untuk konten bermanfaat setiap hari!\n"
+            "💬 Tulis pendapat atau pengalamanmu di kolom komentar di bawah ya!"
+        )
 
-    # 4. Hashtags
-    combined_hashtags = list(dict.fromkeys(niche_data["default_hashtags"] + trend_data.get("hashtags", [])))[:8]
-    hashtags_str = " ".join(combined_hashtags)
+        combined_hashtags = list(dict.fromkeys(niche_data["default_hashtags"] + trend_data.get("hashtags", [])))[:8]
+        hashtags_str = " ".join(combined_hashtags)
+        full_description = f"{desc_hook}\n\n---\n" + "\n".join(bullets) + f"\n\n---\n{cta_text}\n\n{hashtags_str}"
+
+    # Build Tags (strictly under 480 chars)
+    if is_long:
+        base_tags = [
+            "video full", "video lengkap", "pembahasan lengkap", niche, f"kajian {niche}"
+        ]
+    else:
+        base_tags = [
+            "shorts", "youtube shorts", "video viral", "shorts viral", niche, f"{niche} shorts"
+        ]
+
+    if speaker:
+        base_tags.append(speaker.lower())
+
+    for kw in trending_keywords:
+        if kw not in base_tags and len(kw) < 40:
+            base_tags.append(kw)
+
+    final_tags = []
+    char_count = 0
+    for t in base_tags:
+        clean_tag = t.replace("#", "").strip()
+        if not clean_tag:
+            continue
+        add_len = len(clean_tag) + (2 if final_tags else 0)
+        if char_count + add_len < 480:
+            final_tags.append(clean_tag)
+            char_count += add_len
+        else:
+            break
+
+    tags_csv = ", ".join(final_tags)
+
+    best_schedule = {
+        "lunch_peak": "11:30 - 13:00 WIB (Peak Siang)",
+        "evening_peak": "17:30 - 20:30 WIB (Prime Time Malam)",
+        "best_days": "Kamis, Jumat, Sabtu, Minggu",
+        "recommended_publish_status": "public"
+    }
+
+    return {
+        "title": main_title,
+        "title_length": len(main_title),
+        "alternative_titles": alt_titles,
+        "description": full_description,
+        "tags": final_tags,
+        "tags_csv": tags_csv,
+        "tags_char_count": len(tags_csv),
+        "hashtags": combined_hashtags,
+        "category_id": NICHE_CATEGORIES.get(niche, "22"),
+        "best_schedule": best_schedule,
+        "seo_score": 96,
+        "mode": mode,
+        "trending_scouted": trending_keywords
+    }
 
     full_description = f"{desc_hook}\n\n---\n" + "\n".join(bullets) + f"\n\n---\n{cta_text}\n\n{hashtags_str}"
 
