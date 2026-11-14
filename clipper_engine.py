@@ -443,10 +443,11 @@ def generate_catchy_title(opening_sentence: str, full_clip_text: str, niche: str
 
 DEFAULT_PROMPTS = {
     "kajian": (
-        "Transkripsi ceramah agama Islam, kajian dakwah, sejarah Nabi dan sahabat, "
-        "Perang Uhud, Perang Badar, kaum muslimin, Rasulullah shallallahu 'alaihi wasallam, "
-        "para syuhada, sahabat Nabi, jasad, Quraisy, Bukit Rumat, Sayyidina Hamzah, indikasi, "
-        "dalil, syariat, telinga dipotong, dimutilasi, pahala, surga, neraka, shalat, zakat."
+        "Transkripsi ceramah agama Islam, ayat Al-Qur'an dan hadits: "
+        "فَبِمَا رَحْمَةٍ مِنَ اللَّهِ لِنْتَ لَهُمْ وَلَوْ كُنْتَ فَظًّا غَلِيظَ الْقَلْبِ لَانْفَضُّوا مِنْ حَوْلِكَ "
+        "(Fabima rahmatin minallahi linta lahum walau kunta fazzhan ghalizhal qalb lanfadhdhu min hawlik), "
+        "lemah lembut, hatinya kasar, Nabi shallallahu 'alaihi wasallam, para sahabat, "
+        "Perang Uhud, kaum muslimin, para syuhada, Rasulullah, indikasi, dalil, syariat."
     ),
     "bisnis": (
         "Transkripsi podcast bisnis, keuangan, investasi saham, omset, modal, cashflow, ROI, "
@@ -484,6 +485,13 @@ PHONETIC_CORRECTIONS = [
     (r"\bsholat\b", "shalat"),
     (r"\bkealahan\b", "kekalahan"),
     (r"\bpenyalangan\b", "penyerangan"),
+    # Arabic / Qur'an verses common in Islamic lectures
+    (r"\bfokun keliukal kalbi\b", "fazzhan ghalizhal qalb"),
+    (r"\bfokun keliukal\b", "fazzhan ghalizha"),
+    (r"\bkalbi hatinya kasab\b", "ghalizhal qalb hatinya kasar"),
+    (r"\blentoknya min\b", "lanfadhdhu min hawlik"),
+    (r"\bkuberhasilan\b", "keberhasilan"),
+    (r"\blemah lembut kepada\b", "lemah-lembut kepada mereka"),
 ]
 
 
@@ -600,20 +608,27 @@ def render_clip_to_9_16(
 
     # 1. Video Filter:
     # - Blurred pillarbox background
-    # - Dynamic camera punch-in every 4s (wide 1.0x vs punch 1.22x)
+    # - Dynamic camera punch-in every 4s (wide 1.0x vs punch 1.30x)
+    # - Subtle flash transition at 4s camera cut (0.12s white flash)
     # - Top animated neon green progress bar
-    # - Sliding Hook Badge overlay at t=0-4s (no broken emoji glyphs)
+    # - Sliding Hook Badge overlay at t=0-4s
+    # - Floating B-Roll Card at t=5.0s to 10.0s (Key Takeaway)
     # - Dynamic pop-bounce Hormozi subtitles at chest level (MarginV=650)
+    card_title = "HIKMAH & DALIL PENTING" if niche == "kajian" else "POINT UTAMA & STRATEGI"
     filter_v = (
         "[0:v]split=2[bg_in][fg_in];"
-        "[bg_in]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5,eq=brightness=-0.15[bg];"
-        "[fg_in]crop=w='if(between(mod(t,8),0,4), in_w, in_w/1.22)':h='if(between(mod(t,8),0,4), in_h, in_h/1.22)':x='(in_w-out_w)/2':y='(in_h-out_h)/3',scale=1080:-2[fg];"
+        "[bg_in]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=25:5,eq=brightness=-0.18[bg];"
+        "[fg_in]crop=w='if(between(mod(t,8),0,4), in_w, in_w/1.30)':h='if(between(mod(t,8),0,4), in_h, in_h/1.30)':x='(in_w-out_w)/2':y='(in_h-out_h)/3.2',scale=1080:-2[fg];"
         "[bg][fg]overlay=(W-w)/2:(H-h)/2[base_vid];"
-        f"[base_vid]drawbox=x=0:y=0:w='1080*(t/{duration:.2f})':h=12:color=0x10B981@1:t=fill[prog_vid];"
-        f"[prog_vid]drawbox=x='if(lt(t,0.4), -500+1400*t, 80)':y=160:w=920:h=90:color=0x0F172A@0.92:t=fill:enable='between(t,0,4)',"
-        f"drawbox=x='if(lt(t,0.4), -500+1400*t, 80)':y=160:w=920:h=90:color=0xF59E0B@1:t=3:enable='between(t,0,4)',"
-        f"drawtext=text='{clean_header}':font='Segoe UI':fontsize=28:fontcolor=0xFBBF24:x='if(lt(t,0.4), -470+1400*t, 110)':y=175:enable='between(t,0,4)',"
-        f"drawtext=text='{clean_title}':font='Segoe UI':fontsize=36:fontcolor=0xFFFFFF:x='if(lt(t,0.4), -470+1400*t, 110)':y=205:enable='between(t,0,4)',"
+        "[base_vid]drawbox=x=0:y=0:w=1080:h=1920:color=white@0.32:t=fill:enable='between(t,3.95,4.08)'[flash_vid];"
+        f"[flash_vid]drawbox=x=0:y=0:w='1080*(t/{duration:.2f})':h=14:color=0x10B981@1:t=fill[prog_vid];"
+        f"[prog_vid]drawbox=x='if(lt(t,0.4), -500+1400*t, 80)':y=150:w=920:h=90:color=0x0F172A@0.92:t=fill:enable='between(t,0,4)',"
+        f"drawbox=x='if(lt(t,0.4), -500+1400*t, 80)':y=150:w=920:h=90:color=0xF59E0B@1:t=3:enable='between(t,0,4)',"
+        f"drawtext=text='{clean_header}':font='Segoe UI':fontsize=28:fontcolor=0xFBBF24:x='if(lt(t,0.4), -470+1400*t, 110)':y=165:enable='between(t,0,4)',"
+        f"drawtext=text='{clean_title}':font='Segoe UI':fontsize=36:fontcolor=0xFFFFFF:x='if(lt(t,0.4), -470+1400*t, 110)':y=195:enable='between(t,0,4)'[header_vid];"
+        f"[header_vid]drawbox=x='if(lt(t,5.5), -400+800*(t-5.0), 140)':y=290:w=800:h=80:color=0x047857@0.92:t=fill:enable='between(t,5.0,10.0)',"
+        f"drawbox=x='if(lt(t,5.5), -400+800*(t-5.0), 140)':y=290:w=800:h=80:color=0x34D399@1:t=3:enable='between(t,5.0,10.0)',"
+        f"drawtext=text='{card_title}':font='Segoe UI':fontsize=30:fontcolor=0xFFFFFF:x='if(lt(t,5.5), -370+800*(t-5.0), 180)':y=315:enable='between(t,5.0,10.0)',"
         f"subtitles=filename='{relative_ass}'[outv]"
     )
 
@@ -624,32 +639,23 @@ def render_clip_to_9_16(
         "-i", source_video
     ]
 
-    has_all_sfx = add_sfx and sfx_whoosh.exists() and sfx_pop.exists() and sfx_chime.exists()
+    has_sfx = add_sfx and sfx_whoosh.exists()
 
-    if has_all_sfx:
+    if has_sfx:
         cmd.extend([
-            "-i", str(sfx_whoosh),
-            "-i", str(sfx_pop),
-            "-i", str(sfx_chime)
+            "-i", str(sfx_whoosh)
         ])
 
-        # Multi-track audio: Whoosh on every camera cut (every 4s), Pop on badge (0.5s), Chime on conclusion
-        audio_filters = []
-        cut_times = [t for t in range(0, int(duration), 4)]
-        for idx, ct in enumerate(cut_times):
-            ms = ct * 1000
-            audio_filters.append(f"[1:a]adelay={ms}|{ms},volume=0.35[sfx_w{idx}]")
+        # Clean 2-track audio mix:
+        # Original voice 100% intact (0dB) + 1 subtle whoosh at camera cut (4.0s)
+        # normalize=0 prevents any audio drop or crackling static
+        audio_filter = (
+            "[0:a]volume=1.0[voice];"
+            "[1:a]adelay=3950|3950,volume=0.20[sfx_w];"
+            "[voice][sfx_w]amix=inputs=2:duration=first:normalize=0[outa]"
+        )
 
-        audio_filters.append("[2:a]adelay=500|500,volume=0.30[sfx_pop]")
-
-        chime_ms = max(500, int((duration - 1.5) * 1000))
-        audio_filters.append(f"[3:a]adelay={chime_ms}|{chime_ms},volume=0.35[sfx_chime]")
-
-        mix_inputs = ["[0:a]"] + [f"[sfx_w{i}]" for i in range(len(cut_times))] + ["[sfx_pop]", "[sfx_chime]"]
-        total_mix = len(mix_inputs)
-        audio_filters.append(f"{''.join(mix_inputs)}amix=inputs={total_mix}:duration=first:dropout_transition=0[outa]")
-
-        filter_complex = f"{filter_v};{';'.join(audio_filters)}"
+        filter_complex = f"{filter_v};{audio_filter}"
         cmd.extend([
             "-filter_complex", filter_complex,
             "-map", "[outv]",
