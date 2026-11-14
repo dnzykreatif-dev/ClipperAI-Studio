@@ -41,7 +41,13 @@ Bukan sekadar potong video monoton! ClipperAI Studio dilengkapi:
 - **Jadwal Posting Rekomendasi (WIB)**: Memberikan panduan jam tayang prime time (11:30–13:00 WIB & 17:30–20:30 WIB).
 - **Opsi Instan Studio Web**: Tombol 1-klik salin seluruh metadata ke clipboard jika Anda ingin mengunggah via web browser secara manual.
 
-### 2. 🔎 Riset Tren Kata Kunci Live (YouTube Autocomplete API)
+### 2. 🎓 Integrasi Ruang Belajar: Web dnzykreatif (LMS Auto-Publish)
+- **Terhubung Langsung ke Database Web dnzykreatif**: Otomatis tersinkronisasi ke Google Spreadsheet portal Anda (`1uhes6wkdRqdgqGtFQ57BWfAZt5pvTukuzO3-vBw-TR4`).
+- **Mode Video Unlisted**: Mengunggah video materi sebagai *Unlisted* di YouTube agar aman dan hanya bisa diputar oleh siswa yang terdaftar.
+- **Auto-Formatting Format Pembelajaran**: Menyusun format teks materi dengan standar CSS `.hadith-box` (`Faedah:` dan `Artinya:`) serta daftar menit materi (*timestamps*) yang kompatibel dengan pemutar video [CourseView.html](file:///E:/PROJECTS/apps-script/Web%20dnzykreatif/CourseView.html).
+- **1-Klik Terbitkan ke Sheet `Lessons`**: Sekali klik tombol *Terbitkan*, materi langsung aktif di ruang belajar siswa tanpa perlu membuka admin website secara manual!
+
+### 3. 🔎 Riset Tren Kata Kunci Live (YouTube Autocomplete API)
 - Mengambil kata kunci trending pencarian real-time langsung dari mesin pencari YouTube Indonesia.
 - **100% Bebas Biaya**: Bekerja langsung tanpa memerlukan kunci API berbayar.
 - Cukup klik tombol tag untuk langsung memasukkannya ke daftar tags video Anda.

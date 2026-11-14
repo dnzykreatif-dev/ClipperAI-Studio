@@ -258,6 +258,9 @@
         <button id="tab-btn-seo" onclick="switchModalTab('seo')" class="py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition flex-shrink-0">
           <span>✨</span> Metadata & Upload
         </button>
+        <button id="tab-btn-course" onclick="switchModalTab('course')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
+          <span>🎓</span> Web Kursus DN-ZY
+        </button>
         <button id="tab-btn-cloud" onclick="switchModalTab('cloud')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
           <span>☁️</span> Impor Google Drive / URL
         </button>
@@ -380,6 +383,93 @@
                 • <strong>Prime Time 2</strong>: 17:30 - 20:30 WIB (Puncak Retensi Malam)
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- TAB: WEB KURSUS DN-ZY KREATIF INTEGRATION -->
+        <div id="tab-content-course" class="hidden space-y-4">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
+            
+            <!-- Header Banner -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-amber-600 flex items-center justify-center text-xl shadow-lg shadow-red-900/40">
+                  🎓
+                </div>
+                <div>
+                  <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                    Sinkronisasi Ruang Belajar DN-ZY Kreatif
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">LMS INTEGRATED</span>
+                  </h4>
+                  <p class="text-[11px] text-slate-400">Database: Google Spreadsheet (<code>1uhes...TR4</code>) &bull; Tab: <code>Lessons</code></p>
+                </div>
+              </div>
+              <button type="button" onclick="loadCourseCatalog()" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition flex items-center gap-1">
+                🔄 Muat Ulang
+              </button>
+            </div>
+
+            <!-- Form: Course & Module Select -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <label class="font-extrabold text-slate-300">Pilih Program Kursus:</label>
+                <select id="course-select" onchange="onCourseSelectChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs focus:outline-none focus:border-red-500 cursor-pointer">
+                  <option value="">Memuat program kursus...</option>
+                </select>
+              </div>
+
+              <div class="space-y-1">
+                <label class="font-extrabold text-slate-300">Pilih Bab / Module:</label>
+                <select id="module-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs focus:outline-none focus:border-red-500 cursor-pointer">
+                  <option value="">Pilih kursus terlebih dahulu</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Title Field -->
+            <div class="space-y-1">
+              <label class="font-extrabold text-slate-300">Judul Pertemuan / Materi Pelajaran:</label>
+              <input type="text" id="course-lesson-title" placeholder="Contoh: Pertemuan 3: Mengenal Struktur Variabel & Tipe Data" 
+                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold text-xs focus:outline-none focus:border-red-500">
+            </div>
+
+            <!-- Video URL Field -->
+            <div class="space-y-1">
+              <label class="font-extrabold text-slate-300">URL Video YouTube (Unlisted):</label>
+              <input type="text" id="course-video-url" placeholder="https://www.youtube.com/watch?v=... atau https://youtu.be/..." 
+                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-emerald-300 font-mono text-xs focus:outline-none focus:border-emerald-500">
+            </div>
+
+            <!-- Content & Timestamps Field -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <label class="font-extrabold text-slate-300">
+                  Isi Materi, Faedah & Timestamps (Format Ruang Belajar DN-ZY):
+                </label>
+                <span class="text-[10px] text-slate-400">Paragraf 'Faedah:' & 'Artinya:' otomatis masuk Kotak Dalil</span>
+              </div>
+              <textarea id="course-lesson-content" rows="6" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-slate-200 font-mono text-[11px] leading-relaxed focus:outline-none focus:border-red-500"></textarea>
+            </div>
+
+            <!-- Action Buttons Row -->
+            <div class="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800">
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="copyCourseIframeCode()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition flex items-center gap-1.5 border border-slate-700">
+                  <span>📋</span> Salin iframe Embed
+                </button>
+                <button type="button" onclick="copyCourseSheetsRow()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition flex items-center gap-1.5 border border-slate-700">
+                  <span>📋</span> Salin Baris Sheet
+                </button>
+              </div>
+
+              <button type="button" id="btn-sync-to-course" onclick="handleSyncToCourse()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-red-900/40">
+                <span>🚀</span> Terbitkan ke Web Kursus Sekarang
+              </button>
+            </div>
+
+            <!-- Result Feedback Box -->
+            <div id="course-sync-feedback" class="hidden p-3.5 rounded-xl border text-xs leading-relaxed"></div>
           </div>
         </div>
 
@@ -1002,7 +1092,7 @@
     }
 
     function switchModalTab(tab) {
-      const tabs = ['seo', 'cloud', 'research', 'setup'];
+      const tabs = ['seo', 'course', 'cloud', 'research', 'setup'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-btn-${t}`);
         const content = document.getElementById(`tab-content-${t}`);
@@ -1014,6 +1104,174 @@
           btn.className = 'py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0';
           content.classList.add('hidden');
         }
+      });
+
+      if (tab === 'course') {
+        prefillCourseSyncForm();
+      }
+    }
+
+    let cachedCourseCatalog = null;
+
+    async function loadCourseCatalog() {
+      const courseSelect = document.getElementById('course-select');
+      if (!courseSelect) return;
+      courseSelect.innerHTML = '<option value="">Memuat program kursus...</option>';
+
+      try {
+        const res = await fetch('/api/course/catalog');
+        const data = await res.json();
+        cachedCourseCatalog = data.courses || [];
+
+        courseSelect.innerHTML = '<option value="">-- Pilih Program Kursus --</option>';
+        cachedCourseCatalog.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.slug;
+          opt.innerText = c.title;
+          courseSelect.appendChild(opt);
+        });
+
+        if (cachedCourseCatalog.length > 0) {
+          courseSelect.value = cachedCourseCatalog[0].slug;
+          onCourseSelectChange();
+        }
+      } catch (err) {
+        console.error("Gagal memuat katalog kursus:", err);
+        courseSelect.innerHTML = '<option value="">Gagal memuat katalog</option>';
+      }
+    }
+
+    function onCourseSelectChange() {
+      const courseSlug = document.getElementById('course-select').value;
+      const moduleSelect = document.getElementById('module-select');
+      if (!moduleSelect) return;
+      moduleSelect.innerHTML = '';
+
+      if (!cachedCourseCatalog) return;
+      const found = cachedCourseCatalog.find(c => c.slug === courseSlug);
+      if (found && found.modules && found.modules.length > 0) {
+        found.modules.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = m.title;
+          moduleSelect.appendChild(opt);
+        });
+      } else {
+        const opt = document.createElement('option');
+        opt.value = `mod_${courseSlug}_1`;
+        opt.innerText = 'Bab 1: Materi Utama';
+        moduleSelect.appendChild(opt);
+      }
+    }
+
+    function prefillCourseSyncForm() {
+      if (!cachedCourseCatalog) {
+        loadCourseCatalog();
+      }
+
+      const modalTitle = document.getElementById('modal-title').value;
+      const lessonTitleInput = document.getElementById('course-lesson-title');
+      if (!lessonTitleInput.value.trim() && modalTitle) {
+        lessonTitleInput.value = modalTitle.replace(/#\S+/g, '').replace(/[\u{1F600}-\u{1F64F}]/gu, '').trim();
+      }
+
+      const videoUrlInput = document.getElementById('course-video-url');
+      if (window.lastUploadedUrl && !videoUrlInput.value.trim()) {
+        videoUrlInput.value = window.lastUploadedUrl;
+      }
+
+      const modalDesc = document.getElementById('modal-desc').value;
+      const lessonContentInput = document.getElementById('course-lesson-content');
+      if (!lessonContentInput.value.trim() && modalDesc) {
+        lessonContentInput.value = modalDesc;
+      }
+    }
+
+    async function handleSyncToCourse() {
+      const courseSlug = document.getElementById('course-select').value;
+      const moduleId = document.getElementById('module-select').value;
+      const title = document.getElementById('course-lesson-title').value.trim();
+      const videoUrl = document.getElementById('course-video-url').value.trim();
+      const content = document.getElementById('course-lesson-content').value.trim();
+
+      if (!courseSlug) {
+        alert("Pilih program kursus terlebih dahulu!");
+        return;
+      }
+      if (!title) {
+        alert("Judul materi pelajaran tidak boleh kosong!");
+        return;
+      }
+      if (!videoUrl) {
+        alert("Masukkan URL video YouTube terlebih dahulu!");
+        return;
+      }
+
+      const btn = document.getElementById('btn-sync-to-course');
+      const feedback = document.getElementById('course-sync-feedback');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div> Menerbitkan ke Web...`;
+
+      try {
+        const res = await fetch('/api/course/sync_lesson', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            course_slug: courseSlug,
+            module_id: moduleId,
+            title: title,
+            video_url: videoUrl,
+            summary_text: content
+          })
+        });
+        const data = await res.json();
+        feedback.classList.remove('hidden');
+
+        if (data.ok && data.synced_live) {
+          feedback.className = 'p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/40 text-emerald-300 text-xs leading-relaxed space-y-1.5';
+          feedback.innerHTML = `
+            <div class="font-extrabold text-sm flex items-center gap-1.5">
+              <span>🎉</span> ${data.message}
+            </div>
+            <div>Siswa yang terdaftar di kursus <strong>${courseSlug}</strong> kini dapat langsung membuka materi ini di ruang belajar!</div>
+          `;
+          window.lastSyncedIframe = data.embed_iframe;
+          window.lastSyncedTsv = data.tsv_row;
+        } else {
+          feedback.className = 'p-3.5 rounded-xl border border-amber-500/40 bg-amber-950/40 text-amber-300 text-xs leading-relaxed space-y-1.5';
+          feedback.innerHTML = `
+            <div class="font-extrabold">${data.message || 'Data materi siap disalin'}</div>
+            <div class="text-[11px] text-slate-300">Gunakan tombol <strong>"Salin Baris Sheet"</strong> di bawah untuk menempel langsung ke tab Lessons di Google Spreadsheet Anda.</div>
+          `;
+          window.lastSyncedIframe = data.embed_iframe;
+          window.lastSyncedTsv = data.tsv_row;
+        }
+      } catch (err) {
+        feedback.classList.remove('hidden');
+        feedback.className = 'p-3.5 rounded-xl border border-red-500/40 bg-red-950/40 text-red-300 text-xs';
+        feedback.innerText = "Gagal sinkronisasi: " + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀</span> Terbitkan ke Web Kursus Sekarang`;
+      }
+    }
+
+    function copyCourseIframeCode() {
+      const url = document.getElementById('course-video-url').value.trim();
+      let videoId = "";
+      if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
+      else if (url.includes('v=')) videoId = url.split('v=')[1].split('&')[0];
+
+      const iframe = window.lastSyncedIframe || `<iframe width="100%" height="480" src="https://www.youtube-nocookie.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+      navigator.clipboard.writeText(iframe).then(() => {
+        alert("Kode iframe embed berhasil disalin ke clipboard!");
+      });
+    }
+
+    function copyCourseSheetsRow() {
+      const tsv = window.lastSyncedTsv || document.getElementById('course-video-url').value;
+      navigator.clipboard.writeText(tsv).then(() => {
+        alert("Baris data Google Sheets berhasil disalin ke clipboard!");
       });
     }
 
@@ -1174,9 +1432,14 @@
         const data = await res.json();
 
         if (res.ok && data.ok) {
-          alert(`🎉 Video Berhasil Diunggah ke YouTube!\n\nLink Video: ${data.url}\nID: ${data.video_id}`);
-          window.open(data.url, '_blank');
-          closeYouTubeModal();
+          window.lastUploadedUrl = data.url;
+          window.lastUploadedVideoId = data.video_id;
+          if (confirm(`🎉 Video Berhasil Diunggah ke YouTube!\n\nLink: ${data.url}\nID: ${data.video_id}\n\nApakah Anda ingin langsung menerbitkan materi ini ke Web Kursus DN-ZY Kreatif?`)) {
+            switchModalTab('course');
+          } else {
+            window.open(data.url, '_blank');
+            closeYouTubeModal();
+          }
         } else {
           const errMsg = data.detail || data.error || "Gagal upload";
           if (errMsg.includes("Belum terhubung") || errMsg.includes("client_secrets.json")) {

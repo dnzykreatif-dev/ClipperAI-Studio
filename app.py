@@ -20,6 +20,7 @@ from pydantic import BaseModel
 import clipper_engine
 import yt_seo_engine
 import yt_uploader
+import course_sync
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -488,6 +489,39 @@ async def prepare_pc_video(
         "mode": mode,
         "seo": seo_pkg
     }
+
+
+class CourseSyncPayload(BaseModel):
+    course_slug: str
+    module_id: str
+    title: str
+    video_url: str
+    summary_text: str
+    timestamps_text: Optional[str] = None
+
+
+@app.get("/api/course/catalog")
+async def get_course_catalog():
+    """
+    Returns the live or cached list of Courses and Modules from Web dnzykreatif.
+    """
+    return course_sync.fetch_course_catalog()
+
+
+@app.post("/api/course/sync_lesson")
+async def sync_course_lesson(payload: CourseSyncPayload):
+    """
+    Directly appends a new lesson into Web dnzykreatif's Google Spreadsheet database.
+    """
+    result = course_sync.append_lesson_to_database(
+        course_slug=payload.course_slug,
+        module_id=payload.module_id,
+        title=payload.title,
+        video_url=payload.video_url,
+        summary_text=payload.summary_text,
+        timestamps_text=payload.timestamps_text
+    )
+    return result
 
 
 if __name__ == "__main__":
