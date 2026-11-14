@@ -426,6 +426,52 @@ async def get_history():
     return {"clips": results}
 
 
+@app.delete("/api/history/{filename}")
+async def delete_history_item(filename: str):
+    """Hapus 1 video dari riwayat outputs beserta file metadata terkait."""
+    safe_name = Path(filename).name
+    stem = Path(safe_name).stem
+    removed = []
+    for ext in [".mp4", "_seo.json", ".edl.json", ".qa.jpg"]:
+        target = OUTPUTS_DIR / f"{stem}{ext}"
+        if target.exists():
+            try:
+                target.unlink()
+                removed.append(target.name)
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"Gagal menghapus {target.name}: {e}")
+    return {"ok": True, "removed": removed}
+
+
+@app.post("/api/history/clear")
+async def clear_all_history(clean_uploads: bool = Query(False)):
+    """Bersihkan seluruh riwayat video di folder outputs/ (dan opsional uploads/temp)."""
+    removed_count = 0
+    for f in OUTPUTS_DIR.glob("*"):
+        if f.is_file() and f.suffix.lower() in (".mp4", ".json", ".jpg", ".png", ".ass"):
+            try:
+                f.unlink()
+                removed_count += 1
+            except Exception:
+                pass
+
+    temp_dir = UPLOADS_DIR / "temp"
+    if temp_dir.exists():
+        shutil.rmtree(temp_dir, ignore_errors=True)
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+    if clean_uploads:
+        for uf in UPLOADS_DIR.glob("*"):
+            if uf.is_file():
+                try:
+                    uf.unlink()
+                except Exception:
+                    pass
+
+    JOBS.clear()
+    return {"ok": True, "removed_files": removed_count}
+
+
 # =========================================================================
 # YOUTUBE SEO & VIRAL RESEARCH APIS
 # =========================================================================

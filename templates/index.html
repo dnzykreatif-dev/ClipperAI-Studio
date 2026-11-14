@@ -332,9 +332,14 @@
         </h2>
         <p class="text-xs text-slate-400 mt-1">Lengkap dengan Virality Score, dynamic zoom, subtitle Hormozi, dan YouTube Studio Automation.</p>
       </div>
-      <span id="clips-counter" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800">
-        0 Klip
-      </span>
+      <div class="flex items-center gap-2.5">
+        <span id="clips-counter" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800">
+          0 Klip
+        </span>
+        <button id="btn-clear-history" onclick="clearAllHistory()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/50 flex items-center gap-1.5 transition shadow-sm">
+          <span>🗑️</span> Bersihkan Riwayat
+        </button>
+      </div>
     </div>
 
     <!-- Empty State -->
@@ -839,22 +844,61 @@
         if (data.clips && data.clips.length > 0) {
           const formatted = data.clips.map((c, i) => {
             const seo = c.seo || {};
+            const edl = c.edl || {};
+            const dur = edl.duration ? Math.round(edl.duration * 10) / 10 : 38.0;
             return {
               clip_id: `clip_${i+1}`,
               filename: c.filename,
               video_url: c.url,
               title: seo.title || "HIGHLIGHT VIRAL PILIHAN AI",
               score: seo.seo_score || 96.0,
-              duration: 38.0,
+              duration: dur,
               summary: seo.description ? seo.description.split('\n')[0] : "Klip video pendek dengan hook kuat, punch-in camera, dan framing 9:16 sinematik.",
               hashtags: (seo.hashtags && seo.hashtags.length > 0) ? seo.hashtags.join(' ') : "#shorts #reels #viral #fyp #trending",
-              seo: seo
+              seo: seo,
+              edl: edl
             };
           });
           renderClips(formatted);
+        } else {
+          renderClips([]);
         }
       } catch (e) {
         console.error(e);
+      }
+    }
+
+    async function deleteSingleClip(filename) {
+      if (!confirm(`Hapus video "${filename}" dari riwayat?`)) return;
+      try {
+        const res = await fetch(`/api/history/${encodeURIComponent(filename)}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          await loadHistory();
+        } else {
+          alert("Gagal menghapus video: " + (data.detail || "Unknown error"));
+        }
+      } catch (e) {
+        alert("Koneksi gagal: " + e.message);
+      }
+    }
+
+    async function clearAllHistory() {
+      const ok = confirm(
+        "🗑️ Bersihkan seluruh riwayat video hasil render di Galeri?\n\n" +
+        "(Klik OK untuk menghapus semua video di Galeri agar bersih kembali)"
+      );
+      if (!ok) return;
+      try {
+        const res = await fetch('/api/history/clear?clean_uploads=false', { method: 'POST' });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          renderClips([]);
+        } else {
+          alert("Gagal membersihkan riwayat: " + (data.detail || "Unknown error"));
+        }
+      } catch (e) {
+        alert("Koneksi gagal: " + e.message);
       }
     }
 
@@ -1000,9 +1044,15 @@
             <span class="score-badge px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5">
               🔥 VIRALITY: ${clip.score}%
             </span>
-            <span class="text-xs font-bold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800">
-              ⏱️ ${clip.duration}s
-            </span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800">
+                ⏱️ ${clip.duration}s
+              </span>
+              <button onclick="deleteSingleClip('${safeFilename}')" title="Hapus video ini"
+                      class="px-2 py-1 rounded-full text-xs bg-rose-950/70 hover:bg-rose-800 text-rose-300 border border-rose-700/40 transition">
+                🗑️
+              </button>
+            </div>
           </div>
 
           <div class="flex flex-wrap gap-1.5 text-[10px] font-bold">
