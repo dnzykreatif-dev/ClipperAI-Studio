@@ -8,6 +8,7 @@ import os
 import uuid
 import json
 import shutil
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, List
 
@@ -21,6 +22,7 @@ import clipper_engine
 import yt_seo_engine
 import yt_uploader
 import course_sync
+import faceless_engine
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -212,6 +214,102 @@ def process_video_pipeline(
         job["status"] = "error"
         job["error"] = str(e)
         job["step"] = f"Terjadi kesalahan: {str(e)}"
+
+
+def process_faceless_job(
+    job_id: str,
+    script_text: str,
+    voice_key: str = "ardi",
+    theme_key: str = "cyber",
+    header_title: Optional[str] = None
+):
+    job = JOBS[job_id]
+    try:
+        def on_progress(pct: int, msg: str):
+            job["progress"] = pct
+            job["step"] = msg
+
+        out_filename = f"faceless_{job_id[:8]}.mp4"
+        out_path = str(OUTPUTS_DIR / out_filename)
+
+        res = faceless_engine.render_faceless_video(
+            script_text=script_text,
+            output_mp4=out_path,
+            voice_key=voice_key,
+            theme_key=theme_key,
+            header_title=header_title,
+            progress_callback=on_progress
+        )
+
+        seo_res = res.get("seo", {})
+        job["clips"] = [{
+            "clip_id": f"faceless_{job_id[:6]}",
+            "filename": out_filename,
+            "video_url": f"/outputs/{out_filename}",
+            "title": seo_res.get("title", header_title or "AI Faceless Shorts"),
+            "score": 99.2,
+            "duration": res.get("duration", 15.0),
+            "start": 0.0,
+            "end": res.get("duration", 15.0),
+            "summary": script_text[:160] + ("..." if len(script_text) > 160 else ""),
+            "hashtags": " ".join(seo_res.get("tags", ["#shorts", "#faceless", "#viral"])),
+            "seo": seo_res
+        }]
+        job["status"] = "completed"
+        job["step"] = "Selesai! Video Faceless siap ditonton & diunggah ke YouTube."
+        job["progress"] = 100
+
+    except Exception as e:
+        job["status"] = "error"
+        job["error"] = str(e)
+        job["step"] = f"Terjadi kesalahan render faceless: {str(e)}"
+
+
+class FacelessPayload(BaseModel):
+    script_text: str
+    voice_key: str = "ardi"
+    theme_key: str = "cyber"
+    header_title: Optional[str] = None
+
+
+@app.get("/api/faceless/presets")
+async def get_faceless_presets():
+    """Returns available voices and themes for AI Faceless Video Maker."""
+    return {
+        "voices": faceless_engine.VOICES,
+        "themes": faceless_engine.THEMES
+    }
+
+
+@app.post("/api/faceless/generate")
+async def generate_faceless(payload: FacelessPayload, background_tasks: BackgroundTasks):
+    """
+    Starts an AI Faceless Video generation pipeline from raw text/script.
+    """
+    text = payload.script_text.strip()
+    if not text or len(text) < 5:
+        raise HTTPException(status_code=400, detail="Teks naskah terlalu pendek (minimal 5 karakter).")
+
+    job_id = str(uuid.uuid4())
+    JOBS[job_id] = {
+        "id": job_id,
+        "status": "queued",
+        "progress": 5,
+        "step": "Menyiapkan mesin AI Faceless...",
+        "created_at": datetime.now().isoformat(),
+        "type": "faceless"
+    }
+
+    background_tasks.add_task(
+        process_faceless_job,
+        job_id=job_id,
+        script_text=text,
+        voice_key=payload.voice_key,
+        theme_key=payload.theme_key,
+        header_title=payload.header_title
+    )
+
+    return {"ok": True, "job_id": job_id}
 
 
 @app.get("/", response_class=HTMLResponse)

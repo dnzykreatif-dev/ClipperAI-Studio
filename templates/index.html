@@ -77,6 +77,9 @@
       </div>
     </div>
     <div class="flex items-center gap-2.5">
+      <button onclick="switchStudioMode('faceless')" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-600/50 flex items-center gap-1.5 transition shadow-sm">
+        <span>✨</span> AI Faceless Maker
+      </button>
       <button onclick="document.getElementById('direct-pc-file-input').click()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/50 flex items-center gap-1.5 transition shadow-sm">
         <span>📤</span> Upload File dari PC ke YouTube
       </button>
@@ -106,8 +109,21 @@
       Dilengkapi <strong>Dynamic Punch-In Camera</strong>, <strong>Multi-Track SFX</strong>, <strong>Audio Jernih (0 dB)</strong>, <strong>Subtitle Pop-Bounce Gaya Alex Hormozi</strong>, serta <strong>Otomatisasi Upload YouTube</strong> lengkap dengan riset kata kunci dan deskripsi SEO viral.
     </p>
 
-    <!-- The Unified Magic Input Bar -->
-    <div class="pt-4 max-w-3xl mx-auto">
+    <!-- Studio Mode Switcher (Clipper vs Faceless Maker) -->
+    <div class="flex items-center justify-center gap-2.5 pt-2">
+      <button id="tab-mode-clipper" onclick="switchStudioMode('clipper')"
+              class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 border border-indigo-500">
+        <span>🎬</span> 1. AI Video Clipper (Video ➔ Shorts)
+      </button>
+      <button id="tab-mode-faceless" onclick="switchStudioMode('faceless')"
+              class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700">
+        <span class="text-amber-400">✨</span> 2. AI Faceless Studio (Teks ➔ Video Motion)
+        <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 font-black">100% GRATIS</span>
+      </button>
+    </div>
+
+    <!-- Panel 1: Video Clipper Input -->
+    <div id="panel-clipper" class="pt-4 max-w-3xl mx-auto">
       <div class="magic-bar p-2.5 rounded-2xl flex flex-col sm:flex-row items-center gap-3 transition">
         
         <!-- Left: Upload or Paste Icon -->
@@ -182,6 +198,100 @@
             <option value="5" class="bg-slate-900">5 Klip</option>
           </select>
         </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: AI Faceless Maker (Teks ke Video Motion Shorts) -->
+    <div id="panel-faceless" class="hidden pt-4 max-w-3xl mx-auto text-left">
+      <div class="glass-card p-6 md:p-7 rounded-3xl border border-amber-500/30 shadow-2xl shadow-amber-500/10 space-y-5">
+        
+        <!-- Header & Inspiration Badge -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
+          <div>
+            <div class="text-lg font-black text-white flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">✨</span>
+              AI Faceless Motion Maker <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">100% FREE & UNLIMITED</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+              Ketik naskah atau ide, AI mengubahnya langsung menjadi video vertikal 9:16 dengan narasi suara natural, subtitle Alex Hormozi (pop-bounce), kinetic gradient, dan multi-track SFX.
+            </p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <span class="text-[11px] font-bold text-amber-300/90 bg-amber-950/50 px-3 py-1 rounded-full border border-amber-800/50">
+              ⚡ Bebas Token & Tanpa Batas
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Sample Templates -->
+        <div class="space-y-1.5">
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span>💡</span> Contoh Naskah Viral (Klik untuk Mencoba Langsung):
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="fillFacelessTemplate('bisnis')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              💼 Bisnis & Cuan
+            </button>
+            <button type="button" onclick="fillFacelessTemplate('hikmah')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              🕌 Mutiara Hikmah
+            </button>
+            <button type="button" onclick="fillFacelessTemplate('motivasi')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              🔥 Motivasi Mental
+            </button>
+            <button type="button" onclick="fillFacelessTemplate('gas')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              ⚡ Web & Otomatisasi
+            </button>
+          </div>
+        </div>
+
+        <!-- Textarea Script Input -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-300">
+            <span>📝 Naskah Konten / Script Video</span>
+            <span id="faceless-char-count" class="text-slate-500 font-normal">0 kata &bull; ~0 detik durasi</span>
+          </div>
+          <textarea id="faceless-script-input" rows="4"
+                    oninput="updateFacelessCount()"
+                    placeholder="Tuliskan naskah atau ide kontenmu di sini... (contoh: 20 sampai 80 kata). AI akan membacakannya dengan intonasi natural dan membuat subtitle gerak dinamis!"
+                    class="w-full p-3.5 rounded-xl bg-slate-950/80 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-400 transition leading-relaxed"></textarea>
+        </div>
+
+        <!-- Tuning Controls Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <!-- Voice Selector -->
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+            <label class="block font-bold text-slate-300">🎙️ Suara AI (Natural TTS)</label>
+            <select id="faceless-voice-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-semibold focus:outline-none focus:border-amber-400">
+              <option value="ardi" selected>Ardi (Pria Enerjik & Berwibawa)</option>
+              <option value="gadis">Gadis (Wanita Halus & Edukatif)</option>
+            </select>
+          </div>
+
+          <!-- Theme / Visual Style -->
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+            <label class="block font-bold text-slate-300">🎨 Gaya Visual & Subtitle</label>
+            <select id="faceless-theme-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-semibold focus:outline-none focus:border-amber-400" onchange="updateHeaderPlaceholder()">
+              <option value="cyber" selected>🌌 Dark Cyber / Tech (Neon Yellow)</option>
+              <option value="islamic">🕌 Islamic Emerald (Gold Amber)</option>
+              <option value="business">💼 Modern Business (Neon Green)</option>
+              <option value="motivation">🔥 High Energy Motivasi (Ruby Red)</option>
+            </select>
+          </div>
+
+          <!-- Header Tag / Banner -->
+          <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
+            <label class="block font-bold text-slate-300">🏷️ Label Banner Atas</label>
+            <input type="text" id="faceless-header-input" placeholder="⚡ INSIGHT PENTING"
+                   class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-semibold focus:outline-none focus:border-amber-400 text-xs">
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="btn-generate-faceless" onclick="handleFacelessGenerate()"
+                class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-black text-sm tracking-wide uppercase transition duration-200 flex items-center justify-center gap-2 shadow-xl shadow-amber-500/20">
+          <span>✨</span> Buat Video Faceless Sekarang (0 Token / Bebas Pakai)
+        </button>
+
       </div>
     </div>
   </section>
@@ -829,8 +939,15 @@
 
     function resetBtn() {
       const btn = document.getElementById('btn-generate');
-      btn.disabled = false;
-      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+      const btnFace = document.getElementById('btn-generate-faceless');
+      if (btnFace) {
+        btnFace.disabled = false;
+        btnFace.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
     }
 
     function renderClips(clips) {
@@ -1549,6 +1666,139 @@
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<span>🚀</span> Upload ke YouTube`;
+      }
+    }
+
+    // ==========================================
+    // AI FACELESS MAKER STUDIO SCRIPT
+    // ==========================================
+    const FACELESS_TEMPLATES = {
+      bisnis: {
+        script: "Tahukah kamu, 90 persen orang gagal kaya bukan karena mereka kurang kerja keras, tapi karena tidak pernah membuat uang bekerja untuk mereka. Mulai hari ini, bangun aset digitalmu sebelum terlambat!",
+        header: "💡 RAHASIA SUKSES & FINANSIAL",
+        theme: "business"
+      },
+      hikmah: {
+        script: "Jangan pernah merasa bangga dengan banyaknya amalanmu. Karena kita tidak pernah tahu amalan mana yang ikhlas dan diterima di sisi Allah. Tetaplah rendah hati dan terus berbuat kebaikan.",
+        header: "🕌 RENUNGAN & MUTIARA HIKMAH",
+        theme: "islamic"
+      },
+      motivasi: {
+        script: "Saat kamu merasa lelah dan ingin menyerah hari ini, ingat kembali rasa sakit saat kamu pertama kali memulai. Orang yang bertahan di saat sulit adalah orang yang akan tersenyum di garis akhir!",
+        header: "🔥 DENGAR INI SAAT INGIN MENYERAH",
+        theme: "motivation"
+      },
+      gas: {
+        script: "Belajar Google Apps Script itu seperti punya asisten pribadi yang bekerja 24 jam nonstop. Cukup tulis kode sekali, pekerjaan manual berjam-jam selesai dalam hitungan detik!",
+        header: "⚡ OTOMATISASI WEB & SPREADSHEET",
+        theme: "cyber"
+      }
+    };
+
+    function switchStudioMode(mode) {
+      const panelClipper = document.getElementById('panel-clipper');
+      const panelFaceless = document.getElementById('panel-faceless');
+      const tabClipper = document.getElementById('tab-mode-clipper');
+      const tabFaceless = document.getElementById('tab-mode-faceless');
+
+      if (mode === 'faceless') {
+        panelClipper.classList.add('hidden');
+        panelFaceless.classList.remove('hidden');
+
+        tabFaceless.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-amber-600 text-white shadow-lg shadow-amber-600/30 border border-amber-500";
+        tabClipper.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700";
+        window.scrollTo({ top: 320, behavior: 'smooth' });
+      } else {
+        panelFaceless.classList.add('hidden');
+        panelClipper.classList.remove('hidden');
+
+        tabClipper.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 border border-indigo-500";
+        tabFaceless.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700";
+      }
+    }
+
+    function fillFacelessTemplate(type) {
+      const item = FACELESS_TEMPLATES[type];
+      if (!item) return;
+      const scriptInput = document.getElementById('faceless-script-input');
+      const headerInput = document.getElementById('faceless-header-input');
+      const themeSelect = document.getElementById('faceless-theme-select');
+
+      scriptInput.value = item.script;
+      headerInput.value = item.header;
+      themeSelect.value = item.theme;
+      updateFacelessCount();
+    }
+
+    function updateFacelessCount() {
+      const text = document.getElementById('faceless-script-input').value.trim();
+      const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+      const estSeconds = Math.max(3, Math.round(words / 2.3));
+      const countEl = document.getElementById('faceless-char-count');
+      if (countEl) {
+        countEl.innerText = `${words} kata • perkiraan ~${estSeconds} detik durasi`;
+      }
+    }
+
+    function updateHeaderPlaceholder() {
+      const theme = document.getElementById('faceless-theme-select').value;
+      const headerInput = document.getElementById('faceless-header-input');
+      const placeholders = {
+        cyber: "⚡ INSIGHT PENTING",
+        islamic: "🕌 RENUNGAN & MUTIARA HIKMAH",
+        business: "💡 RAHASIA SUKSES & FINANSIAL",
+        motivation: "🔥 DENGAR INI SAAT INGIN MENYERAH"
+      };
+      if (headerInput && !headerInput.value) {
+        headerInput.placeholder = placeholders[theme] || "⚡ INSIGHT PENTING";
+      }
+    }
+
+    async function handleFacelessGenerate() {
+      const scriptInput = document.getElementById('faceless-script-input');
+      const text = scriptInput.value.trim();
+      if (!text || text.length < 5) {
+        alert("Silakan tulis naskah atau ide konten terlebih dahulu!");
+        scriptInput.focus();
+        return;
+      }
+
+      const voice = document.getElementById('faceless-voice-select').value;
+      const theme = document.getElementById('faceless-theme-select').value;
+      const header = document.getElementById('faceless-header-input').value.trim();
+
+      const btn = document.getElementById('btn-generate-faceless');
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      document.getElementById('progress-card').classList.remove('hidden');
+      updateProgress(5, "Menghubungkan ke AI Faceless Engine...");
+
+      try {
+        const res = await fetch('/api/faceless/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            script_text: text,
+            voice_key: voice,
+            theme_key: theme,
+            header_title: header || null
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          activeJobId = data.job_id;
+          startPolling();
+        } else {
+          alert("Gagal memulai render faceless: " + (data.detail || "Unknown error"));
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      } catch (err) {
+        alert("Koneksi gagal: " + err.message);
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
       }
     }
   </script>
