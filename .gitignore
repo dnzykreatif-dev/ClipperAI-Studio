@@ -33,6 +33,10 @@ temp_chrome_profile/
 node_modules/
 *.log
 
+# Google OAuth & YouTube Credentials
+client_secrets*.json
+token.json
+
 # Scratch scripts
 check_raw.py
 inspect_opus.py

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClipperAI Studio — Universal AI Video Shorts Generator</title>
+  <title>ClipperAI Studio — Universal AI Video Shorts & YouTube Automation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -48,51 +48,62 @@
       color: #050b08;
       box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
     }
+    .modal-backdrop {
+      background: rgba(2, 6, 23, 0.85);
+      backdrop-filter: blur(12px);
+    }
+    .tag-badge {
+      transition: all 0.2s ease;
+    }
+    .tag-badge:hover {
+      background: rgba(99, 102, 241, 0.3);
+      border-color: #818CF8;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#111827] via-[#090d16] to-[#04060a] text-slate-100 p-6 md:p-12">
 
   <!-- Top Navbar -->
-  <nav class="max-w-6xl mx-auto flex items-center justify-between pb-8 border-b border-slate-800/80">
+  <nav class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pb-8 border-b border-slate-800/80">
     <div class="flex items-center gap-3.5">
-      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-emerald-500 flex items-center justify-center text-2xl shadow-lg shadow-indigo-900/50">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-rose-500 flex items-center justify-center text-2xl shadow-lg shadow-indigo-900/50">
         ⚡
       </div>
       <div>
         <div class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
           ClipperAI Studio <span class="text-xs px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">UNIVERSAL PRO</span>
         </div>
-        <div class="text-[11px] font-semibold text-slate-400">Dynamic Punch-In Camera &bull; Multi-Track SFX &bull; Hormozi Pop Subtitles</div>
+        <div class="text-[11px] font-semibold text-slate-400">Dynamic Motion &bull; Crystal Voice (0 dB) &bull; YouTube Automation & SEO</div>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-700/40 flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
-        Pro Motion Engine Active
-      </span>
-      <span class="hidden md:inline-flex px-3.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+    <div class="flex items-center gap-2.5">
+      <button onclick="openYouTubeSetupModal()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-700/50 flex items-center gap-1.5 transition shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+        <span id="nav-yt-status">YouTube Studio: Siap</span>
+      </button>
+      <span class="hidden md:inline-flex px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
         ⚡ 100% Offline & Free
       </span>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section class="max-w-4xl mx-auto text-center mt-12 mb-10 space-y-5">
+  <section class="max-w-4xl mx-auto text-center mt-10 mb-10 space-y-5">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-extrabold tracking-widest text-indigo-400 uppercase bg-indigo-950/50 border border-indigo-800/40">
-      <span>🎬</span> PRO AUTO-EDITING &bull; DYNAMIC ZOOM &bull; MULTI-TRACK SFX
+      <span>🎬</span> PRO AUTO-EDITING &bull; YOUTUBE SHORTS AUTOMATION &bull; VIRAL SEO
     </div>
 
     <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
       Ubah Video Panjang Menjadi<br>
-      <span class="hero-capsule">Shorts Viral Ber-Motion</span> 10x Lebih Cepat
+      <span class="hero-capsule">Shorts Viral Ber-Motion</span> & Siap Upload
     </h1>
 
     <p class="text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-      Bukan sekadar potong video biasa! Dilengkapi <strong>Dynamic Punch-In Camera</strong> (zoom bergantian tiap 4 detik), <strong>Multi-Track SFX</strong> (Whoosh, Pop, Chime), <strong>Animated Progress Bar</strong>, dan <strong>Subtitle Pop-Bounce Gaya Alex Hormozi</strong> dengan akurasi Whisper Base AI.
+      Dilengkapi <strong>Dynamic Punch-In Camera</strong>, <strong>Multi-Track SFX</strong>, <strong>Audio Jernih (0 dB)</strong>, <strong>Subtitle Pop-Bounce Gaya Alex Hormozi</strong>, serta <strong>Otomatisasi Upload YouTube</strong> lengkap dengan riset kata kunci dan deskripsi SEO viral.
     </p>
 
     <!-- The Unified Magic Input Bar -->
-    <div class="pt-6 max-w-3xl mx-auto">
+    <div class="pt-4 max-w-3xl mx-auto">
       <div class="magic-bar p-2.5 rounded-2xl flex flex-col sm:flex-row items-center gap-3 transition">
         
         <!-- Left: Upload or Paste Icon -->
@@ -123,12 +134,12 @@
           <span class="text-indigo-400">🏷️</span> Kategori:
           <select id="tune-niche" class="bg-transparent text-white focus:outline-none cursor-pointer font-bold">
             <option value="universal" selected class="bg-slate-900">🌐 Universal / Semua Video</option>
+            <option value="kajian" class="bg-slate-900">🕌 Kajian & Dakwah</option>
             <option value="podcast" class="bg-slate-900">🎙️ Podcast & Wawancara</option>
             <option value="bisnis" class="bg-slate-900">💡 Bisnis & Finansial</option>
             <option value="motivasi" class="bg-slate-900">🚀 Motivasi & Mindset</option>
             <option value="edukasi" class="bg-slate-900">📚 Edukasi & Kuliah</option>
             <option value="gaming" class="bg-slate-900">🎮 Gaming & Hiburan</option>
-            <option value="kajian" class="bg-slate-900">🕌 Kajian & Dakwah</option>
           </select>
         </div>
 
@@ -195,7 +206,7 @@
         <h2 class="text-2xl font-black text-white flex items-center gap-2">
           <span>🎬</span> Galeri Video Shorts Hasil AI
         </h2>
-        <p class="text-xs text-slate-400 mt-1">Lengkap dengan Virality Score, dynamic caption gaya Hormozi, dan format vertikal 9:16.</p>
+        <p class="text-xs text-slate-400 mt-1">Lengkap dengan Virality Score, dynamic zoom, subtitle Hormozi, dan YouTube Studio Automation.</p>
       </div>
       <span id="clips-counter" class="px-3.5 py-1 rounded-full text-xs font-bold bg-slate-900 text-slate-400 border border-slate-800">
         0 Klip
@@ -206,16 +217,242 @@
     <div id="empty-state" class="py-20 text-center text-slate-500 space-y-3 glass-card rounded-3xl">
       <div class="text-5xl opacity-40">🎞️</div>
       <div class="text-sm font-bold text-slate-400">Belum ada video shorts yang digenerate</div>
-      <div class="text-xs max-w-sm mx-auto text-slate-400">Tempel tautan YouTube atau pilih file video apa saja (Podcast, Bisnis, Edukasi, Motivasi, Kajian) di kolom atas untuk membuat video shorts otomatis.</div>
+      <div class="text-xs max-w-sm mx-auto text-slate-400">Tempel tautan YouTube atau pilih file video apa saja (Kajian, Podcast, Bisnis, Edukasi, Motivasi) di kolom atas untuk membuat video shorts otomatis.</div>
     </div>
 
     <!-- Clips Bento Grid -->
     <div id="clips-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
+  <!-- ===================================================================== -->
+  <!-- MODAL: YOUTUBE AUTOMATION & VIRAL SEO STUDIO -->
+  <!-- ===================================================================== -->
+  <div id="yt-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-card bg-[#0b101b] border border-slate-700/80 rounded-3xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden my-auto">
+      
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-xl shadow-lg shadow-red-900/40">
+            ▶️
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white flex items-center gap-2">
+              YouTube Shorts Studio & Upload
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">VIRAL SEO</span>
+            </h3>
+            <p class="text-xs text-slate-400" id="modal-video-label">File: clip.mp4</p>
+          </div>
+        </div>
+        <button onclick="closeYouTubeModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-lg transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="flex border-b border-slate-800/80 bg-slate-950/40 text-xs font-bold px-6">
+        <button id="tab-btn-seo" onclick="switchModalTab('seo')" class="py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition">
+          <span>✨</span> Metadata & Upload
+        </button>
+        <button id="tab-btn-research" onclick="switchModalTab('research')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition">
+          <span>🔎</span> Riset Tren Kata Kunci
+        </button>
+        <button id="tab-btn-setup" onclick="switchModalTab('setup')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition">
+          <span>⚙️</span> Koneksi Channel & Panduan
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-5 flex-grow text-xs">
+
+        <!-- TAB 1: METADATA & UPLOAD -->
+        <div id="tab-content-seo" class="space-y-4">
+          
+          <!-- Viral Title Section -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="font-extrabold text-slate-200 flex items-center gap-1.5">
+                <span>📌</span> Judul Short (Maks 60 Karakter untuk Algoritma Mobile):
+              </label>
+              <span id="title-char-count" class="font-bold text-slate-400">0/60</span>
+            </div>
+            <input type="text" id="modal-title" oninput="updateTitleCount()" 
+                   class="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white font-bold text-sm focus:outline-none focus:border-indigo-500">
+            
+            <!-- Quick Hook Alternatives -->
+            <div class="pt-1 flex flex-wrap items-center gap-1.5" id="alt-titles-container">
+              <span class="text-[11px] text-slate-500 font-semibold">Pilih Angle Hook:</span>
+            </div>
+          </div>
+
+          <!-- Description Section -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="font-extrabold text-slate-200 flex items-center gap-1.5">
+                <span>📝</span> Deskripsi Video (Lengkap Hook, 3 Poin Hikmah, CTA & Hashtags):
+              </label>
+              <button onclick="copyDescriptionOnly()" class="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1">
+                📋 Salin Deskripsi
+              </button>
+            </div>
+            <textarea id="modal-desc" rows="6" 
+                      class="w-full bg-slate-900 border border-slate-700/80 rounded-xl p-3 text-slate-200 font-mono text-[11px] leading-relaxed focus:outline-none focus:border-indigo-500"></textarea>
+          </div>
+
+          <!-- Tags Section -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="font-extrabold text-slate-200 flex items-center gap-1.5">
+                <span>🏷️</span> Tags Pencarian YouTube (Pisahkan dengan koma):
+              </label>
+              <span id="tags-char-count" class="font-bold text-emerald-400">0/500</span>
+            </div>
+            <textarea id="modal-tags" rows="3" oninput="updateTagsCount()" 
+                      class="w-full bg-slate-900 border border-slate-700/80 rounded-xl p-3 text-slate-300 text-xs focus:outline-none focus:border-indigo-500"></textarea>
+            
+            <!-- Live Suggested Tag Pills -->
+            <div class="pt-1">
+              <div class="text-[11px] text-slate-400 font-bold mb-1.5">Trending Tags (Klik untuk menambahkan ke daftar tags):</div>
+              <div id="modal-suggested-tags" class="flex flex-wrap gap-1.5"></div>
+            </div>
+          </div>
+
+          <!-- YouTube Settings Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <label class="text-slate-400 block font-bold mb-1">Visibilitas</label>
+              <select id="modal-privacy" class="w-full bg-transparent text-white font-bold focus:outline-none cursor-pointer">
+                <option value="public" class="bg-slate-900">Publik (Langsung Tayang)</option>
+                <option value="unlisted" class="bg-slate-900">Tidak Publik (Unlisted)</option>
+                <option value="private" class="bg-slate-900">Pribadi (Private)</option>
+              </select>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <label class="text-slate-400 block font-bold mb-1">Kategori YouTube</label>
+              <select id="modal-category" class="w-full bg-transparent text-white font-bold focus:outline-none cursor-pointer">
+                <option value="27" class="bg-slate-900">Pendidikan (Education)</option>
+                <option value="22" class="bg-slate-900">Orang & Blog (People)</option>
+                <option value="24" class="bg-slate-900">Hiburan (Entertainment)</option>
+                <option value="20" class="bg-slate-900">Gaming</option>
+              </select>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <label class="text-slate-400 block font-bold mb-1">Audiens (COPPA)</label>
+              <select id="modal-made-for-kids" class="w-full bg-transparent text-white font-bold focus:outline-none cursor-pointer">
+                <option value="false" class="bg-slate-900">Bukan Untuk Anak-anak</option>
+                <option value="true" class="bg-slate-900">Untuk Anak-anak</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Schedule Recommendation Box -->
+          <div class="bg-indigo-950/30 border border-indigo-900/40 rounded-xl p-3.5 flex items-start gap-3">
+            <div class="text-lg">⏰</div>
+            <div class="space-y-0.5">
+              <div class="font-extrabold text-indigo-300">Rekomendasi Waktu Posting Terbaik (WIB):</div>
+              <div class="text-[11px] text-slate-300" id="schedule-text">
+                • <strong>Prime Time 1</strong>: 11:30 - 13:00 WIB (Waktu Istirahat)<br>
+                • <strong>Prime Time 2</strong>: 17:30 - 20:30 WIB (Puncak Retensi Malam)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: LIVE TREND RESEARCH -->
+        <div id="tab-content-research" class="hidden space-y-4">
+          <div class="space-y-2">
+            <div class="font-extrabold text-slate-200">Riset Kata Kunci Trending Live dari YouTube Indonesia:</div>
+            <p class="text-slate-400 text-[11px]">Mengambil data pencarian real-time langsung dari mesin autocomplete YouTube tanpa perlu API key.</p>
+            <div class="flex gap-2">
+              <input type="text" id="trend-search-input" placeholder="Ketik topik (contoh: kajian rezeki, tips bisnis, podcast)..." 
+                     class="flex-grow bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-white font-medium focus:outline-none focus:border-indigo-500">
+              <button onclick="handleTrendSearch()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition flex items-center gap-1.5 flex-shrink-0">
+                <span>🔎</span> Cari Tren
+              </button>
+            </div>
+          </div>
+
+          <div id="trend-results-container" class="space-y-3 pt-2">
+            <div class="text-slate-500 text-center py-8">Ketik kata kunci di atas untuk mencari tren YouTube terbaru.</div>
+          </div>
+        </div>
+
+        <!-- TAB 3: CHANNEL SETUP & MANUAL GUIDE -->
+        <div id="tab-content-setup" class="hidden space-y-4">
+          <!-- Auth Status Card -->
+          <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="font-extrabold text-white flex items-center gap-2">
+                <span>📡</span> Status Koneksi YouTube API:
+              </div>
+              <span id="setup-status-pill" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400">
+                Memeriksa...
+              </span>
+            </div>
+            <div id="setup-channel-info" class="text-slate-300 text-[11px] leading-relaxed">
+              Memeriksa file kredensial Google OAuth di sistem...
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button onclick="triggerYouTubeAuth()" id="btn-oauth-link" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold flex items-center gap-1.5 transition">
+                <span>🔑</span> Hubungkan Akun YouTube Sekarang
+              </button>
+            </div>
+          </div>
+
+          <!-- Step by Step Free Google Cloud Guide -->
+          <div class="space-y-2 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+            <div class="font-extrabold text-slate-200">Cara Mendapatkan client_secrets.json (100% Gratis & Resmi Google):</div>
+            <ol class="list-decimal list-inside space-y-1.5 text-slate-300 text-[11px] leading-relaxed">
+              <li>Buka <a href="https://console.cloud.google.com" target="_blank" class="text-indigo-400 underline font-bold">Google Cloud Console</a> dan buat proyek baru.</li>
+              <li>Aktifkan <strong>YouTube Data API v3</strong> di menu <em>APIs & Services > Library</em>.</li>
+              <li>Di menu <em>Credentials</em>, klik <strong>Create Credentials > OAuth client ID</strong> (Pilih tipe: <em>Desktop App</em>).</li>
+              <li>Unduh file JSON yang dihasilkan, ubah namanya menjadi <code class="text-amber-300 font-mono">client_secrets.json</code>, lalu letakkan di folder proyek ini (<code class="text-slate-400">E:\PROJECTS\kajian_clipper</code>).</li>
+              <li>Klik tombol <strong>"Hubungkan Akun YouTube Sekarang"</strong> di atas. Selesai!</li>
+            </ol>
+          </div>
+
+          <!-- Direct Web Fallback Option -->
+          <div class="bg-indigo-950/40 p-4 rounded-2xl border border-indigo-900/40 space-y-2">
+            <div class="font-extrabold text-indigo-300 flex items-center gap-1.5">
+              <span>💡</span> Opsi Instan Tanpa Setup API:
+            </div>
+            <p class="text-slate-300 text-[11px] leading-relaxed">
+              Jika belum sempat membuat API Google, Anda tetap bisa mengunggah video dalam 10 detik! Cukup klik tombol <strong>"Buka YouTube Studio Web"</strong> di bawah, semua judul, deskripsi, dan tag akan otomatis disalin ke clipboard Anda untuk langsung ditempel (Ctrl+V) di halaman YouTube Studio resmi.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-6 border-t border-slate-800 bg-slate-900/90 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <button onclick="copyAllMetadata()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition flex items-center gap-1.5 border border-slate-700">
+            <span>📋</span> Salin Semua Metadata
+          </button>
+          <button onclick="openYouTubeStudioWeb()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 font-bold transition flex items-center gap-1.5 border border-slate-700">
+            <span>🌐</span> Buka YouTube Studio Web
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="closeYouTubeModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white font-bold transition">
+            Batal
+          </button>
+          <button id="btn-upload-yt" onclick="handleYouTubeUpload()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-indigo-600 hover:from-red-500 hover:to-indigo-500 text-white font-black uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-red-900/40">
+            <span>🚀</span> Upload ke YouTube
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <script>
     let activeJobId = null;
     let pollInterval = null;
+    let currentClipFilename = null;
+    let currentClipTitle = null;
 
     const fileInput = document.getElementById('file-input');
     const unifiedInput = document.getElementById('unified-input');
@@ -227,23 +464,75 @@
       }
     });
 
-    window.addEventListener('DOMContentLoaded', loadHistory);
+    window.addEventListener('DOMContentLoaded', () => {
+      loadHistory();
+      checkYouTubeConnection();
+      if (window.location.hash === '#youtube') {
+        setTimeout(() => openYouTubeStudio('690ad7e5_clip_1.mp4'), 600);
+      }
+    });
+
+    async function checkYouTubeConnection() {
+      try {
+        const res = await fetch('/api/youtube/status');
+        const data = await res.json();
+        const navPill = document.getElementById('nav-yt-status');
+        const setupPill = document.getElementById('setup-status-pill');
+        const channelInfo = document.getElementById('setup-channel-info');
+
+        if (data.authenticated && data.channel) {
+          navPill.innerText = `YouTube: ${data.channel.title}`;
+          navPill.parentElement.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/50 flex items-center gap-1.5 transition shadow-sm';
+          if (setupPill) {
+            setupPill.innerText = 'Terhubung';
+            setupPill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          }
+          if (channelInfo) {
+            channelInfo.innerHTML = `✅ Terhubung ke channel <strong>${data.channel.title}</strong> (${data.channel.customUrl || data.channel.id}). Video dapat diunggah otomatis via API.`;
+          }
+        } else if (data.secrets_present) {
+          navPill.innerText = 'YouTube: Siap Hubungkan';
+          if (setupPill) {
+            setupPill.innerText = 'Kredensial Ada (Belum Login)';
+            setupPill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+          }
+          if (channelInfo) {
+            channelInfo.innerHTML = `File <code>client_secrets.json</code> terdeteksi. Klik tombol merah di bawah untuk mengizinkan akses ke akun YouTube Anda.`;
+          }
+        } else {
+          navPill.innerText = 'YouTube: Studio Web';
+          if (setupPill) {
+            setupPill.innerText = 'client_secrets.json Belum Ada';
+            setupPill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400';
+          }
+          if (channelInfo) {
+            channelInfo.innerHTML = `File <code>client_secrets.json</code> belum ada di folder proyek. Ikuti panduan di bawah atau gunakan tombol <strong>"Buka YouTube Studio Web"</strong> untuk upload instan.`;
+          }
+        }
+      } catch (e) {
+        console.error("YouTube Status Error:", e);
+      }
+    }
 
     async function loadHistory() {
       try {
         const res = await fetch('/api/history');
         const data = await res.json();
         if (data.clips && data.clips.length > 0) {
-          const formatted = data.clips.map((c, i) => ({
-            clip_id: `clip_${i+1}`,
-            filename: c.filename,
-            video_url: c.url,
-            title: "HIGHLIGHT VIRAL PILIHAN AI",
-            score: 96.0,
-            duration: 36.5,
-            summary: "Klip video pendek dengan hook kuat, kinetic animated captions, dan framing 9:16 sinematik.",
-            hashtags: "#shorts #reels #viral #fyp #trending"
-          }));
+          const formatted = data.clips.map((c, i) => {
+            const seo = c.seo || {};
+            return {
+              clip_id: `clip_${i+1}`,
+              filename: c.filename,
+              video_url: c.url,
+              title: seo.title || "HIGHLIGHT VIRAL PILIHAN AI",
+              score: seo.seo_score || 96.0,
+              duration: 38.0,
+              summary: seo.description ? seo.description.split('\n')[0] : "Klip video pendek dengan hook kuat, punch-in camera, dan framing 9:16 sinematik.",
+              hashtags: (seo.hashtags && seo.hashtags.length > 0) ? seo.hashtags.join(' ') : "#shorts #reels #viral #fyp #trending",
+              seo: seo
+            };
+          });
           renderClips(formatted);
         }
       } catch (e) {
@@ -364,6 +653,13 @@
       clips.forEach((clip) => {
         const card = document.createElement('div');
         card.className = 'glass-card p-4 rounded-3xl flex flex-col space-y-4';
+        
+        // Escape quotes for inline onClick handlers
+        const safeFilename = clip.filename.replace(/'/g, "\\'");
+        const safeTitle = (clip.title || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeSummary = (clip.summary || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeHashtags = (clip.hashtags || "").replace(/'/g, "\\'");
+
         card.innerHTML = `
           <!-- Header Score -->
           <div class="flex items-center justify-between">
@@ -386,7 +682,7 @@
               ${clip.title}
             </h3>
 
-            <p class="text-[11px] text-slate-300 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/50 leading-relaxed">
+            <p class="text-[11px] text-slate-300 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/50 leading-relaxed line-clamp-3">
               "${clip.summary}"
             </p>
 
@@ -396,14 +692,22 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <a href="${clip.video_url}" download="${clip.filename}" 
-               class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
-              <span>⬇️</span> Download
-            </a>
-            <button onclick="copyCaption('${clip.title}', '${clip.summary}', '${clip.hashtags}')" 
-                    class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center justify-center gap-1 border border-slate-700">
-              <span>📋</span> Salin Teks
+          <div class="space-y-2 pt-1">
+            <div class="grid grid-cols-2 gap-2">
+              <a href="${clip.video_url}" download="${clip.filename}" 
+                 class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
+                <span>⬇️</span> Download
+              </a>
+              <button onclick="copyCaption('${safeTitle}', '${safeSummary}', '${safeHashtags}')" 
+                      class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center justify-center gap-1 border border-slate-700">
+                <span>📋</span> Salin Teks
+              </button>
+            </div>
+
+            <!-- YouTube Studio Button -->
+            <button onclick="openYouTubeStudio('${safeFilename}')" 
+                    class="w-full py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-indigo-600 hover:from-red-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/30 transition">
+              <span>🚀</span> YouTube Studio & Upload
             </button>
           </div>
         `;
@@ -416,6 +720,289 @@
       navigator.clipboard.writeText(full).then(() => {
         alert("Judul, ringkasan, dan hashtag berhasil disalin!");
       });
+    }
+
+    // =========================================================================
+    // YOUTUBE STUDIO MODAL LOGIC
+    // =========================================================================
+
+    async function openYouTubeStudio(filename) {
+      currentClipFilename = filename;
+      document.getElementById('modal-video-label').innerText = `File: ${filename}`;
+      document.getElementById('yt-modal').classList.remove('hidden');
+      switchModalTab('seo');
+
+      const niche = document.getElementById('tune-niche').value;
+      const speaker = document.getElementById('tune-watermark').value.trim();
+
+      // Fetch or generate SEO package
+      try {
+        const res = await fetch(`/api/seo_metadata?filename=${encodeURIComponent(filename)}&niche=${niche}&speaker=${encodeURIComponent(speaker)}`);
+        const data = await res.json();
+
+        // Populate Title
+        const titleEl = document.getElementById('modal-title');
+        titleEl.value = data.title || "";
+        currentClipTitle = data.title;
+        updateTitleCount();
+
+        // Populate Alternative Titles
+        const altContainer = document.getElementById('alt-titles-container');
+        altContainer.innerHTML = '<span class="text-[11px] text-slate-500 font-semibold">Pilih Angle Hook:</span>';
+        if (data.alternative_titles) {
+          data.alternative_titles.forEach(alt => {
+            const pill = document.createElement('button');
+            pill.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600/50 text-slate-300 hover:text-white border border-slate-700 transition font-medium';
+            pill.innerText = alt;
+            pill.onclick = () => {
+              titleEl.value = alt;
+              updateTitleCount();
+            };
+            altContainer.appendChild(pill);
+          });
+        }
+
+        // Populate Description
+        document.getElementById('modal-desc').value = data.description || "";
+
+        // Populate Tags
+        const tagsEl = document.getElementById('modal-tags');
+        tagsEl.value = data.tags_csv || (data.tags ? data.tags.join(', ') : "");
+        updateTagsCount();
+
+        // Suggested Tags Pills
+        const suggestedContainer = document.getElementById('modal-suggested-tags');
+        suggestedContainer.innerHTML = '';
+        if (data.trending_scouted) {
+          data.trending_scouted.forEach(kw => {
+            const tagBtn = document.createElement('button');
+            tagBtn.className = 'tag-badge text-[10px] px-2.5 py-1 rounded-lg bg-slate-900 text-indigo-300 border border-slate-800 hover:border-indigo-500 font-semibold flex items-center gap-1';
+            tagBtn.innerHTML = `<span>+</span> ${kw}`;
+            tagBtn.onclick = () => addTagToField(kw);
+            suggestedContainer.appendChild(tagBtn);
+          });
+        }
+
+        // Category
+        if (data.category_id) {
+          document.getElementById('modal-category').value = data.category_id;
+        }
+
+        // Schedule
+        if (data.best_schedule) {
+          document.getElementById('schedule-text').innerHTML = `
+            • <strong>Siang</strong>: ${data.best_schedule.lunch_peak}<br>
+            • <strong>Malam</strong>: ${data.best_schedule.evening_peak}<br>
+            • <strong>Hari Terbaik</strong>: ${data.best_schedule.best_days}
+          `;
+        }
+
+      } catch (err) {
+        console.error("Failed to load SEO metadata:", err);
+      }
+    }
+
+    function openYouTubeSetupModal() {
+      document.getElementById('modal-video-label').innerText = 'Pengaturan Google OAuth & Integrasi Channel';
+      document.getElementById('yt-modal').classList.remove('hidden');
+      switchModalTab('setup');
+      checkYouTubeConnection();
+    }
+
+    function closeYouTubeModal() {
+      document.getElementById('yt-modal').classList.add('hidden');
+    }
+
+    function switchModalTab(tab) {
+      const tabs = ['seo', 'research', 'setup'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (t === tab) {
+          btn.className = 'py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-1.5 transition font-extrabold';
+          content.classList.remove('hidden');
+        } else {
+          btn.className = 'py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition';
+          content.classList.add('hidden');
+        }
+      });
+    }
+
+    function updateTitleCount() {
+      const title = document.getElementById('modal-title').value;
+      const countEl = document.getElementById('title-char-count');
+      countEl.innerText = `${title.length}/60`;
+      if (title.length > 60) {
+        countEl.className = 'font-bold text-amber-400';
+      } else {
+        countEl.className = 'font-bold text-emerald-400';
+      }
+    }
+
+    function updateTagsCount() {
+      const tags = document.getElementById('modal-tags').value;
+      const countEl = document.getElementById('tags-char-count');
+      countEl.innerText = `${tags.length}/500`;
+      if (tags.length > 500) {
+        countEl.className = 'font-bold text-red-400';
+      } else {
+        countEl.className = 'font-bold text-emerald-400';
+      }
+    }
+
+    function addTagToField(kw) {
+      const tagsEl = document.getElementById('modal-tags');
+      const current = tagsEl.value.trim();
+      if (!current) {
+        tagsEl.value = kw;
+      } else if (!current.toLowerCase().includes(kw.toLowerCase())) {
+        tagsEl.value = `${current}, ${kw}`;
+      }
+      updateTagsCount();
+    }
+
+    function copyDescriptionOnly() {
+      const desc = document.getElementById('modal-desc').value;
+      navigator.clipboard.writeText(desc).then(() => {
+        alert("Deskripsi YouTube berhasil disalin ke clipboard!");
+      });
+    }
+
+    function copyAllMetadata() {
+      const title = document.getElementById('modal-title').value;
+      const desc = document.getElementById('modal-desc').value;
+      const tags = document.getElementById('modal-tags').value;
+
+      const fullPackage = `=== JUDUL SHORTS ===\n${title}\n\n=== DESKRIPSI ===\n${desc}\n\n=== TAGS ===\n${tags}`;
+      navigator.clipboard.writeText(fullPackage).then(() => {
+        alert("Semua metadata (Judul, Deskripsi, Tags) berhasil disalin ke clipboard!");
+      });
+    }
+
+    function openYouTubeStudioWeb() {
+      copyAllMetadata();
+      window.open('https://studio.youtube.com', '_blank');
+    }
+
+    async function handleTrendSearch() {
+      const q = document.getElementById('trend-search-input').value.trim();
+      const niche = document.getElementById('tune-niche').value;
+      if (!q) return;
+
+      const container = document.getElementById('trend-results-container');
+      container.innerHTML = '<div class="text-center py-4 text-indigo-400">Mencari tren YouTube...</div>';
+
+      try {
+        const res = await fetch(`/api/research_trends?query=${encodeURIComponent(q)}&niche=${niche}`);
+        const data = await res.json();
+
+        container.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white">${data.total_found} Kata Kunci Trending Ditemukan:</span>
+            <button onclick="addAllTrendsToTags()" class="text-indigo-400 hover:text-indigo-300 font-bold text-[11px]">
+              + Tambahkan Semua ke Tags
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2 pt-1" id="trend-pills-list"></div>
+        `;
+
+        const pillsList = document.getElementById('trend-pills-list');
+        window.lastFoundTrends = data.trending_keywords || [];
+
+        data.trending_keywords.forEach(kw => {
+          const pill = document.createElement('button');
+          pill.className = 'text-xs px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-indigo-600/40 text-slate-200 border border-slate-800 hover:border-indigo-500 transition font-medium flex items-center gap-1.5';
+          pill.innerHTML = `<span>🔥</span> ${kw}`;
+          pill.onclick = () => {
+            addTagToField(kw);
+            pill.classList.add('bg-indigo-900', 'border-indigo-400');
+          };
+          pillsList.appendChild(pill);
+        });
+
+      } catch (e) {
+        container.innerHTML = `<div class="text-red-400 text-center py-4">Gagal mencari tren: ${e.message}</div>`;
+      }
+    }
+
+    function addAllTrendsToTags() {
+      if (window.lastFoundTrends) {
+        window.lastFoundTrends.forEach(kw => addTagToField(kw));
+        alert("Semua tren berhasil ditambahkan ke kolom Tags!");
+      }
+    }
+
+    async function triggerYouTubeAuth() {
+      const btn = document.getElementById('btn-oauth-link');
+      btn.innerText = "Membuka Autentikasi Google...";
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/youtube/auth', { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+          alert(`Sukses! ${data.message}`);
+          checkYouTubeConnection();
+        } else {
+          alert("Gagal koneksi: " + data.error);
+        }
+      } catch (e) {
+        alert("Error: " + e.message);
+      } finally {
+        btn.innerText = "Hubungkan Akun YouTube Sekarang";
+        btn.disabled = false;
+      }
+    }
+
+    async function handleYouTubeUpload() {
+      if (!currentClipFilename) {
+        alert("Pilih video terlebih dahulu!");
+        return;
+      }
+
+      const btn = document.getElementById('btn-upload-yt');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div> Mengunggah...`;
+
+      const payload = {
+        filename: currentClipFilename,
+        title: document.getElementById('modal-title').value,
+        description: document.getElementById('modal-desc').value,
+        tags: document.getElementById('modal-tags').value,
+        category_id: document.getElementById('modal-category').value,
+        privacy_status: document.getElementById('modal-privacy').value,
+        made_for_kids: document.getElementById('modal-made-for-kids').value === 'true'
+      };
+
+      try {
+        const res = await fetch('/api/youtube/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.ok) {
+          alert(`🎉 Video Berhasil Diunggah ke YouTube!\n\nLink Video: ${data.url}\nID: ${data.video_id}`);
+          window.open(data.url, '_blank');
+          closeYouTubeModal();
+        } else {
+          const errMsg = data.detail || data.error || "Gagal upload";
+          if (errMsg.includes("Belum terhubung") || errMsg.includes("client_secrets.json")) {
+            if (confirm(`${errMsg}\n\nApakah Anda ingin membuka YouTube Studio Web langsung dan menyalin semua judul & tags ke clipboard?`)) {
+              openYouTubeStudioWeb();
+            }
+          } else {
+            alert(`Gagal Upload: ${errMsg}`);
+          }
+        }
+      } catch (e) {
+        alert(`Kesalahan Jaringan: ${e.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🚀</span> Upload ke YouTube`;
+      }
     }
   </script>
 </body>

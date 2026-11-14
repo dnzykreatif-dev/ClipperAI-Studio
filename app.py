@@ -1,6 +1,7 @@
 """
 ClipperAI Studio - Web Application (Universal Edition)
-FastAPI Server providing Web GUI and REST APIs for All Video Niches.
+FastAPI Server providing Web GUI, REST APIs, YouTube Studio Automation,
+and AI Viral SEO Research.
 """
 
 import os
@@ -8,16 +9,19 @@ import uuid
 import json
 import shutil
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
-from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 import clipper_engine
+import yt_seo_engine
+import yt_uploader
 
-app = FastAPI(title="ClipperAI Studio", version="2.0.0")
+app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,6 +45,16 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/outputs", StaticFiles(directory=str(OUTPUTS_DIR)), name="outputs")
 
 JOBS: Dict[str, Dict[str, Any]] = {}
+
+
+class YouTubeUploadPayload(BaseModel):
+    filename: str
+    title: str
+    description: str
+    tags: str
+    category_id: str = "22"
+    privacy_status: str = "public"
+    made_for_kids: bool = False
 
 
 def process_video_pipeline(
@@ -140,11 +154,11 @@ def process_video_pipeline(
         job["candidates"] = candidates
         job["clips"] = []
 
-        # Step 4: Render 9:16 Shorts with dynamic captions & SFX
+        # Step 4: Render 9:16 Shorts with dynamic captions & SFX + Auto SEO Generation
         total_cand = len(candidates)
         for idx, cand in enumerate(candidates):
             pct = 65 + int((idx / total_cand) * 32)
-            job["step"] = f"Rendering Video Short {idx+1}/{total_cand} (9:16 + Dynamic Captions + SFX)..."
+            job["step"] = f"Rendering Video Short {idx+1}/{total_cand} (9:16 + Dynamic Zoom + SFX)..."
             job["progress"] = pct
 
             out_filename = f"{job_id}_{cand['clip_id']}.mp4"
@@ -159,6 +173,22 @@ def process_video_pipeline(
                 add_sfx=True
             )
 
+            # Auto-generate broadcast-grade YouTube SEO Package
+            seo_package = yt_seo_engine.generate_shorts_seo_package(
+                transcript_text=cand.get("text", ""),
+                title_hint=cand.get("hook_title", ""),
+                niche=niche,
+                speaker=custom_watermark
+            )
+
+            seo_filename = f"{job_id}_{cand['clip_id']}_seo.json"
+            seo_path = OUTPUTS_DIR / seo_filename
+            try:
+                with open(seo_path, "w", encoding="utf-8") as f:
+                    json.dump(seo_package, f, ensure_ascii=False, indent=2)
+            except Exception as e:
+                print(f"[Warning] Failed to save SEO cache: {e}")
+
             job["clips"].append({
                 "clip_id": cand["clip_id"],
                 "filename": out_filename,
@@ -169,11 +199,12 @@ def process_video_pipeline(
                 "start": cand["start_time"],
                 "end": cand["end_time"],
                 "summary": cand["text"][:160] + "...",
-                "hashtags": cand["hashtags"]
+                "hashtags": cand["hashtags"],
+                "seo": seo_package
             })
 
         job["status"] = "completed"
-        job["step"] = "Selesai! Video siap diunduh & diunggah."
+        job["step"] = "Selesai! Video siap diunduh & diunggah ke YouTube."
         job["progress"] = 100
 
     except Exception as e:
@@ -262,13 +293,122 @@ async def get_history():
     files = list(OUTPUTS_DIR.glob("*.mp4"))
     results = []
     for f in sorted(files, key=lambda x: x.stat().st_mtime, reverse=True):
+        seo_path = OUTPUTS_DIR / f"{f.stem}_seo.json"
+        seo_data = None
+        if seo_path.exists():
+            try:
+                with open(seo_path, "r", encoding="utf-8") as sf:
+                    seo_data = json.load(sf)
+            except Exception:
+                pass
+
         results.append({
             "filename": f.name,
             "url": f"/outputs/{f.name}",
             "size_mb": round(f.stat().st_size / (1024 * 1024), 2),
-            "date": f.stat().st_mtime
+            "date": f.stat().st_mtime,
+            "seo": seo_data
         })
     return {"clips": results}
+
+
+# =========================================================================
+# YOUTUBE SEO & VIRAL RESEARCH APIS
+# =========================================================================
+
+@app.get("/api/research_trends")
+async def research_trends(query: str = Query(..., min_length=1), niche: str = Query("universal")):
+    """
+    Scouts live real-time search autocomplete suggestions directly from YouTube.
+    """
+    data = yt_seo_engine.research_viral_keywords(topic=query, niche=niche, limit=15)
+    return data
+
+
+@app.get("/api/seo_metadata")
+async def get_seo_metadata(
+    filename: str = Query(...),
+    niche: str = Query("universal"),
+    speaker: Optional[str] = Query(None)
+):
+    """
+    Retrieves or generates YouTube Shorts SEO package for a specific output clip.
+    """
+    base_name = Path(filename).stem
+    seo_file = OUTPUTS_DIR / f"{base_name}_seo.json"
+
+    if seo_file.exists():
+        try:
+            with open(seo_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
+    # Generate fresh package
+    topic_hint = base_name.replace("_", " ").title()
+    seo_pkg = yt_seo_engine.generate_shorts_seo_package(
+        transcript_text=f"Pembahasan menarik seputar {topic_hint}. Simak penjelasannya sampai tuntas.",
+        title_hint=topic_hint,
+        niche=niche,
+        speaker=speaker
+    )
+
+    # Cache for future use
+    try:
+        with open(seo_file, "w", encoding="utf-8") as f:
+            json.dump(seo_pkg, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+    return seo_pkg
+
+
+# =========================================================================
+# YOUTUBE AUTOMATION & UPLOAD APIS
+# =========================================================================
+
+@app.get("/api/youtube/status")
+async def youtube_status():
+    """
+    Returns the current Google OAuth connection status and channel information.
+    """
+    return yt_uploader.check_auth_status()
+
+
+@app.post("/api/youtube/auth")
+async def youtube_auth():
+    """
+    Initiates local browser OAuth flow to link creator's YouTube channel.
+    """
+    result = yt_uploader.authenticate_flow()
+    return result
+
+
+@app.post("/api/youtube/upload")
+async def youtube_upload(payload: YouTubeUploadPayload):
+    """
+    Uploads a short video directly to YouTube with automated metadata.
+    """
+    video_path = OUTPUTS_DIR / payload.filename
+    if not video_path.exists():
+        raise HTTPException(status_code=404, detail=f"File {payload.filename} tidak ditemukan di outputs.")
+
+    tags_list = [t.strip() for t in payload.tags.split(",") if t.strip()]
+
+    result = yt_uploader.upload_to_youtube(
+        video_path=str(video_path),
+        title=payload.title,
+        description=payload.description,
+        tags=tags_list,
+        category_id=payload.category_id,
+        privacy_status=payload.privacy_status,
+        made_for_kids=payload.made_for_kids
+    )
+
+    if not result.get("ok"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Gagal upload video."))
+
+    return result
 
 
 if __name__ == "__main__":

@@ -1,13 +1,14 @@
-# ⚡ ClipperAI Studio — Universal AI Video Shorts Generator
+# ⚡ ClipperAI Studio — Universal AI Video Shorts & YouTube Automation
 > **Open-Source Local Alternative untuk Opus Clip, Submagic, & Klap**  
-> 100% Offline, Gratis Selamanya, Bebas Biaya Berlangganan & Tanpa Kuota API Bulanan!
+> 100% Offline, Gratis Selamanya, Bebas Biaya Berlangganan, Bebas Kuota API Bulanan, serta Dilengkapi Otomatisasi Upload & SEO YouTube!
 
 ![ClipperAI Studio Preview](static/gui_preview.png)
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![Faster-Whisper](https://img.shields.io/badge/Faster--Whisper-1.0%2B-orange.svg)](https://github.com/SYSTRAN/faster-whisper)
-[![FFmpeg](https://img.shields.io/badge/FFmpeg-Ready-007808.svg)](https://ffmpeg.org/)
+[![YouTube Data API v3](https://img.shields.io/badge/YouTube_API-v3_Ready-red.svg)](https://developers.google.com/youtube/v3)
+[![FFmpeg](https://img.shields.io/badge/FFmpeg-Pro_Motion-007808.svg)](https://ffmpeg.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -15,39 +16,54 @@
 ## 🌟 Apa itu ClipperAI Studio?
 **ClipperAI Studio** adalah aplikasi desktop berbasis AI lokal yang mengubah video panjang (rekaman seminar, podcast, talkshow, edukasi kuliah, konten bisnis, gaming, hingga kajian/dakwah) menjadi **3–5 video vertikal Shorts/Reels viral (9:16)** secara otomatis hanya dalam 1 klik.
 
-Semua proses transkripsi kata-demi-kata (speech-to-text), deteksi hook kalimat viral, penataan aspek rasio vertikal 9:16, pemberian efek suara (SFX whoosh/pop), dan pembakaran *dynamic animated subtitles* dilakukan **100% di komputer lokal Anda** tanpa mengirim data ke cloud atau membayar langganan bulanan mahal.
+Bukan sekadar potong video monoton! ClipperAI Studio dilengkapi:
+1. **Dynamic Motion Camera**: Punch-in zoom dinamis (1.30x) bergantian tiap 4 detik + transisi white flash cut untuk menjaga retensi penonton (*watch time*).
+2. **Audio Jernih Siar (0 dB)**: Suara pembicara 100% jernih tanpa gangguan kresek-kresek atau suara mengecil, dipadukan dengan efek suara whoosh lembut.
+3. **Floating B-Roll Cards**: Kartu visual intisari/hikmah otomatis muncul di menit penting video.
+4. **Subtitle Pop-Bounce Gaya Alex Hormozi**: Teks kinetik beranimasi kata-demi-kata dengan highlight kontras tinggi.
+5. **YouTube Shorts Automation & Upload**: 1-klik upload langsung ke channel YouTube via official YouTube Data API v3, lengkap dengan riset kata kunci trending live dan penulisan deskripsi SEO otomatis.
 
 ---
 
 ## ✨ Fitur Unggulan
 
-### 1. 🌐 Dukungan Multi-Niche & Kategori Universal
+### 1. 🚀 Otomatisasi Upload YouTube & Generator SEO Viral
+- **1-Click Auto Upload**: Unggah video vertikal 9:16 langsung ke YouTube channel Anda via Google OAuth2.
+- **Viral Title Generator (< 60 Karakter)**: Judul hook pendek dengan emoji dan `#Shorts` yang optimal untuk layar handphone tanpa terpotong.
+- **Multiple Hook Variations**: Pilihan angle judul instan (⚡ Curiosity, ❓ Pertanyaan, ⚠️ Peringatan, 💎 Rahasia).
+- **Struktur Deskripsi SEO Standar Industri**:
+  - 2 Baris pertama sebagai hook penarik sebelum lipatan *"Show More"*.
+  - 3 Poin hikmah/intisari berpeluru emoji.
+  - Call to Action (CTA) ajakan subscribe dan berdiskusi di komentar.
+  - 6–10 Hashtag viral relevan.
+- **Manajemen Tags Ketat (< 500 Karakter)**: Menjamin tags tidak melebihi batas sistem YouTube.
+- **Jadwal Posting Rekomendasi (WIB)**: Memberikan panduan jam tayang prime time (11:30–13:00 WIB & 17:30–20:30 WIB).
+- **Opsi Instan Studio Web**: Tombol 1-klik salin seluruh metadata ke clipboard jika Anda ingin mengunggah via web browser secara manual.
+
+### 2. 🔎 Riset Tren Kata Kunci Live (YouTube Autocomplete API)
+- Mengambil kata kunci trending pencarian real-time langsung dari mesin pencari YouTube Indonesia.
+- **100% Bebas Biaya**: Bekerja langsung tanpa memerlukan kunci API berbayar.
+- Cukup klik tombol tag untuk langsung memasukkannya ke daftar tags video Anda.
+
+### 3. 🎬 Dynamic Punch-In Camera & Pro Motion Graphics
+- Mengeliminasi video yang membosankan dan monoton dengan efek kamera *punch-in zoom* bergantian setiap 4 detik.
+- Transisi *white flash cut* sinematik saat pergantian adegan.
+- Floating B-roll cards intisari konten yang muncul secara otomatis.
+- Subtitle kinetik ASS beranimasi *pop-bounce* kata-demi-kata gaya Alex Hormozi.
+
+### 4. 🎙️ Audio Jernih & Multi-Track SFX
+- Penanganan audio cerdas dengan normalisasi desibel (0 dB) sehingga suara asli pembicara terdengar lantang dan kristal.
+- Dilengkapi kamus transliterasi istilah dan ayat suci agar ejaan subtitle tetap akurat.
+
+### 5. 🌐 Dukungan Multi-Niche Universal
 AI secara otomatis menyesuaikan gaya judul hook, header atas, dan hashtag sesuai topik video:
 - 🌐 **Universal / Semua Topik**: Vlog, wawancara santai, tips harian, dan dokumenter.
+- 🕌 **Kajian & Dakwah**: Nasihat agama, renungan hadits, dan pesan hikmah akhlak.
 - 🎙️ **Podcast & Talkshow**: Fokus pada pertanyaan tajam, jawaban mengejutkan, dan interaksi seru.
 - 💡 **Bisnis, Finansial & Tech**: Mengutamakan strategi omset, modal, investasi, dan kiat sukses.
 - 🚀 **Motivasi & Mindset**: Menyoroti kutipan inspiratif dan pesan reflektif bertenaga.
 - 📚 **Edukasi & Kuliah**: Penjelasan fakta penting, sains, wawasan baru, dan istilah penting.
 - 🎮 **Gaming & Hiburan**: Momen lucu, clutch gameplay, dan reaksi seru.
-- 🕌 **Kajian & Dakwah**: Nasihat agama, renungan hadits, dan pesan hikmah akhlak.
-
-### 2. ⚡ Turbo AI Transkripsi (Faster-Whisper Multi-Core)
-- Menggunakan mesin CTranslate2 yang dioptimalkan untuk performa CPU multi-core.
-- Pilihan **Turbo Tiny** (5x lebih cepat, ideal untuk scan cepat) atau **Base** (akurasi standar).
-- **Fitur Quick Scan (15 Menit Awal)**: Menghasilkan 3 klip shorts berkualitas tinggi hanya dalam 1–2 menit pemrosesan!
-
-### 3. 🎯 Viral Hook Scorer & RMS Audio Energy
-- Algoritma cerdas yang menganalisis intonasi suara, puncak desibel (*RMS energy peaks*), serta kekuatan kalimat pembuka (*hook opening*).
-- Menghitung **Virality Score (0–100%)** untuk memprediksi potensi keterikatan penonton (*watch time*).
-
-### 4. 🔤 Dynamic Word-by-Word Subtitles (Gaya Alex Hormozi)
-- Subtitle kinetik beranimasi kata-demi-kata dengan teks kontras tinggi (kuning & hijau neon).
-- Penyisipan ikon emoji otomatis secara kontekstual (💰 🏆 🎯 🧠 🕌 🔥 dll.).
-
-### 5. 📱 Format Vertikal 9:16 Siap Upload
-- Smart center crop ke resolusi standar 1080x1920 (divisible by 2 compliant).
-- Header label kustom (bisa diganti nama channel/akun media sosial Anda).
-- Audio dipadukan dengan efek transisi SFX (Whoosh & Pop).
 
 ---
 
@@ -56,7 +72,6 @@ AI secara otomatis menyesuaikan gaya judul hook, header atas, dan hashtag sesuai
 ### Prasyarat
 1. **Python 3.10+** terinstal di komputer.
 2. **FFmpeg** terinstal dan terdaftar di PATH sistem (ketik `ffmpeg -version` di terminal untuk mengecek).
-3. **Git** (opsional untuk clone repositori).
 
 ---
 
@@ -86,45 +101,16 @@ AI secara otomatis menyesuaikan gaya judul hook, header atas, dan hashtag sesuai
 
 ---
 
-### Cara 2: Manual / Linux / macOS
+### 🔑 Pengaturan YouTube Data API (Opsional untuk Fitur Auto-Upload)
 
-1. **Buat Virtual Environment (Opsional tapi disarankan)**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Di Linux/macOS
-   # atau
-   venv\Scripts\activate     # Di Windows
-   ```
+Untuk mengaktifkan fitur upload langsung 1-klik ke channel YouTube Anda:
+1. Buka [Google Cloud Console](https://console.cloud.google.com/) dan buat proyek baru.
+2. Aktifkan **YouTube Data API v3** pada menu *APIs & Services > Library*.
+3. Buka menu *Credentials* -> klik **Create Credentials** -> pilih **OAuth client ID** (Pilih tipe aplikasi: **Desktop App**).
+4. Unduh file JSON kredensial tersebut, ubah namanya menjadi `client_secrets.json`, dan letakkan di folder utama `ClipperAI-Studio/`.
+5. Di antarmuka ClipperAI Studio, klik tombol **"Hubungkan Akun YouTube Sekarang"**. Browser akan membuka halaman izin Google untuk mengotorisasi channel Anda.
 
-2. **Install Dependensi**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Jalankan Server**:
-   ```bash
-   uvicorn app:app --host 127.0.0.1 --port 8000
-   ```
-   Buka browser di: **`http://127.0.0.1:8000`**
-
----
-
-## 💡 Cara Penggunaan
-
-1. **Input Video**:
-   - Tempel tautan video YouTube langsung (`https://www.youtube.com/watch?v=...`), atau
-   - Klik ikon 📁 untuk memilih file video lokal (`.mp4`, `.mkv`, `.mov`) dari komputer Anda.
-2. **Pilih Niche / Kategori**:
-   - Tentukan topik video (Universal, Podcast, Bisnis, Motivasi, Edukasi, Gaming, atau Dakwah).
-3. **Sesuaikan Pengaturan Cepat**:
-   - Masukkan nama channel Anda di kolom *Header* (opsional).
-   - Pilih *Mode Kecepatan*: Turbo Tiny (Super Cepat) atau Base.
-   - Pilih *Rentang Pindai*: 15 Menit Awal (1–2 Menit) atau Seluruh Video.
-4. **Klik "Buat Shorts Sekarang"**:
-   - Amati progress bar real-time saat AI mentranskripsi dan merender video.
-5. **Download & Upload**:
-   - Pratinjau langsung video 9:16 di galeri.
-   - Klik tombol **Download** untuk mengunduh file `.mp4`, dan klik **Salin Teks** untuk menyalin judul hook, rangkuman, dan hashtag siap posting!
+*Catatan: Jika belum memiliki kredensial API, Anda tetap bisa menggunakan tombol **"Buka YouTube Studio Web"** di modal upload yang otomatis menyalin judul, deskripsi, dan tag ke clipboard Anda!*
 
 ---
 
@@ -132,19 +118,21 @@ AI secara otomatis menyesuaikan gaya judul hook, header atas, dan hashtag sesuai
 
 ```
 ClipperAI-Studio/
-├── app.py                  # Server FastAPI & API Endpoints
-├── clipper_engine.py       # Engine inti: Faster-Whisper, Hook Scorer, ASS Captions & FFmpeg
+├── app.py                  # Server FastAPI, Router API & Integrasi Modul
+├── clipper_engine.py       # Engine Video: Faster-Whisper, Dynamic Zoom, SFX & Subtitle ASS
+├── yt_seo_engine.py        # Engine SEO: Riset Tren YouTube & Generator Metadata Viral
+├── yt_uploader.py          # Uploader: Google OAuth2 & YouTube Data API v3 Upload Resumable
 ├── Start_ClipperAI.bat     # File peluncur otomatis untuk Windows
 ├── install_requirements.bat# Script instalasi dependensi otomatis
 ├── create_shortcut.ps1     # Script pembuat shortcut Desktop
 ├── requirements.txt        # Daftar pustaka Python yang dibutuhkan
 ├── templates/
-│   └── index.html          # Frontend modern Dark Glassmorphism (Opus Clip UI)
+│   └── index.html          # Web GUI Modern Dark Glassmorphism + YouTube Studio Modal
 ├── static/
 │   ├── gui_preview.png     # Screenshot tampilan antarmuka
 │   └── sfx/                # Efek suara transisi (whoosh, pop, chime)
 ├── uploads/                # Direktori sementara video input
-└── outputs/                # Direktori penyimpanan hasil video Shorts/Reels MP4
+└── outputs/                # Direktori penyimpanan hasil video Shorts/Reels MP4 & Metadata SEO
 ```
 
 ---
