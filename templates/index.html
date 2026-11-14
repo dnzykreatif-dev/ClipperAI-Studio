@@ -278,6 +278,54 @@
         <!-- TAB 1: METADATA & UPLOAD -->
         <div id="tab-content-seo" class="space-y-4">
 
+          <!-- TARGET AUDIENCE SELECTOR (UMUM vs MATERI KURSUS) -->
+          <div class="space-y-2 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
+            <div class="flex items-center justify-between">
+              <label class="font-black text-slate-200 text-xs flex items-center gap-1.5">
+                <span>🎯</span> Mana Tujuan Upload Anda? (Pilih Salah Satu):
+              </label>
+              <span id="target-active-pill" class="text-[10px] px-2.5 py-0.5 rounded-full font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                Mode: Konten Umum (Publik)
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- Opsi 1: Untuk Umum (Publik) -->
+              <button type="button" id="target-card-public" onclick="setTargetAudience('public')" 
+                      class="p-3.5 rounded-2xl border-2 text-left transition flex items-center gap-3 bg-indigo-950/40 border-indigo-500 shadow-lg shadow-indigo-950/50">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center text-xl flex-shrink-0">
+                  🌐
+                </div>
+                <div>
+                  <div class="font-black text-white text-xs flex items-center gap-1.5">
+                    1. UPLOAD UNTUK UMUM
+                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/30 text-indigo-300 font-extrabold">PUBLIK</span>
+                  </div>
+                  <div class="text-[10px] text-slate-300 leading-tight mt-1">
+                    Ditonton bebas oleh semua orang di YouTube, kejar views, viralitas, dan subscriber.
+                  </div>
+                </div>
+              </button>
+
+              <!-- Opsi 2: Materi Kursus (Unlisted) -->
+              <button type="button" id="target-card-unlisted" onclick="setTargetAudience('unlisted')" 
+                      class="p-3.5 rounded-2xl border-2 text-left transition flex items-center gap-3 bg-slate-900/60 border-slate-800 hover:border-emerald-500/50">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-xl flex-shrink-0">
+                  🔒
+                </div>
+                <div>
+                  <div class="font-black text-slate-200 text-xs flex items-center gap-1.5">
+                    2. MATERI KURSUS
+                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-extrabold">UNLISTED</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 leading-tight mt-1">
+                    Khusus siswa berbayar di Web dnzykreatif, tersembunyi & tidak tampil di beranda YouTube.
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
           <!-- Format Mode Selector (Shorts vs Long Video) -->
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
             <div>
@@ -348,11 +396,11 @@
           <!-- YouTube Settings Row -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-              <label class="text-slate-400 block font-bold mb-1">Visibilitas</label>
-              <select id="modal-privacy" class="w-full bg-transparent text-white font-bold focus:outline-none cursor-pointer">
-                <option value="public" class="bg-slate-900">Publik (Langsung Tayang)</option>
-                <option value="unlisted" class="bg-slate-900">Tidak Publik (Unlisted)</option>
-                <option value="private" class="bg-slate-900">Pribadi (Private)</option>
+              <label class="text-slate-400 block font-bold mb-1">Status Visibilitas YouTube</label>
+              <select id="modal-privacy" onchange="syncPrivacyDropdown(this.value)" class="w-full bg-transparent text-white font-bold focus:outline-none cursor-pointer">
+                <option value="public" class="bg-slate-900">🌐 Publik (Tayang Bebas ke Umum)</option>
+                <option value="unlisted" class="bg-slate-900">🔒 Tidak Publik (Unlisted / Materi Kursus)</option>
+                <option value="private" class="bg-slate-900">👁️ Pribadi (Hanya Anda)</option>
               </select>
             </div>
             <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
@@ -979,6 +1027,7 @@
       document.getElementById('modal-video-label').innerText = `File: ${filename}`;
       document.getElementById('yt-modal').classList.remove('hidden');
       switchModalTab('seo');
+      setTargetAudience('public');
 
       const niche = document.getElementById('tune-niche').value;
       const speaker = document.getElementById('tune-watermark').value.trim();
@@ -1002,6 +1051,51 @@
 
     function closeYouTubeModal() {
       document.getElementById('yt-modal').classList.add('hidden');
+    }
+
+    let currentTargetAudience = 'public';
+
+    function setTargetAudience(target) {
+      currentTargetAudience = target;
+      const cardPublic = document.getElementById('target-card-public');
+      const cardUnlisted = document.getElementById('target-card-unlisted');
+      const pill = document.getElementById('target-active-pill');
+      const privacyDropdown = document.getElementById('modal-privacy');
+      const uploadBtn = document.getElementById('btn-upload-yt');
+
+      if (target === 'unlisted') {
+        if (privacyDropdown) privacyDropdown.value = 'unlisted';
+        if (cardUnlisted) cardUnlisted.className = 'p-3.5 rounded-2xl border-2 text-left transition flex items-center gap-3 bg-emerald-950/40 border-emerald-500 shadow-lg shadow-emerald-950/50';
+        if (cardPublic) cardPublic.className = 'p-3.5 rounded-2xl border-2 text-left transition flex items-center gap-3 bg-slate-900/60 border-slate-800 hover:border-indigo-500/50';
+        if (pill) {
+          pill.innerText = 'Mode: Materi Kursus (Unlisted)';
+          pill.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        }
+        if (uploadBtn) {
+          uploadBtn.innerHTML = '<span>🔒</span> Upload Unlisted & Kirim ke Web Kursus';
+          uploadBtn.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-emerald-900/40';
+        }
+      } else {
+        if (privacyDropdown) privacyDropdown.value = 'public';
+        if (cardPublic) cardPublic.className = 'p-3.5 rounded-2xl border-2 text-left transition flex items-center gap-3 bg-indigo-950/40 border-indigo-500 shadow-lg shadow-indigo-950/50';
+        if (cardUnlisted) cardUnlisted.className = 'p-3.5 rounded-2xl border-2 text-left transition flex items-center gap-3 bg-slate-900/60 border-slate-800 hover:border-emerald-500/50';
+        if (pill) {
+          pill.innerText = 'Mode: Konten Umum (Publik)';
+          pill.className = 'text-[10px] px-2.5 py-0.5 rounded-full font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
+        }
+        if (uploadBtn) {
+          uploadBtn.innerHTML = '<span>🚀</span> Upload Publik ke YouTube';
+          uploadBtn.className = 'px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-indigo-600 hover:from-red-500 hover:to-indigo-500 text-white font-black uppercase tracking-wider transition flex items-center gap-2 shadow-lg shadow-red-900/40';
+        }
+      }
+    }
+
+    function syncPrivacyDropdown(val) {
+      if (val === 'unlisted') {
+        setTargetAudience('unlisted');
+      } else {
+        setTargetAudience('public');
+      }
     }
 
     let currentVideoUploadMode = 'shorts';
