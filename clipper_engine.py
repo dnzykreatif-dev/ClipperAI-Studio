@@ -538,6 +538,11 @@ PHONETIC_CORRECTIONS = [
     (r"\blentoknya min\b", "lanfadhdhu min hawlik"),
     (r"\bkuberhasilan\b", "keberhasilan"),
     (r"\blemah lembut kepada\b", "lemah-lembut kepada mereka"),
+    (r"\bwadahi wa salam\b", "'alaihi wa sallam"),
+    (r"\bhadishadis\b", "hadits-hadits"),
+    (r"\bsebutar\b", "seputar"),
+    (r"\bmasyibahas\b", "masih bahas"),
+    (r"\balalah\b", "adalah"),
 ]
 
 
@@ -594,16 +599,20 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             for j, w in enumerate(chunk):
                 raw_corrected = apply_phonetic_corrections(w["word"]).upper()
                 clean_lower = re.sub(r"[^\w]", "", raw_corrected.lower())
-
-                display_w = EMOJI_MAP.get(clean_lower, raw_corrected)
+                is_power = clean_lower in EMOJI_MAP
+                display_w = raw_corrected
 
                 if j == idx:
-                    # Pop-bounce transform: active word pops up 120% and settles back
+                    # Pop-bounce transform: active word pops up 122% (130% for power words) and settles back
+                    hi_col = "&H004ADE80&" if is_power else "&H0000F5FF&"
+                    pop_sc = 130 if is_power else 120
                     line_parts.append(
-                        r"{\t(0,80,\fscx120\fscy120)\t(80,160,\fscx100\fscy100)\c&H0000F5FF&\b1}"
+                        rf"{{\t(0,80,\fscx{pop_sc}\fscy{pop_sc})\t(80,160,\fscx100\fscy100)\c{hi_col}\b1}}"
                         + display_w
                         + r"{\r}"
                     )
+                elif is_power:
+                    line_parts.append(r"{\c&H0080F5FF&\b1}" + display_w)
                 else:
                     line_parts.append(r"{\c&H00FFFFFF&\b1}" + display_w)
 
@@ -624,8 +633,26 @@ def render_clip_to_9_16(
     output_mp4: str,
     niche: str = "universal",
     custom_watermark: Optional[str] = None,
-    add_sfx: bool = True
+    add_sfx: bool = True,
+    intensity: str = "normal"
 ) -> str:
+    try:
+        import pro_editor
+        edl = pro_editor.render_clip_pro(
+            source_video=source_video,
+            clip_info=clip_info,
+            output_mp4=output_mp4,
+            niche=niche,
+            custom_watermark=custom_watermark,
+            intensity=intensity,
+        )
+        clip_info["edl"] = edl
+        if "duration" in edl:
+            clip_info["duration"] = round(float(edl["duration"]), 2)
+        return output_mp4
+    except Exception as pro_err:
+        print(f"[Warning] pro_editor fallback to legacy render: {pro_err}")
+
     start_sec = clip_info["start_time"]
     end_sec = clip_info["end_time"]
     duration = max(1.0, end_sec - start_sec)

@@ -70,7 +70,8 @@ def process_video_pipeline(
     target_clips: int = 3,
     scan_range: str = "15min",
     min_dur: float = 25.0,
-    max_dur: float = 60.0
+    max_dur: float = 60.0,
+    intensity: str = "normal"
 ):
     job = JOBS[job_id]
     try:
@@ -157,11 +158,11 @@ def process_video_pipeline(
         job["candidates"] = candidates
         job["clips"] = []
 
-        # Step 4: Render 9:16 Shorts with dynamic captions & SFX + Auto SEO Generation
+        # Step 4: Render 9:16 Shorts with Pro Editor (Face Track + Multi-Shot + B-Roll Card + Argon LUT/SFX)
         total_cand = len(candidates)
         for idx, cand in enumerate(candidates):
             pct = 65 + int((idx / total_cand) * 32)
-            job["step"] = f"Rendering Video Short {idx+1}/{total_cand} (9:16 + Dynamic Zoom + SFX)..."
+            job["step"] = f"Pro Editing Short {idx+1}/{total_cand} (Face Track + Multi-Shot + B-Roll Card + Argon LUT/SFX)..."
             job["progress"] = pct
 
             out_filename = f"{job_id}_{cand['clip_id']}.mp4"
@@ -173,7 +174,8 @@ def process_video_pipeline(
                 output_mp4=out_path,
                 niche=niche,
                 custom_watermark=custom_watermark,
-                add_sfx=True
+                add_sfx=True,
+                intensity=intensity
             )
 
             # Auto-generate broadcast-grade YouTube SEO Package
@@ -203,7 +205,8 @@ def process_video_pipeline(
                 "end": cand["end_time"],
                 "summary": cand["text"][:160] + "...",
                 "hashtags": cand["hashtags"],
-                "seo": seo_package
+                "seo": seo_package,
+                "edl": cand.get("edl")
             })
 
         job["status"] = "completed"
@@ -332,7 +335,8 @@ async def start_job(
     scan_range: str = Form("15min"),
     num_clips: int = Form(3),
     min_dur: float = Form(25.0),
-    max_dur: float = Form(60.0)
+    max_dur: float = Form(60.0),
+    intensity: str = Form("normal")
 ):
     job_id = str(uuid.uuid4())[:8]
 
@@ -374,7 +378,8 @@ async def start_job(
         target_clips=num_clips,
         scan_range=scan_range,
         min_dur=min_dur,
-        max_dur=max_dur
+        max_dur=max_dur,
+        intensity=intensity
     )
 
     return {"ok": True, "job_id": job_id}
@@ -401,12 +406,22 @@ async def get_history():
             except Exception:
                 pass
 
+        edl_path = OUTPUTS_DIR / f"{f.stem}.edl.json"
+        edl_data = None
+        if edl_path.exists():
+            try:
+                with open(edl_path, "r", encoding="utf-8") as ef:
+                    edl_data = json.load(ef)
+            except Exception:
+                pass
+
         results.append({
             "filename": f.name,
             "url": f"/outputs/{f.name}",
             "size_mb": round(f.stat().st_size / (1024 * 1024), 2),
             "date": f.stat().st_mtime,
-            "seo": seo_data
+            "seo": seo_data,
+            "edl": edl_data
         })
     return {"clips": results}
 

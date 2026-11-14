@@ -11,7 +11,7 @@ import json
 import asyncio
 import subprocess
 from pathlib import Path
-from typing import Dict, Any, List, Optional, Callable
+from typing import Dict, Any, List, Optional, Callable, Tuple
 
 import edge_tts
 import clipper_engine
@@ -103,15 +103,18 @@ def create_faceless_ass(
     ass_path: str,
     theme_key: str = "cyber",
     header_title: Optional[str] = None
-) -> str:
+) -> Tuple[str, List[float], List[Dict[str, Any]]]:
     """
-    Creates high-impact Hormozi animated ASS captions with word-by-word highlight.
+    Creates high-impact Hormozi animated ASS captions + Multi-Scene Visual Cards & Keyword Pops.
+    Returns (ass_path, scene_cut_times, sfx_events).
     """
+    import re
+    import pro_editor
     theme = THEMES.get(theme_key, THEMES["cyber"])
     highlight_color = theme["highlight_color"]
 
     header = f"""[Script Info]
-Title: ClipperAI Faceless Motion
+Title: ClipperAI Faceless Motion v2
 ScriptType: v4.00+
 PlayResX: 1080
 PlayResY: 1920
@@ -119,45 +122,82 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Trebuchet MS,66,&H00FFFFFF,&H000000FF,&H00000000,&H90000000,-1,0,0,0,100,100,2,0,1,6,3,2,60,60,420,1
-Style: Highlight,Trebuchet MS,72,{highlight_color},&H000000FF,&H00000000,&HA0000000,-1,0,0,0,105,105,2,0,1,8,4,2,60,60,420,1
+Style: Default,Trebuchet MS,68,&H00FFFFFF,&H000000FF,&H00000000,&H90000000,-1,0,0,0,100,100,2,0,1,7,3,2,60,60,380,1
+Style: Highlight,Trebuchet MS,74,{highlight_color},&H000000FF,&H00000000,&HA0000000,-1,0,0,0,105,105,2,0,1,8,4,2,60,60,380,1
+Style: SceneTag,Segoe UI,32,{highlight_color},&H0000FFFF,&H00000000,&H00000000,-1,0,0,0,100,100,3,0,1,3,0,5,60,60,0,1
+Style: SceneHero,Segoe UI,64,&H00FFFFFF,&H0000FFFF,&H000F172A,&HC80F172A,-1,0,0,0,100,100,1.5,0,3,22,0,5,80,80,0,1
+Style: SceneSub,Segoe UI,40,&H00E2E8F0,&H0000FFFF,&H00000000,&H00000000,-1,0,0,0,100,100,1,0,1,4,2,5,80,80,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 
     events = []
-    # Group words into chunks of 3-5 words for fast-paced mobile engagement
     chunk_size = 4
+    scenes = []
+    cur_scene = []
+    for w in words:
+        cur_scene.append(w)
+        dur = w["end"] - cur_scene[0]["start"]
+        punct = w["word"].strip()[-1:] in ".,?!;:"
+        if dur >= 3.2 or (punct and dur >= 2.0):
+            scenes.append(cur_scene)
+            cur_scene = []
+    if cur_scene:
+        scenes.append(cur_scene)
+
+    cut_times: List[float] = []
+    sfx_events: List[Dict[str, Any]] = [dict(id="VL0516", t=0.02, gain=0.30)]
+    whoosh_ids = ["VL0501", "VL0502", "VL0503", "VL0504", "VL0505"]
+
+    for s_idx, sc in enumerate(scenes):
+        s_start = sc[0]["start"]
+        s_end = sc[-1]["end"] + 0.08
+        if s_idx > 0:
+            cut_times.append(round(s_start, 3))
+            sfx_events.append(dict(id=whoosh_ids[s_idx % len(whoosh_ids)], t=max(0.0, s_start - 0.05), gain=0.34))
+
+        kw = pro_editor.pick_keyword(sc)
+        hero_word = re.sub(r"[^\w\-]", "", kw["word"] if kw else sc[0]["word"]).upper()
+        phrase = pro_editor.summarize_shot_phrase(sc)
+        sfx_events.append(dict(id="VL0526", t=s_start + 0.12, gain=0.26))
+
+        events.append(
+            f"Dialogue: 2,{format_ass_time(s_start)},{format_ass_time(s_end)},SceneTag,,0,0,0,,"
+            rf"{{\an5\pos(540,620)\fad(120,140)}}✦ SCENE 0{s_idx + 1} • POIN UTAMA"
+        )
+        events.append(
+            f"Dialogue: 2,{format_ass_time(s_start)},{format_ass_time(s_end)},SceneHero,,0,0,0,,"
+            rf"{{\an5\pos(540,730)\fad(100,140)\fscx80\fscy80\t(0,140,\fscx108\fscy108)\t(140,260,\fscx100\fscy100)\1c{highlight_color}}}⚡ {hero_word}"
+        )
+        events.append(
+            f"Dialogue: 2,{format_ass_time(s_start)},{format_ass_time(s_end)},SceneSub,,0,0,0,,"
+            rf"{{\an5\pos(540,850)\fad(160,140)}}{phrase}"
+        )
+
     for i in range(0, len(words), chunk_size):
         chunk = words[i:i + chunk_size]
         if not chunk:
             continue
-
-        c_start = chunk[0]["start"]
-        c_end = chunk[-1]["end"] + 0.15
-
-        # Word-by-word highlight within this sentence chunk
         for cur_idx, cur_w in enumerate(chunk):
             w_start = cur_w["start"]
-            w_end = cur_w["end"]
-            
-            # Format chunk: current word highlighted and enlarged, others white
+            w_end = max(w_start + 0.18, cur_w["end"])
             chunk_tokens = []
             for j, w in enumerate(chunk):
                 w_clean = w["word"].strip().upper()
                 if j == cur_idx:
-                    chunk_tokens.append(f"{{\\c{highlight_color}\\fscx112\\fscy112}}{w_clean}{{\\rDefault}}")
+                    chunk_tokens.append(
+                        f"{{\\t(0,80,\\fscx120\\fscy120)\\t(80,160,\\fscx100\\fscy100)\\c{highlight_color}}}{w_clean}{{\\rDefault}}"
+                    )
                 else:
                     chunk_tokens.append(f"{{\\c&H00FFFFFF&}}{w_clean}")
-
             line_text = " ".join(chunk_tokens)
             events.append(f"Dialogue: 0,{format_ass_time(w_start)},{format_ass_time(w_end)},Default,,0,0,0,,{line_text}")
 
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write(header + "\n".join(events) + "\n")
 
-    return ass_path
+    return ass_path, cut_times, sfx_events
 
 
 def render_faceless_video(
@@ -226,68 +266,84 @@ def render_faceless_video(
                 "end": (idx + 1) * interval
             })
 
-    # Step 3: Build Animated ASS
+    # Step 3: Build Animated ASS + Multi-Scene Cards & Argon SFX cues
+    import pro_editor
     ass_path = str(UPLOADS_DIR / f"faceless_{uuid.uuid4().hex[:6]}.ass")
-    create_faceless_ass(all_words, ass_path, theme_key=theme_key, header_title=clean_header)
+    _, cut_times, sfx_events = create_faceless_ass(all_words, ass_path, theme_key=theme_key, header_title=clean_header)
     escaped_ass = ass_path.replace("\\", "/").replace(":", "\\:")
 
-    # Step 4: Multi-Track Audio (Voice + Whoosh SFX)
-    whoosh_sfx = SFX_DIR / "whoosh.wav"
-    has_sfx = whoosh_sfx.exists()
+    # Step 4: Multi-Track Argon SFX Bed
+    sfx_wav = UPLOADS_DIR / f"faceless_sfx_{uuid.uuid4().hex[:6]}.wav"
+    pro_editor.build_sfx_bed(sfx_events, total_dur, sfx_wav)
 
-    # Step 5: Render with FFmpeg Procedural Motion Canvas
+    # Step 5: Render with FFmpeg Procedural Motion Canvas + Argon Light-Leak Overlay + Scene Card Viewport
     if progress_callback:
-        progress_callback(70, "Merender video vertikal 9:16 dengan efek motion canvas & audio 0 dB...")
+        progress_callback(70, "Merender video 9:16 dengan Argon Light-Leak, Scene Cards & Audio -14 LUFS...")
 
-    # Procedural background: Dynamic smooth gradient waves
     c1 = theme["bg_color1"]
     c2 = theme["bg_color2"]
-
-    # Filtergraph: Creates 1080x1920 procedural radial motion canvas + header badge + ASS subtitles
     font_file = "C\\:/Windows/Fonts/arialbd.ttf"
     if not os.path.exists("C:/Windows/Fonts/arialbd.ttf"):
         font_file = "C\\:/Windows/Fonts/arial.ttf"
 
-    filtergraph = (
-        f"gradients=s=1080x1920:d={total_dur:0.2f}:c0={c1}:c1={c2}:x0=540:y0=960:x1=1080:y1=1920:type=radial:speed=0.005[canvas];"
-        f"[canvas]drawbox=x=80:y=240:w=920:h=90:color={theme['header_bg']}@0.9:t=fill,"
-        f"drawtext=fontfile='{font_file}':text='{clean_header}':"
-        f"fontsize=36:fontcolor=white:x=(w-text_w)/2:y=268,"
+    ov_name = "VL0201" if theme_key in ("islamic", "motivation") else "VL0281"
+    ov_path = BASE_DIR / "assets" / "argon" / "overlays" / f"{ov_name}.mp4"
+    has_ov = ov_path.exists()
+
+    flash_terms = [f"between(t\\,{ct - 0.05:.2f}\\,{ct + 0.09:.2f})" for ct in cut_times[:16]]
+    flash_enable = "+".join(flash_terms) if flash_terms else "0"
+
+    v_chain = [
+        f"gradients=s=1080x1920:d={total_dur:0.2f}:c0={c1}:c1={c2}:x0=540:y0=960:x1=1080:y1=1920:type=radial:speed=0.008[grad]"
+    ]
+    last_v = "grad"
+    if has_ov:
+        v_chain.append("[2:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p[ov]")
+        v_chain.append(f"[{last_v}][ov]blend=all_mode=screen:all_opacity=0.28:shortest=1[bgfx]")
+        last_v = "bgfx"
+
+    v_chain.append(
+        f"[{last_v}]vignette=PI/6,"
+        f"drawbox=x=0:y=0:w='1080*(t/{total_dur:0.2f})':h=12:color=0x10B981@1:t=fill,"
+        f"drawbox=x=80:y=200:w=920:h=92:color={theme['header_bg']}@0.92:t=fill,"
+        f"drawbox=x=80:y=200:w=920:h=92:color=0xFFFFFF@0.35:t=3,"
+        f"drawtext=fontfile='{font_file}':text='{clean_header}':fontsize=34:fontcolor=white:x=(w-text_w)/2:y=230,"
+        f"drawbox=x=80:y=540:w=920:h=390:color=0x090D16@0.72:t=fill,"
+        f"drawbox=x=80:y=540:w=920:h=390:color={theme['header_bg']}@0.85:t=4,"
+        f"drawbox=x=0:y=0:w=1080:h=1920:color=white@0.22:t=fill:enable='{flash_enable}',"
         f"ass='{escaped_ass}'[v]"
     )
 
-    cmd = [
-        "ffmpeg", "-y",
-        "-i", audio_path
-    ]
+    audio_filter = (
+        "[0:a]aresample=48000,volume=1.0[vce];"
+        "[1:a]volume=1.0[sfx];"
+        "[vce][sfx]amix=inputs=2:duration=first:normalize=0,"
+        "loudnorm=I=-14:TP=-1.5:LRA=11[a]"
+    )
 
-    if has_sfx:
-        cmd.extend(["-i", str(whoosh_sfx)])
-        # Mix voice (1.0) and whoosh (0.25)
-        audio_filter = "[0:a]volume=1.0[vce];[1:a]adelay=100|100,volume=0.25[sfx];[vce][sfx]amix=inputs=2:duration=first:normalize=0[a]"
-    else:
-        audio_filter = "[0:a]volume=1.0[a]"
-
-    full_filter = f"{filtergraph};{audio_filter}"
+    cmd = ["ffmpeg", "-y", "-i", audio_path, "-i", str(sfx_wav)]
+    if has_ov:
+        cmd.extend(["-stream_loop", "-1", "-i", str(ov_path)])
 
     cmd.extend([
-        "-filter_complex", full_filter,
+        "-filter_complex", ";".join(v_chain) + ";" + audio_filter,
         "-map", "[v]",
         "-map", "[a]",
+        "-t", f"{total_dur:0.2f}",
         "-c:v", "libx264",
         "-preset", "veryfast",
-        "-crf", "22",
+        "-crf", "20",
         "-pix_fmt", "yuv420p",
         "-c:a", "aac",
         "-b:a", "192k",
-        "-shortest",
+        "-movflags", "+faststart",
         output_mp4
     ])
 
     subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
 
     # Clean up temp files
-    for p in [audio_path, ass_path]:
+    for p in [audio_path, ass_path, str(sfx_wav)]:
         if os.path.exists(p):
             try:
                 os.remove(p)

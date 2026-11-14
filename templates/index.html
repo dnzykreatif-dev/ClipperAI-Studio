@@ -198,6 +198,16 @@
             <option value="5" class="bg-slate-900">5 Klip</option>
           </select>
         </div>
+
+        <!-- Pro Editing Intensity -->
+        <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-amber-500/40">
+          <span class="text-amber-400">🎬</span> Editing Pro:
+          <select id="tune-intensity" class="bg-transparent text-amber-300 focus:outline-none cursor-pointer font-bold">
+            <option value="normal" selected class="bg-slate-900">⚡ Pro Normal (Multi-Shot + B-Roll + Argon LUT)</option>
+            <option value="agresif" class="bg-slate-900">🔥 Pro Agresif (Fast Cut + High Energy)</option>
+            <option value="halus" class="bg-slate-900">✨ Pro Halus (Sinematik Tenang)</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -857,6 +867,8 @@
       const speed = document.getElementById('tune-speed').value;
       const range = document.getElementById('tune-range').value;
       const clips = document.getElementById('tune-clips').value;
+      const intensityEl = document.getElementById('tune-intensity');
+      const intensity = intensityEl ? intensityEl.value : 'normal';
 
       if (!val && !file) {
         alert("Silakan tempel link YouTube atau pilih file video terlebih dahulu!");
@@ -883,6 +895,7 @@
       formData.append('num_clips', clips);
       formData.append('min_dur', 25.0);
       formData.append('max_dur', 60.0);
+      formData.append('intensity', intensity);
 
       document.getElementById('progress-card').classList.remove('hidden');
       updateProgress(5, "Mengirim tugas ke engine AI...");
@@ -975,6 +988,12 @@
         const safeSummary = (clip.summary || "").replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const safeHashtags = (clip.hashtags || "").replace(/'/g, "\\'");
 
+        const edl = clip.edl || {};
+        const shotsCount = edl.shots ? edl.shots.length : 8;
+        const brollCount = edl.broll_cards ? edl.broll_cards.length : 2;
+        const lutId = (edl.preset && edl.preset.lut) ? edl.preset.lut : 'VL0001';
+        const lufsVal = (edl.qa && edl.qa.lufs) ? `${edl.qa.lufs} LUFS` : '-14 LUFS';
+
         card.innerHTML = `
           <!-- Header Score -->
           <div class="flex items-center justify-between">
@@ -984,6 +1003,13 @@
             <span class="text-xs font-bold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800">
               ⏱️ ${clip.duration}s
             </span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 text-[10px] font-bold">
+            <span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">🎬 ${shotsCount} Multi-Shot</span>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">🖼️ ${brollCount} B-Roll Card</span>
+            <span class="px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">🎨 Argon ${lutId}</span>
+            <span class="px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30">🔊 ${lufsVal}</span>
           </div>
 
           <!-- Video Player (9:16 Vertical) -->
