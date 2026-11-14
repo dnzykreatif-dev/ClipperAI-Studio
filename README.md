@@ -22,7 +22,10 @@ Bukan sekadar potong video monoton! ClipperAI Studio dilengkapi:
 3. **Floating B-Roll Cards**: Kartu visual intisari/hikmah otomatis muncul di menit penting video.
 4. **Subtitle Pop-Bounce Gaya Alex Hormozi**: Teks kinetik beranimasi kata-demi-kata dengan highlight kontras tinggi.
 5. **YouTube Automation & SEO (Shorts & Video Panjang)**: 1-klik upload langsung ke channel YouTube via official YouTube Data API v3, lengkap dengan riset kata kunci trending live, pembuat timestamps/chapters, dan penulisan deskripsi SEO otomatis.
-6. **Multi-Source Ingestion (Google Drive, Dropbox, YouTube, PC)**: Mendukung unduhan video langsung dari Google Drive, YouTube, atau folder PC lokal.
+6. **AI Faceless Video Maker (Text-to-Video)**: Ubah naskah atau ide tulisan menjadi video vertikal motion shorts dengan suara neural natural Indonesia dan visual kinetic gradient.
+7. **Multi-Source Ingestion (Google Drive, Dropbox, YouTube, PC)**: Mendukung unduhan video langsung dari Google Drive, YouTube, atau folder PC lokal.
+
+📖 **Buku Panduan & Deployment Lengkap**: Baca panduan teknis mendalam di [DOKUMENTASI_LENGKAP.md](DOKUMENTASI_LENGKAP.md).
 
 ---
 
