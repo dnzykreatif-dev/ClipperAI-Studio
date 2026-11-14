@@ -77,6 +77,10 @@
       </div>
     </div>
     <div class="flex items-center gap-2.5">
+      <button onclick="document.getElementById('direct-pc-file-input').click()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/50 flex items-center gap-1.5 transition shadow-sm">
+        <span>📤</span> Upload File dari PC ke YouTube
+      </button>
+      <input type="file" id="direct-pc-file-input" class="hidden" accept="video/mp4,video/mkv,video/mov" onchange="handleDirectPCFileUpload(this)">
       <button onclick="openYouTubeSetupModal()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-700/50 flex items-center gap-1.5 transition shadow-sm">
         <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
         <span id="nav-yt-status">YouTube Studio: Siap</span>
@@ -726,6 +730,104 @@
     // YOUTUBE STUDIO MODAL LOGIC
     // =========================================================================
 
+    function populateModalSEO(data) {
+      if (!data) return;
+
+      // Populate Title
+      const titleEl = document.getElementById('modal-title');
+      titleEl.value = data.title || "";
+      currentClipTitle = data.title;
+      updateTitleCount();
+
+      // Populate Alternative Titles
+      const altContainer = document.getElementById('alt-titles-container');
+      altContainer.innerHTML = '<span class="text-[11px] text-slate-500 font-semibold">Pilih Angle Hook:</span>';
+      if (data.alternative_titles) {
+        data.alternative_titles.forEach(alt => {
+          const pill = document.createElement('button');
+          pill.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600/50 text-slate-300 hover:text-white border border-slate-700 transition font-medium';
+          pill.innerText = alt;
+          pill.onclick = () => {
+            titleEl.value = alt;
+            updateTitleCount();
+          };
+          altContainer.appendChild(pill);
+        });
+      }
+
+      // Populate Description
+      document.getElementById('modal-desc').value = data.description || "";
+
+      // Populate Tags
+      const tagsEl = document.getElementById('modal-tags');
+      tagsEl.value = data.tags_csv || (data.tags ? data.tags.join(', ') : "");
+      updateTagsCount();
+
+      // Suggested Tags Pills
+      const suggestedContainer = document.getElementById('modal-suggested-tags');
+      suggestedContainer.innerHTML = '';
+      if (data.trending_scouted) {
+        data.trending_scouted.forEach(kw => {
+          const tagBtn = document.createElement('button');
+          tagBtn.className = 'tag-badge text-[10px] px-2.5 py-1 rounded-lg bg-slate-900 text-indigo-300 border border-slate-800 hover:border-indigo-500 font-semibold flex items-center gap-1';
+          tagBtn.innerHTML = `<span>+</span> ${kw}`;
+          tagBtn.onclick = () => addTagToField(kw);
+          suggestedContainer.appendChild(tagBtn);
+        });
+      }
+
+      // Category
+      if (data.category_id) {
+        document.getElementById('modal-category').value = data.category_id;
+      }
+
+      // Schedule
+      if (data.best_schedule) {
+        document.getElementById('schedule-text').innerHTML = `
+          • <strong>Siang</strong>: ${data.best_schedule.lunch_peak}<br>
+          • <strong>Malam</strong>: ${data.best_schedule.evening_peak}<br>
+          • <strong>Hari Terbaik</strong>: ${data.best_schedule.best_days}
+        `;
+      }
+    }
+
+    async function handleDirectPCFileUpload(input) {
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+      const niche = document.getElementById('tune-niche').value;
+
+      document.getElementById('modal-video-label').innerText = `File PC: ${file.name} (Sedang dianalisis AI...)`;
+      document.getElementById('yt-modal').classList.remove('hidden');
+      switchModalTab('seo');
+
+      document.getElementById('modal-title').value = "AI sedang mentranskripsi audio & meriset hook viral...";
+      document.getElementById('modal-desc').value = "Menyusun deskripsi SEO, 3 poin hikmah, CTA, dan hashtag...";
+      document.getElementById('modal-tags').value = "Mengambil trending tags live YouTube...";
+
+      const formData = new FormData();
+      formData.append('video_file', file);
+      formData.append('niche', niche);
+
+      try {
+        const res = await fetch('/api/youtube/prepare_pc_video', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          currentClipFilename = data.video_path;
+          document.getElementById('modal-video-label').innerText = `File PC: ${data.filename}`;
+          populateModalSEO(data.seo);
+        } else {
+          alert("Gagal memproses file PC: " + (data.detail || "Error"));
+        }
+      } catch (err) {
+        alert("Gagal mengirim file PC: " + err.message);
+      } finally {
+        input.value = "";
+      }
+    }
+
     async function openYouTubeStudio(filename) {
       currentClipFilename = filename;
       document.getElementById('modal-video-label').innerText = `File: ${filename}`;
@@ -739,64 +841,7 @@
       try {
         const res = await fetch(`/api/seo_metadata?filename=${encodeURIComponent(filename)}&niche=${niche}&speaker=${encodeURIComponent(speaker)}`);
         const data = await res.json();
-
-        // Populate Title
-        const titleEl = document.getElementById('modal-title');
-        titleEl.value = data.title || "";
-        currentClipTitle = data.title;
-        updateTitleCount();
-
-        // Populate Alternative Titles
-        const altContainer = document.getElementById('alt-titles-container');
-        altContainer.innerHTML = '<span class="text-[11px] text-slate-500 font-semibold">Pilih Angle Hook:</span>';
-        if (data.alternative_titles) {
-          data.alternative_titles.forEach(alt => {
-            const pill = document.createElement('button');
-            pill.className = 'text-[10px] px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600/50 text-slate-300 hover:text-white border border-slate-700 transition font-medium';
-            pill.innerText = alt;
-            pill.onclick = () => {
-              titleEl.value = alt;
-              updateTitleCount();
-            };
-            altContainer.appendChild(pill);
-          });
-        }
-
-        // Populate Description
-        document.getElementById('modal-desc').value = data.description || "";
-
-        // Populate Tags
-        const tagsEl = document.getElementById('modal-tags');
-        tagsEl.value = data.tags_csv || (data.tags ? data.tags.join(', ') : "");
-        updateTagsCount();
-
-        // Suggested Tags Pills
-        const suggestedContainer = document.getElementById('modal-suggested-tags');
-        suggestedContainer.innerHTML = '';
-        if (data.trending_scouted) {
-          data.trending_scouted.forEach(kw => {
-            const tagBtn = document.createElement('button');
-            tagBtn.className = 'tag-badge text-[10px] px-2.5 py-1 rounded-lg bg-slate-900 text-indigo-300 border border-slate-800 hover:border-indigo-500 font-semibold flex items-center gap-1';
-            tagBtn.innerHTML = `<span>+</span> ${kw}`;
-            tagBtn.onclick = () => addTagToField(kw);
-            suggestedContainer.appendChild(tagBtn);
-          });
-        }
-
-        // Category
-        if (data.category_id) {
-          document.getElementById('modal-category').value = data.category_id;
-        }
-
-        // Schedule
-        if (data.best_schedule) {
-          document.getElementById('schedule-text').innerHTML = `
-            • <strong>Siang</strong>: ${data.best_schedule.lunch_peak}<br>
-            • <strong>Malam</strong>: ${data.best_schedule.evening_peak}<br>
-            • <strong>Hari Terbaik</strong>: ${data.best_schedule.best_days}
-          `;
-        }
-
+        populateModalSEO(data);
       } catch (err) {
         console.error("Failed to load SEO metadata:", err);
       }

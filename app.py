@@ -388,10 +388,20 @@ async def youtube_auth():
 async def youtube_upload(payload: YouTubeUploadPayload):
     """
     Uploads a short video directly to YouTube with automated metadata.
+    Supports files from outputs directory or direct local PC path.
     """
-    video_path = OUTPUTS_DIR / payload.filename
-    if not video_path.exists():
-        raise HTTPException(status_code=404, detail=f"File {payload.filename} tidak ditemukan di outputs.")
+    # Check if absolute path or exists directly
+    if os.path.isabs(payload.filename) and os.path.exists(payload.filename):
+        video_path = Path(payload.filename)
+    else:
+        video_path = OUTPUTS_DIR / payload.filename
+        if not video_path.exists():
+            # Check uploads directory as well
+            upl_path = UPLOADS_DIR / payload.filename
+            if upl_path.exists():
+                video_path = upl_path
+            else:
+                raise HTTPException(status_code=404, detail=f"File {payload.filename} tidak ditemukan.")
 
     tags_list = [t.strip() for t in payload.tags.split(",") if t.strip()]
 
@@ -409,6 +419,67 @@ async def youtube_upload(payload: YouTubeUploadPayload):
         raise HTTPException(status_code=400, detail=result.get("error", "Gagal upload video."))
 
     return result
+
+
+@app.post("/api/youtube/prepare_pc_video")
+async def prepare_pc_video(
+    video_file: Optional[UploadFile] = File(None),
+    file_path: Optional[str] = Form(None),
+    niche: str = Form("universal")
+):
+    """
+    Analyzes an existing video file from PC (custom edited or raw)
+    and generates an automated viral SEO package without running full video re-render.
+    """
+    target_path = None
+    if video_file and video_file.filename:
+        safe_name = f"pc_direct_{uuid.uuid4().hex[:6]}_{video_file.filename}"
+        save_dest = UPLOADS_DIR / safe_name
+        with open(save_dest, "wb") as f:
+            shutil.copyfileobj(video_file.file, f)
+        target_path = str(save_dest)
+        display_name = video_file.filename
+    elif file_path and os.path.exists(file_path):
+        target_path = file_path
+        display_name = Path(file_path).name
+    else:
+        raise HTTPException(status_code=400, detail="File video lokal dari PC tidak ditemukan.")
+
+    # Extract quick audio for transcription
+    audio_path = str(UPLOADS_DIR / f"temp_pc_{uuid.uuid4().hex[:6]}.wav")
+    try:
+        clipper_engine.extract_audio(target_path, audio_path, max_duration=90.0)
+        # Fast transcription with base model
+        transcript = clipper_engine.transcribe_audio_with_progress(
+            audio_path=audio_path,
+            total_audio_dur=90.0,
+            model_size="base",
+            niche=niche,
+            progress_callback=lambda p, m: None
+        )
+        full_text = transcript.get("full_text", "")
+    except Exception as e:
+        full_text = display_name.replace("_", " ").replace("-", " ")
+    finally:
+        if os.path.exists(audio_path):
+            try:
+                os.remove(audio_path)
+            except Exception:
+                pass
+
+    # Generate viral SEO package
+    seo_pkg = yt_seo_engine.generate_shorts_seo_package(
+        transcript_text=full_text,
+        title_hint=Path(display_name).stem.replace("_", " ").title(),
+        niche=niche
+    )
+
+    return {
+        "ok": True,
+        "video_path": target_path,
+        "filename": display_name,
+        "seo": seo_pkg
+    }
 
 
 if __name__ == "__main__":
