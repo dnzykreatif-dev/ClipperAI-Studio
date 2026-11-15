@@ -12,6 +12,9 @@ Features:
 import os
 import re
 import math
+import uuid
+import json
+import shutil
 import subprocess
 from pathlib import Path
 from typing import List, Dict, Any, Callable, Optional
@@ -147,7 +150,55 @@ EMOJI_MAP = {
     "mati": "⚰️ KEMATIAN",
     "kematian": "⚰️ KEMATIAN",
     "ilmu": "📚 ILMU",
-    "belajar": "📚 BELAJAR"
+    "belajar": "📚 BELAJAR",
+    "panglima": "⚔️ PANGLIMA",
+    "perang": "⚔️ PERANG",
+    "pasukan": "🛡️ PASUKAN",
+    "pemimpin": "👑 PEMIMPIN",
+    "raja": "👑 RAJA",
+    "muda": "🔥 ANAK MUDA",
+    "pemuda": "🔥 PEMUDA",
+    "umur": "⏳ USIA MUDA",
+    "usia": "⏳ USIA",
+    "sahabat": "🤝 SAHABAT",
+    "ulama": "👳 ULAMA",
+    "sejarah": "📜 SEJARAH",
+    "dunia": "🌍 DUNIA",
+    "akhirat": "🌌 AKHIRAT",
+    "iman": "✨ IMAN",
+    "takwa": "✨ TAKWA",
+    "sabar": "💎 SABAR",
+    "syukur": "🤲 SYUKUR",
+    "taubat": "💧 TAUBAT",
+    "rezeki": "💎 REZEKI",
+    "berkah": "✨ BERKAH",
+    "halal": "✅ HALAL",
+    "haram": "🚫 HARAM",
+    "wajib": "❗ WAJIB",
+    "keluarga": "👨‍👩‍👧‍👦 KELUARGA",
+    "anak": "👶 ANAK",
+    "orangtua": "🤲 ORANG TUA",
+    "ibu": "❤️ IBU",
+    "ayah": "🛡️ AYAH",
+    "cinta": "❤️ CINTA",
+    "takut": "😨 TAKUT",
+    "berani": "🦁 BERANI",
+    "kuat": "💪 KUAT",
+    "hebat": "🔥 HEBAT",
+    "penting": "❗ PENTING",
+    "kunci": "🔑 KUNCI UTAMA",
+    "solusi": "💡 SOLUSI",
+    "masalah": "⚡ MASALAH",
+    "permasalahan": "⚡ PERMASALAHAN",
+    "kenapa": "❓ KENAPA?",
+    "mengapa": "❓ MENGAPA?",
+    "bagaimana": "💡 BAGAIMANA?",
+    "bukti": "🔍 BUKTI NYATA",
+    "benar": "✅ KEBENARAN",
+    "salah": "❌ SALAH",
+    "jujur": "💎 JUJUR",
+    "amanah": "🛡️ AMANAH",
+    "adil": "⚖️ KEADILAN"
 }
 
 
@@ -164,14 +215,193 @@ def run_command(cmd: List[str], cwd: Optional[str] = None) -> subprocess.Complet
     )
 
 
+def _is_valid_video_file(path: str) -> bool:
+    """Memastikan file yang diunduh benar-benar memiliki stream video/audio yang valid (bukan halaman HTML)."""
+    if not path or not os.path.exists(path) or os.path.getsize(path) < 4096:
+        return False
+    try:
+        with open(path, "rb") as f:
+            head = f.read(512).lstrip().lower()
+            if head.startswith(b"<!doctype html") or head.startswith(b"<html"):
+                return False
+        res = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", path],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+        return res.returncode == 0 and float(res.stdout.strip() or "0") > 0.1
+    except Exception:
+        return False
+
+
+def download_google_photos_video(url: str, output_dir: str, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
+    """
+    Mengunduh video dari tautan berbagi Google Photos (photos.app.goo.gl / photos.google.com).
+    Mengekstrak base media URL (lh3.googleusercontent.com / video-downloads.googleusercontent.com)
+    lalu mengunduh stream video MP4 asli menggunakan parameter '=dv' / '=m37' / '=m22' / '=m18'.
+    """
+    import urllib.request
+    import http.cookiejar
+
+    if progress_callback:
+        progress_callback(10, "Menghubungkan ke Google Photos & mengekstrak stream video...")
+
+    cj = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,video/mp4,*/*;q=0.8",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+    }
+
+    out_file = str(Path(output_dir) / f"gphotos_{uuid.uuid4().hex[:6]}.mp4")
+
+    # Jika URL sudah berupa link googleusercontent langsung
+    if "googleusercontent.com" in url:
+        base_u = url.split("=")[0]
+        candidates = [url, f"{base_u}=m22", f"{base_u}=m37", f"{base_u}=dv", f"{base_u}=m18"]
+        final_url = url
+        raw_html = ""
+    else:
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with opener.open(req, timeout=30) as resp:
+                final_url = resp.geturl()
+                ctype = (resp.headers.get("Content-Type") or "").lower()
+                if ctype.startswith("video/"):
+                    with open(out_file, "wb") as out:
+                        shutil.copyfileobj(resp, out)
+                    if _is_valid_video_file(out_file):
+                        return out_file
+                raw_html = resp.read().decode("utf-8", errors="ignore")
+        except Exception as e:
+            raise RuntimeError(f"Gagal membuka halaman Google Photos: {e}")
+
+        # Deteksi jika link yang ditempel adalah link privat 'photos.google.com/photo/...' yang diarahkan ke halaman Login Google
+        if "accounts.google.com" in final_url or "ServiceLogin" in final_url:
+            raise RuntimeError(
+                "Link 'photos.google.com/photo/...' adalah link privat akun Google (terkunci login). "
+                "Solusi: Di Google Foto, klik tombol 'Bagikan' (Share) -> pilih 'Buat link' (Create link) "
+                "hingga mendapat link 'https://photos.app.goo.gl/...', lalu tempelkan link tersebut di sini! "
+                "(Atau tekan Shift+D di Google Foto untuk unduh ke PC lalu klik ikon 📁)."
+            )
+
+        def _clean_html(h: str) -> str:
+            return (
+                h.replace("\\u003d", "=")
+                .replace("\\u0026", "&")
+                .replace("\\/", "/")
+                .replace("&amp;", "&")
+            )
+
+        html_clean = _clean_html(raw_html)
+
+        # Jika halaman share album memiliki sub-link item '/share/.../photo/...?key=...', ambil juga halaman item tersebut
+        sub_links = re.findall(r"https://photos\.google\.com/share/[A-Za-z0-9_\-]+/photo/[A-Za-z0-9_\-]+\?key=[A-Za-z0-9_\-]+", html_clean)
+        if not sub_links:
+            rel_subs = re.findall(r"/share/[A-Za-z0-9_\-]+/photo/[A-Za-z0-9_\-]+\?key=[A-Za-z0-9_\-]+", html_clean)
+            sub_links = [f"https://photos.google.com{s}" for s in rel_subs]
+        for sub_u in sub_links[:2]:
+            try:
+                with opener.open(urllib.request.Request(sub_u, headers=headers), timeout=20) as r2:
+                    html_clean += "\n" + _clean_html(r2.read().decode("utf-8", errors="ignore"))
+            except Exception:
+                pass
+
+        candidates: List[str] = []
+
+        # 1. Cek link video-downloads.googleusercontent.com langsung
+        for m in re.findall(r"https://video-downloads\.googleusercontent\.com/[^\s\"'<>\\]+", html_clean):
+            if m not in candidates:
+                candidates.append(m)
+
+        # 2. Cek meta og:video jika tersedia
+        for m in re.findall(r'<meta[^>]+property=["\']og:video[^"\']*["\'][^>]+content=["\']([^"\']+)["\']', html_clean):
+            if m not in candidates:
+                candidates.append(m)
+
+        # 3. Ambil base URL media dari og:image dan lh3.googleusercontent.com/pw/...
+        base_urls: List[str] = []
+        for m in re.findall(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', html_clean):
+            if "googleusercontent.com" in m:
+                b = m.split("=")[0]
+                if b not in base_urls:
+                    base_urls.append(b)
+
+        for m in re.findall(r"https://lh3\.googleusercontent\.com/(?:pw/)?[A-Za-z0-9_\-/]+", html_clean):
+            b = m.split("=")[0]
+            tail = b.rsplit("/", 1)[-1]
+            if len(tail) >= 28 and b not in base_urls:
+                base_urls.append(b)
+
+        # Prioritaskan stream HD MP4 cepat (=m22 720p, =m37 1080p) sebelum =dv (raw besar) dan =m18 (360p)
+        for suffix in ("=m22", "=m37", "=dv", "=m18"):
+            for b in base_urls[:6]:
+                cand = f"{b}{suffix}"
+                if cand not in candidates:
+                    candidates.append(cand)
+
+    # Coba unduh dari kandidat URL sampai dapat stream video yang valid (dengan progres MB real-time)
+    for cand_url in candidates:
+        try:
+            req = urllib.request.Request(cand_url, headers=headers)
+            with opener.open(req, timeout=25) as resp:
+                ctype = (resp.headers.get("Content-Type") or "").lower()
+                if ctype.startswith("image/") or ctype.startswith("text/html"):
+                    continue
+                total_bytes = int(resp.headers.get("Content-Length") or 0)
+                downloaded = 0
+                chunk_size = 512 * 1024
+                with open(out_file, "wb") as out:
+                    while True:
+                        buf = resp.read(chunk_size)
+                        if not buf:
+                            break
+                        out.write(buf)
+                        downloaded += len(buf)
+                        if progress_callback:
+                            mb_done = downloaded / (1024 * 1024)
+                            if total_bytes > 0:
+                                mb_tot = total_bytes / (1024 * 1024)
+                                pct = min(19, 12 + int(7 * downloaded / total_bytes))
+                                progress_callback(pct, f"Mengunduh video Google Photos: {mb_done:.1f} / {mb_tot:.1f} MB...")
+                            else:
+                                progress_callback(15, f"Mengunduh video Google Photos: {mb_done:.1f} MB...")
+            if _is_valid_video_file(out_file):
+                return out_file
+        except Exception:
+            continue
+
+    # Fallback ke yt-dlp jika ekstraktor di atas belum berhasil
+    if YT_DLP_AVAILABLE:
+        try:
+            return download_youtube_video(url, output_dir, progress_callback)
+        except Exception:
+            pass
+
+    if os.path.exists(out_file):
+        try:
+            os.remove(out_file)
+        except Exception:
+            pass
+
+    raise RuntimeError(
+        "Gagal mengunduh video dari link Google Photos. Pastikan: (1) Item yang dibagikan adalah VIDEO (bukan foto), "
+        "(2) Video sudah selesai diproses di Google Photos, atau (3) Gunakan Google Drive dengan izin 'Anyone with the link'."
+    )
+
+
 def download_remote_video(url: str, output_dir: str, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
     """
-    Universally downloads video from YouTube, Google Drive, Dropbox, or direct web URLs.
+    Universally downloads video from YouTube, Google Drive, Google Photos, Dropbox, or direct web URLs.
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     clean_url = url.strip()
 
-    # 1. Google Drive
+    # 1. Google Photos (photos.app.goo.gl / photos.google.com / googleusercontent.com)
+    if any(k in clean_url for k in ("photos.app.goo.gl", "photos.google.com", "googleusercontent.com")):
+        return download_google_photos_video(clean_url, output_dir, progress_callback)
+
+    # 2. Google Drive
     if "drive.google.com" in clean_url or "docs.google.com" in clean_url:
         if progress_callback:
             progress_callback(10, "Menghubungkan ke Google Drive & mengunduh video...")
@@ -179,33 +409,52 @@ def download_remote_video(url: str, output_dir: str, progress_callback: Optional
             import gdown
             out_file = str(Path(output_dir) / f"gdrive_{uuid.uuid4().hex[:6]}.mp4")
             downloaded = gdown.download(url=clean_url, output=out_file, quiet=False, fuzzy=True)
-            if downloaded and os.path.exists(downloaded):
+            if downloaded and _is_valid_video_file(downloaded):
                 return downloaded
-            else:
-                raise RuntimeError("File gagal diunduh atau link Google Drive tidak valid.")
+            if YT_DLP_AVAILABLE:
+                return download_youtube_video(clean_url, output_dir, progress_callback)
+            raise RuntimeError("File gagal diunduh atau link Google Drive bukan file video yang valid.")
         except Exception as e:
             raise RuntimeError(f"Gagal mengunduh dari Google Drive: {str(e)}. Pastikan link diatur ke 'Anyone with the link' (Siapa saja yang memiliki link).")
 
-    # 2. YouTube
-    if "youtube.com" in clean_url or "youtu.be" in clean_url:
+    # 3. YouTube & Platform Sosial Media (yt-dlp)
+    if any(k in clean_url for k in ("youtube.com", "youtu.be", "tiktok.com", "instagram.com", "facebook.com", "fb.watch", "twitter.com", "x.com", "vimeo.com")):
         return download_youtube_video(clean_url, output_dir, progress_callback)
 
-    # 3. Dropbox
+    # 4. Dropbox
     if "dropbox.com" in clean_url:
         clean_url = clean_url.replace("?dl=0", "?dl=1")
         if "?dl=" not in clean_url:
             clean_url += "?dl=1"
 
-    # 4. Direct / Generic HTTP/HTTPS URL
+    # 5. Direct / Generic HTTP/HTTPS URL
     if clean_url.startswith("http://") or clean_url.startswith("https://"):
         if progress_callback:
-            progress_callback(15, "Mengunduh video dari tautan web langsung...")
+            progress_callback(15, "Mengunduh video dari tautan web...")
         import urllib.request
         out_file = str(Path(output_dir) / f"web_{uuid.uuid4().hex[:6]}.mp4")
-        req = urllib.request.Request(clean_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req) as resp, open(out_file, 'wb') as out:
-            shutil.copyfileobj(resp, out)
-        return out_file
+        req = urllib.request.Request(clean_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
+        try:
+            with urllib.request.urlopen(req, timeout=45) as resp:
+                ctype = (resp.headers.get("Content-Type") or "").lower()
+                if not ctype.startswith("text/html"):
+                    with open(out_file, 'wb') as out:
+                        shutil.copyfileobj(resp, out)
+                    if _is_valid_video_file(out_file):
+                        return out_file
+        except Exception:
+            pass
+        if os.path.exists(out_file):
+            try:
+                os.remove(out_file)
+            except Exception:
+                pass
+        if YT_DLP_AVAILABLE:
+            try:
+                return download_youtube_video(clean_url, output_dir, progress_callback)
+            except Exception as e:
+                raise RuntimeError(f"Tautan web tidak berisi stream video langsung yang dapat diunduh: {e}")
+        raise RuntimeError("Tautan web tersebut adalah halaman HTML, bukan file video langsung (.mp4).")
 
     raise ValueError(f"Tautan tidak dikenali: {clean_url}")
 
@@ -295,6 +544,7 @@ def transcribe_audio_with_progress(
         language="id",
         beam_size=beam,
         initial_prompt=init_prompt,
+        condition_on_previous_text=False,
         word_timestamps=True,
         vad_filter=True,
         vad_parameters=dict(min_silence_duration_ms=400)
@@ -357,7 +607,22 @@ def find_viral_clips(
     if not segments:
         return []
 
-    # Broad hook triggers across all niches
+    # 1. Coba kurasi menggunakan AI (Gemini / SumoPod / 9Router) jika diaktifkan & memiliki API Key
+    try:
+        import ai_brain
+        ai_selected = ai_brain.curate_viral_clips_with_ai(
+            transcript_data=transcript_data,
+            niche=niche,
+            min_duration=min_duration,
+            max_duration=max_duration,
+            top_k=top_k,
+        )
+        if ai_selected:
+            return ai_selected
+    except Exception as ai_err:
+        print(f"[Info] Fallback ke kurasi lokal: {ai_err}")
+
+    # 2. Fallback Algoritma Lokal (Heuristik) jika AI tidak aktif / offline
     HOOK_KEYWORDS = [
         "tahukah", "kenapa", "mengapa", "bagaimana", "rahasia", "kunci",
         "jangan", "seringkali", "banyak orang", "banyak yang salah", "waspada",
@@ -441,9 +706,14 @@ def find_viral_clips(
 
 
 def generate_catchy_title(opening_sentence: str, full_clip_text: str, niche: str = "universal") -> str:
-    clean = re.sub(r"[^\w\s]", "", opening_sentence).strip()
-    words = clean.split()
-    base = " ".join(words[:6]).upper() if len(words) > 6 else clean.upper()
+    clean = re.sub(r"[^A-Za-z0-9À-ÿ\s\-]", "", apply_phonetic_corrections(opening_sentence)).strip()
+    words = [w for w in clean.split() if len(w) > 1 or w.lower() in ("di", "ke")]
+    picked = words[:6] if len(words) > 6 else words
+    # Buang kata sambung gantung di ujung judul agar tidak terputus canggung (misal "DUA ORANG KALAU")
+    dangling = {"kalau", "jika", "bila", "yang", "dan", "atau", "di", "ke", "dari", "untuk", "pada", "dengan", "karena", "adalah", "itu", "ini", "ketika", "saat", "bahwa"}
+    while len(picked) > 3 and picked[-1].lower() in dangling:
+        picked.pop()
+    base = " ".join(picked).upper() if picked else "POIN PENTING"
 
     lower_full = full_clip_text.lower()
     
@@ -489,11 +759,10 @@ def generate_catchy_title(opening_sentence: str, full_clip_text: str, niche: str
 
 DEFAULT_PROMPTS = {
     "kajian": (
-        "Transkripsi ceramah agama Islam, ayat Al-Qur'an dan hadits: "
-        "فَبِمَا رَحْمَةٍ مِنَ اللَّهِ لِنْتَ لَهُمْ وَلَوْ كُنْتَ فَظًّا غَلِيظَ الْقَلْبِ لَانْفَضُّوا مِنْ حَوْلِكَ "
-        "(Fabima rahmatin minallahi linta lahum walau kunta fazzhan ghalizhal qalb lanfadhdhu min hawlik), "
-        "lemah lembut, hatinya kasar, Nabi shallallahu 'alaihi wasallam, para sahabat, "
-        "Perang Uhud, kaum muslimin, para syuhada, Rasulullah, indikasi, dalil, syariat."
+        "Transkripsi ceramah kajian Islam bahasa Indonesia yang jelas dan rapi: "
+        "Allah Subhanahu wa Ta'ala, Rasulullah shallallahu 'alaihi wa sallam, Al-Qur'an, hadits, "
+        "para sahabat, kaum muslimin, keluarga, mendidik anak perempuan, sabar, syukur, pahala, surga, "
+        "ustadz, syariat, ibadah, akhlak, taubat, sedekah, doa."
     ),
     "bisnis": (
         "Transkripsi podcast bisnis, keuangan, investasi saham, omset, modal, cashflow, ROI, "
@@ -543,6 +812,26 @@ PHONETIC_CORRECTIONS = [
     (r"\bsebutar\b", "seputar"),
     (r"\bmasyibahas\b", "masih bahas"),
     (r"\balalah\b", "adalah"),
+    (r"\blogikar\b", "logika"),
+    (r"\bnajalan\b", "nggak jalan"),
+    (r"\btimkel\b", "titel"),
+    (r"\btelbunyatnya\b", "sebenarnya"),
+    (r"\bperumpuan\b", "perempuan"),
+    (r"\bmarau\b", "marah"),
+    (r"\bdaripang\b", "gampang"),
+    (r"\bsebeginak\b", "sebegitu"),
+    (r"\bmajoritasnya\b", "mayoritasnya"),
+    (r"\bmajoritas\b", "mayoritas"),
+    (r"\busama bin zet\b", "Usamah bin Zaid"),
+    (r"\busama bin zed\b", "Usamah bin Zaid"),
+    (r"\busama\b", "Usamah"),
+    (r"\bzet\b", "Zaid"),
+    (r"\bzed\b", "Zaid"),
+    (r"\btermu daya\b", "termuda yang"),
+    (r"\btermudai\b", "termuda"),
+    (r"\btermu\b", "termuda"),
+    (r"\bditunduk\b", "ditunjuk"),
+    (r"\bulakukan\b", "lakukan"),
 ]
 
 

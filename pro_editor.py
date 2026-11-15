@@ -10,6 +10,8 @@ Mengubah video mentah (16:9 maupun 9:16) menjadi Shorts/Reels dengan editing pro
   6. Color Grading 3D LUT Argon (VL0001..VL0096) + Overlay Light-Leak/Film (VL0201..VL0281)
   7. Audio Broadcast Mastering: Highpass + FFT Denoise + Compressor + Multi-SFX + Loudnorm -14 LUFS
   8. EDL JSON (Edit Decision List) + Verifikasi QA Otomatis & Contact Sheet (.qa.jpg)
+  9. Motion Graphics modern (motion_gfx.py): caption karaoke spring + pill, hook title card,
+     stiker keyword, panel takeaway, video-card rounded, kamera ease + handheld drift.
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 import clipper_engine as ce
+import motion_gfx as mg
 
 try:
     import cv2
@@ -47,13 +50,20 @@ STOPWORDS = set(
     "saya kita kamu anda mereka kami dia kalau jadi karena sebagai oleh dalam bisa lebih sangat "
     "banyak sekali seperti ketika sehingga namun tetapi tapi bahwa agar supaya yaitu yakni "
     "apa gimana kenapa mengapa bagaimana terus lalu nah itulah dimana pun saja masih harus "
-    "sebuah seorang suatu para setiap semua seluruh bagian adapun seputar tentang".split()
+    "sebuah seorang suatu para setiap semua seluruh bagian adapun seputar tentang "
+    "kurang anaknya kemudian sekarang begini begitu misalnya contohnya pertama kedua ketiga "
+    "akhirnya biasanya memang bahkan apalagi padahal sebelum sesudah setelah sampai hingga "
+    "antara diantara waktu tahun orang beliau kalian engkau dirinya namanya disebut dikatakan "
+    "katanya artinya maksudnya ibarat nanti tadi baru lagi pernah belum sedang hendak mau "
+    "ingin punya milik melakukan dilakukan".split()
 )
 POWER_WORDS = set(
     "rahasia kunci gagal sukses uang bisnis jangan waspada bahaya penting ternyata fakta "
     "kesalahan hikmah pahala dosa taubat ikhlas sabar syukur surga neraka amanah ilmu "
     "mindset disiplin konsisten modal untung rugi gratis wajib haram halal doa shalat "
-    "pendidikan keluarga anak orangtua akhlak iman takwa sedekah rezeki berkah".split()
+    "pendidikan keluarga anak orangtua akhlak iman takwa sedekah rezeki berkah "
+    "nabi rasul rasulullah allah panglima perang pasukan pemimpin sahabat ulama sejarah "
+    "termuda pemuda berani kuat hebat bukti nyata solusi masalah".split()
 )
 
 # Preset gaya per niche: LUT / overlay / SFX Argon + warna aksen ASS (BGR) + warna frame (RGB hex)
@@ -68,12 +78,12 @@ PRESETS: Dict[str, Dict[str, Any]] = {
 }
 
 INTENSITY = {
-    "halus":   dict(shot=(3.8, 5.5), push=0.05, punch=0.06, flash=0.16),
-    "normal":  dict(shot=(2.6, 4.2), push=0.08, punch=0.12, flash=0.24),
-    "agresif": dict(shot=(1.9, 3.1), push=0.11, punch=0.18, flash=0.30),
+    "halus":   dict(shot=(4.2, 6.2), push=0.05, punch=0.06, flash=0.0),
+    "normal":  dict(shot=(2.8, 4.4), push=0.07, punch=0.09, flash=0.0),
+    "agresif": dict(shot=(2.2, 3.5), push=0.09, punch=0.12, flash=0.0),
 }
 
-GAP_CUT = 0.45
+GAP_CUT = 0.55
 PAD_IN, PAD_OUT = 0.06, 0.12
 
 
@@ -88,6 +98,29 @@ def _run_ok(cmd: List[str]) -> None:
     r = _run(cmd)
     if r.returncode != 0:
         raise RuntimeError("ffmpeg gagal: " + r.stderr[-1500:])
+
+
+def _encode_with_overlay(cmd: List[str], timeline: "mg.Timeline", log_path: Path) -> None:
+    """Jalankan ffmpeg sambil mem-pipe frame RGBA motion graphics ke stdin (render paralel, urutan terjaga)."""
+    n = timeline.n_frames()
+    with open(log_path, "w", encoding="utf-8", errors="replace") as lf:
+        p = subprocess.Popen(cmd, cwd=str(BASE_DIR), stdin=subprocess.PIPE,
+                             stdout=subprocess.DEVNULL, stderr=lf)
+        try:
+            with ThreadPoolExecutor(max_workers=4) as ex:
+                for b in range(0, n, 24):
+                    for buf in ex.map(timeline.frame, range(b, min(n, b + 24))):
+                        p.stdin.write(buf)
+        except (BrokenPipeError, OSError):
+            pass
+        finally:
+            try:
+                p.stdin.close()
+            except Exception:
+                pass
+        rc = p.wait()
+    if rc != 0:
+        raise RuntimeError("ffmpeg gagal: " + Path(log_path).read_text(encoding="utf-8", errors="replace")[-1500:])
 
 
 def _snap(t: float) -> float:
@@ -145,15 +178,22 @@ def face_for_range(track, a: float, b: float, fallback) -> Tuple[float, float, f
     pts = [p for p in track if a - 0.3 <= p[0] <= b + 0.3]
     if not pts:
         return fallback
+    sx = float(np.median([p[1] for p in pts]))
+    sy = float(np.median([p[2] for p in pts]))
+    sh = float(np.median([p[3] for p in pts]))
+    # Stabilkan koordinat X/Y terhadap median seluruh klip agar deteksi palsu tidak memotong wajah
+    fbx, fby, fbh = fallback
+    sx = max(fbx - 0.06, min(fbx + 0.06, sx))
+    sy = max(fby - 0.05, min(fby + 0.05, sy))
     return (
-        float(np.median([p[1] for p in pts])),
-        float(np.median([p[2] for p in pts])),
-        float(np.median([p[3] for p in pts])),
+        0.85 * fbx + 0.15 * sx,
+        0.85 * fby + 0.15 * sy,
+        0.80 * fbh + 0.20 * sh,
     )
 
 
 # ----------------------------------------------------------------------------
-# 2. Shot Planning (Jump-Cut + Multi-Shot + B-Roll Spotlight)
+# 2. Shot Planning (Jump-Cut + Multi-Shot + Clean Camera Alternation)
 # ----------------------------------------------------------------------------
 def plan_shots(
     words: List[Dict[str, Any]], clip_start: float, clip_end: float,
@@ -173,8 +213,8 @@ def plan_shots(
         a = max(clip_start, cws[0]["start"] - PAD_IN)
         b = min(clip_end, cws[-1]["end"] + PAD_OUT)
         a, b = _snap(a), _snap(b)
-        if b - a < 0.6:
-            b = a + 0.6
+        if b - a < 1.2:
+            b = min(_snap(clip_end), a + 1.2)
         shots.append(dict(a=a, b=b, words=list(cws)))
 
     for i, w in enumerate(ws):
@@ -185,129 +225,123 @@ def plan_shots(
         gap = nxt["start"] - w["end"]
         dur = w["end"] - cur[0]["start"]
         punct = w["word"].strip()[-1:] in ".,?!;:"
-        if gap > GAP_CUT:
+        if gap > GAP_CUT and dur >= 2.4:
             close(cur); cur = []; target = rng.uniform(*cfg["shot"])
-        elif dur >= target and (punct or gap >= 0.12 or dur >= cfg["shot"][1] + 0.9):
+        elif dur >= target and (punct or gap >= 0.18 or dur >= cfg["shot"][1] + 1.2):
             close(cur); cur = []; target = rng.uniform(*cfg["shot"])
 
     if cur:
-        if shots and (cur[-1]["end"] - cur[0]["start"]) < 1.1 and cur[0]["start"] - shots[-1]["words"][-1]["end"] <= GAP_CUT:
+        if shots and (cur[-1]["end"] - cur[0]["start"]) < 2.5 and cur[0]["start"] - shots[-1]["words"][-1]["end"] <= GAP_CUT + 0.25:
             shots[-1]["words"].extend(cur)
             shots[-1]["b"] = _snap(min(clip_end, cur[-1]["end"] + PAD_OUT))
         else:
             close(cur)
-    return shots
+
+    # Gabungkan shot yang terlalu pendek (< 2.1s) agar transisi tetap ritmis dan dinamis
+    merged: List[Dict[str, Any]] = []
+    for s in shots:
+        if merged and (s["b"] - s["a"] < 2.1 or merged[-1]["b"] - merged[-1]["a"] < 2.1):
+            pause = s["a"] - merged[-1]["b"]
+            if pause < 0.65:
+                merged[-1]["b"] = s["b"]
+                merged[-1]["words"].extend(s["words"])
+                continue
+        merged.append(s)
+    return merged if merged else shots
 
 
-# Siklus kamera yang memberi variasi nyata bahkan dari 1 kamera vertikal maupun horizontal:
-# close (1.38x) -> medium (1.14x) -> broll_card (Cinema Split Card) -> close -> wide (1.0x) -> medium -> broll_card
-FRAMING_CYCLE = ["close", "medium", "broll_card", "close", "wide", "medium", "broll_card", "close"]
+# Siklus kamera profesional layar penuh (Medium <-> Close <-> Cinema Focus dengan Kartu Insight Glassmorphic)
+FRAMING_CYCLE = ["medium", "close", "cinema_focus", "close", "medium", "cinema_focus"]
 
 
 def assign_framing(shots: List[Dict[str, Any]], vertical_source: bool, rng: random.Random) -> None:
     for i, s in enumerate(shots):
-        dur = s["b"] - s["a"]
+        f = FRAMING_CYCLE[i % len(FRAMING_CYCLE)]
         if i == 0:
-            f = "close"
-        else:
-            f = FRAMING_CYCLE[i % len(FRAMING_CYCLE)]
-            # broll_card paling bagus untuk shot >= 2.0 detik
-            if f == "broll_card" and dur < 1.8:
-                f = "medium"
-        if i > 0 and f == shots[i - 1].get("framing"):
-            f = "medium" if f != "medium" else "close"
+            f = "medium"
+        elif i > 0 and f == shots[i - 1].get("framing"):
+            f = "close" if f == "medium" else "medium"
         s["framing"] = f
 
 
 # ----------------------------------------------------------------------------
-# 3. Render Shot (4 Mode Kamera: close, medium, wide, broll_card)
+# 3. Render Shot (Clean Full-Screen Camera: medium 1.04x, cinema_focus 1.15x, close 1.24x)
 # ----------------------------------------------------------------------------
-def build_shot_filter(shot: Dict[str, Any], src_w: int, src_h: int, face, dur: float, cfg, accent_hex: str) -> str:
+CARD_X, CARD_Y, CARD_W, CARD_H = 100, 400, 880, 1080
+
+
+def build_shot_filter(shot: Dict[str, Any], src_w: int, src_h: int, face, dur: float, cfg, accent_hex: str,
+                      card_pad: int = 60) -> str:
     framing = shot["framing"]
     push, punch = cfg["push"], cfg["punch"]
-    # Kurva zoom dinamis per-frame: punch cepat di 0.28s pertama + push-in halus sepanjang shot
-    zexpr = f"(1+{push}*t/{dur:.3f}+{punch}*pow(max(0\\,1-t/0.28)\\,2))"
+    # Kurva zoom dinamis per-frame dengan ease-out punch di awal shot + smooth push-in
+    zexpr = f"(1+{push}*t/{max(dur, 0.5):.3f}+{punch}*pow(max(0\\,1-t/0.26)\\,3))"
     cx, cy, fh = face
     vertical_src = (src_w / src_h) < 0.7
 
-    # Mode 1: B-ROLL CINEMA SPLIT CARD (Visual Pattern Interrupt)
-    if framing == "broll_card":
-        # Ambil crop 9:11 sekitar wajah untuk ditempatkan di dalam Cinema Viewport Card (880x1080 di y=400)
-        if src_w / src_h >= 880 / 1080:
-            ch = int(src_h * 0.82)
-            cw = int(ch * 880 / 1080)
-        else:
-            cw = int(src_w * 0.88)
-            ch = int(cw * 1080 / 880)
-        cw = max(16, (cw // 2) * 2)
-        ch = max(16, (ch // 2) * 2)
-        x = int(min(max(cx * src_w - cw / 2, 0), max(0, src_w - cw)))
-        y = int(min(max(cy * src_h - 0.42 * ch, 0), max(0, src_h - ch)))
-        scale_card = f"scale=w='trunc(880*{zexpr}/2)*2':h=-2:eval=frame:flags=bicubic,crop=880:1080"
-        return (
-            "[0:v]split=2[bg0][fg0];"
-            "[bg0]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-            "boxblur=30:6,eq=brightness=-0.26:saturation=0.80:contrast=1.08,"
-            "drawbox=x=70:y=165:w=940:h=190:color=0x0F172A@0.92:t=fill,"
-            f"drawbox=x=70:y=165:w=940:h=190:color={accent_hex}@0.95:t=4,"
-            f"drawbox=x=70:y=165:w=18:h=190:color={accent_hex}@1:t=fill,"
-            f"drawbox=x=92:y=392:w=896:h=1096:color={accent_hex}@0.95:t=6[bg];"
-            f"[fg0]crop={cw}:{ch}:{x}:{y},{scale_card}[fg];"
-            "[bg][fg]overlay=100:400,fps=30,format=yuv420p,setsar=1[v]"
-        )
-
-    # Mode 2: WIDE pada sumber landscape 16:9 (blurred pillarbox + zoom)
+    # WIDE pada sumber landscape 16:9 (blurred pillarbox + zoom)
     if framing == "wide" and not vertical_src:
-        scale_w = f"scale=w='trunc(1080*{zexpr}/2)*2':h=-2:eval=frame:flags=bicubic"
+        scale_w = f"scale=w='trunc(1080*{zexpr}/2)*2':h=-2:eval=frame"
         return (
             "[0:v]split[a][b];"
             "[a]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
-            "boxblur=25:5,eq=brightness=-0.18:saturation=0.9[bg];"
+            "boxblur=25:5,eq=brightness=-0.20:saturation=0.9[bg];"
             f"[b]{scale_w},crop=1080:ih[fg];"
             "[bg][fg]overlay=(W-w)/2:(H-h)/2,fps=30,format=yuv420p,setsar=1[v]"
         )
 
-    # Mode 3 & 4: CLOSE (1.40x), MEDIUM (1.16x), atau WIDE vertikal (1.00x)
+    # CLOSE (1.28x punch-in tegas), CINEMA_FOCUS (1.19x + fokus kontras), MEDIUM (1.12x full-frame bersih & potong tepi atas)
     if src_w / src_h >= 9 / 16:
         ch0 = src_h
     else:
         ch0 = src_w * 16 / 9
 
     if framing == "close":
-        z = 1.42
+        z = 1.28
+    elif framing == "cinema_focus":
+        z = 1.19
     elif framing == "medium":
-        z = 1.16
-    else:  # wide pada sumber vertikal
-        z = 1.00
+        z = 1.12
+    else:
+        z = 1.08
 
-    if fh < 0.12 and framing != "wide":
-        z *= 1.10
-    z = min(z, 1.68)
+    if fh < 0.12 and framing == "close":
+        z *= 1.06
+    z = min(z, 1.38)
     ch = ch0 / z
     m = max(1, int(ch / 32))
     ch = min(src_h, 32 * m)
     cw = min(src_w, 18 * m)
     x = int(min(max(cx * src_w - cw / 2, 0), max(0, src_w - cw)))
-    # Sedikit variasi posisi vertikal antara close dan medium agar cut terasa nyata
-    y_bias = 0.38 if framing == "close" else 0.43
-    y = int(min(max(cy * src_h - y_bias * ch, 0), max(0, src_h - ch)))
+    y_bias = 0.37 if framing == "close" else (0.39 if framing == "cinema_focus" else 0.40)
+    y_min = int(min(0.068 * src_h, max(0, src_h - ch)))
+    y = int(min(max(cy * src_h - y_bias * ch, y_min), max(0, src_h - ch)))
 
-    scale = f"scale=w='trunc(1080*{zexpr}/2)*2':h=-2:eval=frame:flags=bicubic"
+    scale = f"scale=w='trunc(1080*{zexpr}/2)*2':h=-2:eval=frame"
+    extra_fx = ",eq=contrast=1.06:saturation=1.08" if framing == "cinema_focus" else ""
     return (
-        f"[0:v]crop={cw}:{ch}:{x}:{y},{scale},crop=1080:1920,"
+        f"[0:v]crop={cw}:{ch}:{x}:{y},{scale},crop=1080:1920:(iw-ow)/2:(ih-oh)/2{extra_fx},"
         "fps=30,format=yuv420p,setsar=1[v]"
     )
 
 
 def render_shot(
     src: str, shot: Dict[str, Any], idx: int, src_w: int, src_h: int,
-    face, cfg, accent_hex: str, tmp: Path
+    face, cfg, accent_hex: str, tmp: Path, card_assets: Optional[Tuple[Path, Path, int]] = None
 ) -> str:
     dur = shot["b"] - shot["a"]
     out = str(tmp / f"shot_{idx:03d}.mp4")
-    fg = build_shot_filter(shot, src_w, src_h, face, dur, cfg, accent_hex)
-    cmd = [
-        "ffmpeg", "-y", "-ss", f"{shot['a']:.3f}", "-i", src, "-t", f"{dur:.3f}",
+    shot["idx"] = idx
+    use_card = shot["framing"] == "broll_card" and card_assets is not None
+    if shot["framing"] == "broll_card" and not use_card:
+        shot["framing"] = "medium"
+    fg = build_shot_filter(shot, src_w, src_h, face, dur, cfg, accent_hex,
+                           card_pad=card_assets[2] if card_assets else 60)
+    cmd = ["ffmpeg", "-y", "-ss", f"{shot['a']:.3f}", "-i", src]
+    if use_card:
+        cmd += ["-loop", "1", "-i", str(card_assets[0]), "-loop", "1", "-i", str(card_assets[1])]
+    cmd += [
+        "-t", f"{dur:.3f}",
         "-filter_complex", fg, "-map", "[v]", "-an",
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p",
         "-r", str(FPS), out
@@ -503,10 +537,15 @@ def render_clip_pro(
     for s in shots:
         s["face"] = face_for_range(track, s["a"], s["b"], fb)
 
-    # 3. Render individual shots in parallel
+    # 3. Render individual shots in parallel (video-card B-Roll memakai mask rounded + bayangan)
+    accent_rgb = mg.hex_rgb(preset["hex"])
+    try:
+        card_assets = mg.make_card_assets(tmp, accent_rgb, CARD_W, CARD_H)
+    except Exception:
+        card_assets = None
     with ThreadPoolExecutor(max_workers=3) as ex:
         futs = [
-            ex.submit(render_shot, source_video, s, i, src_w, src_h, s["face"], cfg, preset["hex"], tmp)
+            ex.submit(render_shot, source_video, s, i, src_w, src_h, s["face"], cfg, preset["hex"], tmp, card_assets)
             for i, s in enumerate(shots)
         ]
         files = [f.result() for f in futs]
@@ -516,10 +555,30 @@ def render_clip_pro(
     vcat = tmp / "video_cat.mp4"
     _run_ok(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(listf), "-c", "copy", str(vcat)])
 
-    # 4. Timeline remap + transitions + B-Roll cards + Keyword callouts + SFX cues
+    # 4. Timeline remap + Multi-Layer Effects + Studio Harmonic SFX (0% white-noise)
     t = 0.0
     remapped, kw_events, broll_cards, sfx_events, cut_times = [], [], [], [], []
-    whoosh_ids = ["VL0501", "VL0502", "VL0503", "VL0504", "VL0505"]
+    emoji_map = getattr(ce, "EMOJI_MAP", {}) or {}
+    ai_pwords = set(w.lower().strip() for w in (clip_info.get("power_words") or []) if w)
+    merged_power_words = POWER_WORDS | ai_pwords
+
+    clean_title = re.sub(
+        r"[^\w\s\-&!?]", "",
+        ce.apply_phonetic_corrections(clip_info.get("hook_title", "")).replace(":", " -")
+    ).strip()
+    niche_cfg = ce.NICHE_CONFIGS.get(niche, ce.NICHE_CONFIGS["universal"])
+    header = custom_watermark.strip() if custom_watermark and custom_watermark.strip() else niche_cfg["header_tag"]
+
+    hook_end = min(3.1, shots[0]["b"] - shots[0]["a"] - 0.1) if shots else 2.8
+    hook_dur = max(1.9, hook_end)
+
+    # SFX Hook Pembuka (Deep Sub-Bass Boom + Warm Glass Chime)
+    if clean_title:
+        sfx_events.append(dict(id="VL0516", t=0.05, gain=0.42, role="hook_boom"))
+        sfx_events.append(dict(id="VL0566", t=0.20, gain=0.24, role="hook_chime"))
+
+    velvet_ids = ["VL0501", "VL0502", "VL0503", "VL0504"]
+    pop_ids = ["VL0526", "VL0531"]
 
     for i, s in enumerate(shots):
         s["t0"] = t
@@ -528,53 +587,81 @@ def render_clip_pro(
             ws_ = t + max(0.0, w["start"] - s["a"])
             we_ = t + max(0.0, w["end"] - s["a"])
             remapped.append({
-                "word": w["word"], "start": ws_, "end": max(we_, ws_ + 0.1),
+                "word": ce.apply_phonetic_corrections(w["word"]), "start": ws_, "end": max(we_, ws_ + 0.1),
                 "probability": w.get("probability", 1.0)
             })
 
         if i > 0:
-            cut_times.append(round(t, 3))
-            sfx_id = "VL0516" if s["framing"] == "broll_card" else whoosh_ids[i % len(whoosh_ids)]
-            sfx_events.append(dict(id=sfx_id, t=max(0.0, t - 0.05), gain=0.32))
-        else:
-            sfx_events.append(dict(id="VL0516", t=0.02, gain=0.28))
+            cut_t = round(t, 3)
+            cut_times.append(cut_t)
+            # Velvet Sub-Bass Transition SFX di setiap pergantian kamera
+            vid = velvet_ids[(i - 1) % len(velvet_ids)]
+            sfx_events.append(dict(id=vid, t=max(0.0, cut_t - 0.08), gain=0.32, role="camera_transition"))
 
-        if s["framing"] == "broll_card":
-            phrase = summarize_shot_phrase(s["words"])
-            broll_cards.append(dict(t0=t + 0.05, t1=t + d - 0.05, badge=preset["badge"], phrase=phrase))
-            s["broll_phrase"] = phrase
-        elif t > 3.3:  # Jangan tabrak Hook Banner di 0..3.2s
-            kw = pick_keyword(s["words"])
-            if kw is not None:
-                kt = t + max(0.20, kw["start"] - s["a"])
-                if kt < t + d - 0.35:
-                    kw_events.append(dict(text=kw["word"], t=kt, d=min(1.05, t + d - kt - 0.05)))
-                    sfx_events.append(dict(id="VL0526", t=kt, gain=0.28))
-                    s["keyword"] = kw["word"]
+        # Pilih efek visual & audio untuk setiap shot setelah hook pembuka
+        if i >= 1 and d >= 2.1:
+            if s.get("framing") == "cinema_focus":
+                phrase = summarize_shot_phrase(s["words"])
+                bt0 = round(t + 0.12, 3)
+                bt1 = round(t + min(d - 0.15, 3.4), 3)
+                if bt1 - bt0 >= 1.4:
+                    s["broll_phrase"] = phrase
+                    broll_cards.append(dict(t0=bt0, t1=bt1, badge=preset["badge"], phrase=phrase))
+                    sfx_events.append(dict(id="VL0511", t=max(0.0, bt0 - 0.32), gain=0.22, role="insight_riser"))
+                    sfx_events.append(dict(id="VL0566", t=bt0 + 0.05, gain=0.30, role="insight_chime"))
+            else:
+                kw = pick_keyword(s["words"])
+                if kw:
+                    kt = t + max(0.15, kw["start"] - s["a"] - 0.04)
+                    if kt > hook_dur + 0.25:
+                        kdur = min(1.85, max(1.15, (t + d) - kt - 0.12))
+                        if kdur >= 0.9:
+                            kw_clean = re.sub(r"[^\w\-]", "", kw["word"]).upper()
+                            s["keyword"] = kw_clean
+                            em_raw = emoji_map.get(kw_clean.lower(), "🔥")
+                            em = mg.first_emoji(em_raw) or "🔥"
+                            kw_events.append(dict(text=kw_clean, t=round(kt, 3), d=round(kdur, 3), emoji=em))
+                            pid = pop_ids[len(kw_events) % len(pop_ids)]
+                            sfx_events.append(dict(id=pid, t=max(0.0, round(kt, 3)), gain=0.28, role="keyword_pop"))
+
         t += d
     total = _snap(t)
 
-    clean_title = re.sub(
-        r"[^\w\s\-&!?]", "",
-        ce.apply_phonetic_corrections(clip_info.get("hook_title", "")).replace(":", " -")
-    ).strip()
-    niche_cfg = ce.NICHE_CONFIGS.get(niche, ce.NICHE_CONFIGS["universal"])
-    header = custom_watermark.strip() if custom_watermark and custom_watermark.strip() else niche_cfg["header_tag"]
-    clean_header = re.sub(r"[^\w\s\-&]", "", header).strip()
+    # Kumpulkan zona waktu saat kartu lower-middle aktif agar emoji caption otomatis menyesuaikan posisi
+    card_zones: List[Tuple[float, float]] = []
+    if clean_title:
+        card_zones.append((0.0, hook_dur + 0.25))
+    for bc in broll_cards:
+        card_zones.append((bc["t0"] - 0.1, bc["t1"] + 0.15))
+    for kev in kw_events:
+        card_zones.append((kev["t"] - 0.1, kev["t"] + kev["d"] + 0.15))
 
-    # Gunakan Hook Banner di 0..3.2s jika shot pertama bukan broll_card
-    hook_end = min(3.2, shots[0]["b"] - shots[0]["a"] - 0.1) if shots else 2.8
-    hook_banner = dict(header=clean_header, title=clean_title, dur=max(1.8, hook_end))
-
-    ass_path = tmp / "subs.ass"
-    build_ass(remapped, kw_events, broll_cards, hook_banner, preset["accent"], ass_path)
+    # 4b. Motion graphics timeline (Multi-Layer Modern Agency Look)
+    elements: List[Any] = [
+        mg.TopGradient(total, height=240, max_alpha=185),
+        mg.BottomGradient(total, height=820, max_alpha=225),
+        mg.CinemaParticles(total, accent_rgb, count=12),
+        mg.TopHeaderPill(header, total, accent_rgb, y=96),
+        mg.CaptionTrack(remapped, accent_rgb, power_words=merged_power_words,
+                        emoji_map=emoji_map, y_center=1490, alt_zones=[], card_zones=card_zones),
+    ]
+    if clean_title:
+        elements.append(mg.HookTitle(clean_title, header, accent_rgb, t0=0.0, t1=hook_dur, y=1090))
+    for bc in broll_cards:
+        elements.append(mg.BrollPanel(bc["badge"], bc["phrase"], bc["t0"], bc["t1"], accent_rgb, y_top=1120))
+    for kev in kw_events:
+        elements.append(mg.KeywordSticker(kev["text"], kev["t"], kev["d"], accent_rgb, emoji=kev.get("emoji", "🔥"), y=1245))
+    if cut_times:
+        elements.append(mg.CutSweep(cut_times, accent=accent_rgb, strength=0.34))
+    elements.append(mg.ProgressBar(total, accent_rgb))
+    timeline = mg.Timeline(total, elements)
 
     speech = tmp / "speech.wav"
-    sfxbed = tmp / "sfx.wav"
     build_speech(source_video, shots, speech)
-    build_sfx_bed(sfx_events, total, sfxbed)
+    sfx_wav = tmp / "sfx.wav"
+    build_sfx_bed(sfx_events, total, sfx_wav)
 
-    # 5. Final Composite: Argon 3D LUT + Vignette + Light-Leak Overlay + Cut Flash Transitions + Hook Box + ASS
+    # 5. Final Composite: Argon 3D LUT + Vignette + Light-Leak Overlay + Motion Graphics RGBA + Voice & Studio SFX Mix
     rel = lambda p: Path(p).resolve().relative_to(BASE_DIR).as_posix()
     lut = ARGON / "luts" / f"{preset['lut']}.cube"
     ovf = ARGON / "overlays" / f"{preset['overlay']}.mp4"
@@ -583,44 +670,37 @@ def render_clip_pro(
         "[0:v]split[o][l]",
         f"[l]lut3d=file='{rel(lut)}'[lg]",
         f"[o][lg]blend=all_mode=normal:all_opacity={preset['lut_s']}[gr]",
-        "[gr]vignette=PI/7[vg]",
+        "[gr]vignette=PI/6[vg]",
     ]
     last = "vg"
+    cmd = ["ffmpeg", "-y", "-i", str(vcat), "-i", str(speech), "-i", str(sfx_wav)]
+    idx = 3
     if ovf.exists():
-        chain.append("[3:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p[ov]")
-        chain.append(f"[{last}][ov]blend=all_mode=screen:all_opacity={preset['ov_s']}:shortest=1[fx]")
+        cmd += ["-stream_loop", "-1", "-i", str(ovf)]
+        chain.append(f"[{idx}:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p[ov]")
+        chain.append(f"[{last}][ov]blend=all_mode=screen:all_opacity={preset['ov_s'] * 0.55:.3f}:shortest=1[fx]")
         last = "fx"
-
-    # Ekspresi transisi flash halus di setiap titik cut antar-shot
-    flash_terms = [f"between(t\\,{ct - 0.05:.2f}\\,{ct + 0.09:.2f})" for ct in cut_times[:16]]
-    flash_enable = "+".join(flash_terms) if flash_terms else "0"
-    hb_dur = hook_banner["dur"]
-
-    chain.append(
-        f"[{last}]drawbox=x=0:y=0:w=1080:h=1920:color=white@{cfg['flash']}:t=fill:enable='{flash_enable}',"
-        f"drawbox=x=0:y=0:w='1080*(t/{total:.2f})':h=12:color=0x10B981@1:t=fill,"
-        f"drawbox=x=80:y=148:w=920:h=110:color=0x0F172A@0.92:t=fill:enable='between(t\\,0.05\\,{hb_dur:.2f})',"
-        f"drawbox=x=80:y=148:w=920:h=110:color={preset['hex']}@0.95:t=3:enable='between(t\\,0.05\\,{hb_dur:.2f})',"
-        f"subtitles=filename='{rel(ass_path)}'[outv]"
-    )
+        idx += 1
+    cmd += ["-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{mg.W}x{mg.H}", "-framerate", str(FPS), "-i", "pipe:0"]
+    chain.append(f"[{idx}:v]format=rgba[mg]")
+    chain.append(f"[{last}][mg]overlay=0:0:format=auto:eof_action=pass,format=yuv420p[outv]")
 
     achain = (
         "[1:a]highpass=f=70,afftdn=nr=8:nf=-32,"
-        "acompressor=threshold=-20dB:ratio=3:attack=5:release=90:makeup=2[sp];"
-        "[sp][2:a]amix=inputs=2:duration=first:normalize=0,"
-        "loudnorm=I=-14:TP=-1.5:LRA=11[outa]"
+        "acompressor=threshold=-20dB:ratio=3:attack=5:release=90:makeup=2,"
+        "loudnorm=I=-14:TP=-1.5:LRA=11[voc];"
+        "[2:a]volume=0.88[sfx];"
+        "[voc][sfx]amix=inputs=2:duration=first:dropout_transition=0:normalize=0,"
+        "alimiter=limit=0.95[outa]"
     )
-    cmd = ["ffmpeg", "-y", "-i", str(vcat), "-i", str(speech), "-i", str(sfxbed)]
-    if ovf.exists():
-        cmd += ["-stream_loop", "-1", "-i", str(ovf)]
     cmd += [
         "-filter_complex", ";".join(chain) + ";" + achain,
         "-map", "[outv]", "-map", "[outa]",
-        "-t", f"{total:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "19",
+        "-t", f"{total:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart",
         output_mp4,
     ]
-    _run_ok(cmd)
+    _encode_with_overlay(cmd, timeline, tmp / "ffmpeg_final.log")
 
     # 6. Simpan EDL + Jalankan QA Otomatis
     edl = dict(
@@ -648,6 +728,26 @@ def render_clip_pro(
         edl["qa"] = qa.check_video(output_mp4, expected_shots=len(shots))
     except Exception as e:
         edl["qa"] = {"error": str(e)}
+
+    try:
+        import thumbnail_engine
+        thumb_path = str(Path(output_mp4).with_name(f"{Path(output_mp4).stem}_thumb.jpg"))
+        clean_jpg = str(Path(output_mp4).with_name(f"{Path(output_mp4).stem}_clean.jpg"))
+        # Ambil frame terbaik dari vcat (video 9:16 bersih sebelum ditempel subtitle)
+        clean_im = thumbnail_engine.pick_best_frame(str(vcat))
+        clean_im.save(clean_jpg, "JPEG", quality=92)
+        thumb_hl = clip_info.get("thumbnail_text") or clean_title or "WAJIB SIMAK!"
+        thumbnail_engine.generate_thumbnail(
+            video_path=str(vcat),
+            output_jpg=thumb_path,
+            headline=thumb_hl,
+            sub_badge=header,
+            niche=niche,
+            clean_frame_jpg=clean_jpg,
+        )
+        edl["thumbnail"] = Path(thumb_path).name
+    except Exception as te:
+        print(f"[Thumbnail Warning] {te}")
 
     shutil.rmtree(tmp, ignore_errors=True)
     return edl

@@ -23,6 +23,8 @@ import yt_seo_engine
 import yt_uploader
 import course_sync
 import faceless_engine
+import ai_brain
+import thumbnail_engine
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -178,13 +180,16 @@ def process_video_pipeline(
                 intensity=intensity
             )
 
-            # Auto-generate broadcast-grade YouTube SEO Package
-            seo_package = yt_seo_engine.generate_shorts_seo_package(
-                transcript_text=cand.get("text", ""),
-                title_hint=cand.get("hook_title", ""),
-                niche=niche,
-                speaker=custom_watermark
-            )
+            # Auto-generate broadcast-grade YouTube SEO Package (gunakan hasil AI Curation jika sudah ada)
+            if cand.get("ai_seo"):
+                seo_package = cand["ai_seo"]
+            else:
+                seo_package = yt_seo_engine.generate_shorts_seo_package(
+                    transcript_text=cand.get("text", ""),
+                    title_hint=cand.get("hook_title", ""),
+                    niche=niche,
+                    speaker=custom_watermark
+                )
 
             seo_filename = f"{job_id}_{cand['clip_id']}_seo.json"
             seo_path = OUTPUTS_DIR / seo_filename
@@ -194,10 +199,14 @@ def process_video_pipeline(
             except Exception as e:
                 print(f"[Warning] Failed to save SEO cache: {e}")
 
+            thumb_name = f"{Path(out_filename).stem}_thumb.jpg"
+            thumb_url = f"/outputs/{thumb_name}" if (OUTPUTS_DIR / thumb_name).exists() else None
+
             job["clips"].append({
                 "clip_id": cand["clip_id"],
                 "filename": out_filename,
                 "video_url": f"/outputs/{out_filename}",
+                "thumb_url": thumb_url,
                 "title": cand["hook_title"],
                 "score": cand["hook_score"],
                 "duration": cand["duration"],
@@ -245,10 +254,28 @@ def process_faceless_job(
         )
 
         seo_res = res.get("seo", {})
+
+        # Generate thumbnail otomatis untuk video faceless
+        thumb_name = f"{Path(out_filename).stem}_thumb.jpg"
+        thumb_dest = str(OUTPUTS_DIR / thumb_name)
+        try:
+            import thumbnail_engine
+            thumbnail_engine.generate_thumbnail(
+                video_path=out_path,
+                output_jpg=thumb_dest,
+                headline=seo_res.get("thumbnail_text", header_title or "VIRAL SHORTS"),
+                niche="universal"
+            )
+        except Exception as te:
+            print(f"[Warning] Failed to generate faceless thumbnail: {te}")
+
+        thumb_url = f"/outputs/{thumb_name}" if (OUTPUTS_DIR / thumb_name).exists() else None
+
         job["clips"] = [{
             "clip_id": f"faceless_{job_id[:6]}",
             "filename": out_filename,
             "video_url": f"/outputs/{out_filename}",
+            "thumb_url": thumb_url,
             "title": seo_res.get("title", header_title or "AI Faceless Shorts"),
             "score": 99.2,
             "duration": res.get("duration", 15.0),
@@ -415,9 +442,11 @@ async def get_history():
             except Exception:
                 pass
 
+        thumb_file = OUTPUTS_DIR / f"{f.stem}_thumb.jpg"
         results.append({
             "filename": f.name,
             "url": f"/outputs/{f.name}",
+            "thumb_url": f"/outputs/{thumb_file.name}" if thumb_file.exists() else None,
             "size_mb": round(f.stat().st_size / (1024 * 1024), 2),
             "date": f.stat().st_mtime,
             "seo": seo_data,
@@ -432,7 +461,7 @@ async def delete_history_item(filename: str):
     safe_name = Path(filename).name
     stem = Path(safe_name).stem
     removed = []
-    for ext in [".mp4", "_seo.json", ".edl.json", ".qa.jpg"]:
+    for ext in [".mp4", "_seo.json", ".edl.json", ".qa.jpg", "_thumb.jpg"]:
         target = OUTPUTS_DIR / f"{stem}{ext}"
         if target.exists():
             try:
@@ -601,8 +630,11 @@ async def prepare_pc_video(
         target_path = str(save_dest)
         display_name = video_file.filename
     elif file_path and (file_path.startswith("http://") or file_path.startswith("https://")):
-        # Remote link (Google Drive / Dropbox / Direct Web)
-        downloaded = clipper_engine.download_remote_video(file_path.strip(), str(UPLOADS_DIR))
+        # Remote link (Google Drive / Google Photos / Dropbox / Direct Web)
+        try:
+            downloaded = clipper_engine.download_remote_video(file_path.strip(), str(UPLOADS_DIR))
+        except Exception as dl_err:
+            raise HTTPException(status_code=400, detail=str(dl_err))
         target_path = downloaded
         display_name = Path(downloaded).name
     elif file_path and os.path.exists(file_path):
@@ -681,6 +713,113 @@ async def sync_course_lesson(payload: CourseSyncPayload):
         timestamps_text=payload.timestamps_text
     )
     return result
+
+
+class AIConfigPayload(BaseModel):
+    enabled: bool = True
+    provider: str = "gemini"
+    base_url: Optional[str] = None
+    model: Optional[str] = None
+    api_keys: Any = None
+    active_key_index: int = 0
+    auto_rotate_on_limit: bool = True
+
+
+class AIModelsQueryPayload(BaseModel):
+    provider: str = "gemini"
+    base_url: Optional[str] = None
+    api_key: Optional[str] = None
+
+
+class AIIdeasPayload(BaseModel):
+    topic: str
+    style: str = "fakta"
+    duration_sec: int = 35
+
+
+class ThumbnailRegenPayload(BaseModel):
+    filename: str
+    headline: str
+    sub_badge: Optional[str] = None
+    niche: str = "universal"
+
+
+@app.get("/api/ai/config")
+async def get_ai_config():
+    """Mengambil status & konfigurasi Multi-Provider AI Router (Gemini / SumoPod / 9Router / dll)."""
+    return ai_brain.get_public_status()
+
+
+@app.post("/api/ai/config")
+async def update_ai_config(payload: AIConfigPayload):
+    """Menyimpan konfigurasi AI Provider, Model, dan daftar Multi-API Key."""
+    ai_brain.save_config(payload.dict())
+    return {"ok": True, "status": ai_brain.get_public_status()}
+
+
+@app.post("/api/ai/models")
+async def list_ai_models(payload: AIModelsQueryPayload):
+    """Menarik daftar model yang tersedia langsung dari provider (Gemini / SumoPod / 9Router / OpenRouter)."""
+    models = ai_brain.fetch_available_models(
+        provider=payload.provider,
+        base_url=payload.base_url,
+        api_key=payload.api_key,
+    )
+    return {"ok": True, "models": models}
+
+
+@app.post("/api/ai/test")
+async def test_ai_router():
+    """Menguji koneksi AI dengan provider, model, dan API key aktif."""
+    try:
+        res = ai_brain.test_ai_connection()
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/ai/ideas")
+async def generate_ai_ideas(payload: AIIdeasPayload):
+    """Membuat naskah & ide konten viral menggunakan AI (atau fallback lokal jika offline)."""
+    ai_res = ai_brain.generate_script_or_ideas_with_ai(
+        topic=payload.topic,
+        style=payload.style,
+        duration_sec=payload.duration_sec,
+    )
+    if ai_res:
+        return {"ok": True, "ai_generated": True, **ai_res}
+    fallback_script = faceless_engine.generate_script_from_topic(
+        topic=payload.topic,
+        style=payload.style,
+        duration_sec=payload.duration_sec,
+    )
+    return {
+        "ok": True,
+        "ai_generated": False,
+        "header_title": payload.topic.upper()[:28],
+        "thumbnail_text": payload.topic.upper()[:20],
+        "script": fallback_script,
+        "ideas": [],
+    }
+
+
+@app.post("/api/thumbnail/regenerate")
+async def regenerate_clip_thumbnail(payload: ThumbnailRegenPayload):
+    """Merender ulang thumbnail ber-CTR tinggi dengan teks custom atau AI."""
+    safe_name = Path(payload.filename).name
+    video_path = OUTPUTS_DIR / safe_name
+    if not video_path.exists():
+        raise HTTPException(status_code=404, detail=f"Video {safe_name} tidak ditemukan.")
+    thumb_name = f"{video_path.stem}_thumb.jpg"
+    thumb_path = OUTPUTS_DIR / thumb_name
+    thumbnail_engine.generate_thumbnail(
+        video_path=str(video_path),
+        output_jpg=str(thumb_path),
+        headline=payload.headline,
+        sub_badge=payload.sub_badge,
+        niche=payload.niche,
+    )
+    return {"ok": True, "thumb_url": f"/outputs/{thumb_name}?t={int(datetime.now().timestamp())}"}
 
 
 if __name__ == "__main__":

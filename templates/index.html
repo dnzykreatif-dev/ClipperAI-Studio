@@ -76,7 +76,11 @@
         <div class="text-[11px] font-semibold text-slate-400">Dynamic Motion &bull; Crystal Voice (0 dB) &bull; YouTube Automation & SEO</div>
       </div>
     </div>
-    <div class="flex items-center gap-2.5">
+    <div class="flex flex-wrap items-center gap-2.5">
+      <button onclick="openAIConfigModal()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-950/90 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/50 flex items-center gap-1.5 transition shadow-sm">
+        <span id="nav-ai-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <span id="nav-ai-status">🧠 AI Router: Atur API Key</span>
+      </button>
       <button onclick="switchStudioMode('faceless')" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-600/50 flex items-center gap-1.5 transition shadow-sm">
         <span>✨</span> AI Faceless Maker
       </button>
@@ -88,9 +92,6 @@
         <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
         <span id="nav-yt-status">YouTube Studio: Siap</span>
       </button>
-      <span class="hidden md:inline-flex px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
-        ⚡ 100% Offline & Free
-      </span>
     </div>
   </nav>
 
@@ -135,7 +136,7 @@
           </button>
           <input type="file" id="file-input" class="hidden" accept="video/mp4,video/mkv,video/mov">
           <input type="text" id="unified-input" 
-                 placeholder="Tempel link YouTube, Google Drive, atau pilih file video PC..." 
+                 placeholder="Tempel link YouTube, Google Drive, Google Photos, atau pilih file video PC..." 
                  class="w-full bg-transparent border-none text-white text-sm focus:outline-none placeholder-slate-500 font-medium">
         </div>
 
@@ -172,9 +173,10 @@
 
         <!-- Speed Mode -->
         <div class="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
-          <span class="text-emerald-400">⚡</span> Model AI:
+          <span class="text-emerald-400">⚡</span> Suara ke Teks:
           <select id="tune-speed" class="bg-transparent text-white focus:outline-none cursor-pointer font-bold">
-            <option value="base" selected class="bg-slate-900">Base AI (Akurasi Tinggi & Rekomendasi)</option>
+            <option value="base" selected class="bg-slate-900">Base AI (Cepat & Rekomendasi)</option>
+            <option value="small" class="bg-slate-900">Small AI (Akurasi Maksimal Kajian/Ceramah)</option>
             <option value="tiny" class="bg-slate-900">Turbo Tiny (Super Cepat)</option>
           </select>
         </div>
@@ -233,12 +235,32 @@
           </div>
         </div>
 
+        <!-- AI Topic to Script Generator -->
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-emerald-500/30 space-y-2">
+          <div class="text-xs font-extrabold text-emerald-300 flex items-center justify-between">
+            <span>🧠 Buat Naskah & Ide Otomatis dengan AI (Gemini / SumoPod / 9Router):</span>
+            <button type="button" onclick="openAIConfigModal()" class="text-[11px] text-indigo-300 underline hover:text-white">Atur Model AI</button>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input type="text" id="faceless-ai-topic" placeholder="Ketik topik apa saja (contoh: 3 amalan pembuka pintu rezeki, psikologi uang)..."
+                   class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-emerald-400">
+            <button type="button" id="btn-ai-write-script" onclick="generateFacelessScriptWithAI()"
+                    class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center justify-center gap-1.5 flex-shrink-0">
+              <span>✨</span> Tulis Naskah AI
+            </button>
+          </div>
+          <div id="faceless-ai-ideas" class="hidden pt-1 flex flex-wrap gap-1.5"></div>
+        </div>
+
         <!-- Quick Sample Templates -->
         <div class="space-y-1.5">
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
             <span>💡</span> Contoh Naskah Viral (Klik untuk Mencoba Langsung):
           </div>
           <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="fillFacelessTemplate('vox')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 transition flex items-center gap-1.5">
+              <span>📜</span> Vox 2.5D Kertas Sobek (Indonesia/Paralaks)
+            </button>
             <button type="button" onclick="fillFacelessTemplate('bisnis')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
               💼 Bisnis & Cuan
             </button>
@@ -272,8 +294,8 @@
           <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
             <label class="block font-bold text-slate-300">🎙️ Suara AI (Natural TTS)</label>
             <select id="faceless-voice-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-semibold focus:outline-none focus:border-amber-400">
-              <option value="ardi" selected>Ardi (Pria Enerjik & Berwibawa)</option>
-              <option value="gadis">Gadis (Wanita Halus & Edukatif)</option>
+              <option value="ardi" selected>🎙️ Ardi (Pria Narator Santai & Berwibawa - ID)</option>
+              <option value="gadis">🎙️ Gadis (Wanita Edukatif & Halus - ID)</option>
             </select>
           </div>
 
@@ -281,7 +303,8 @@
           <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
             <label class="block font-bold text-slate-300">🎨 Gaya Visual & Subtitle</label>
             <select id="faceless-theme-select" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-semibold focus:outline-none focus:border-amber-400" onchange="updateHeaderPlaceholder()">
-              <option value="cyber" selected>🌌 Dark Cyber / Tech (Neon Yellow)</option>
+              <option value="vox" selected>📜 Vox 2.5D Torn-Paper (Dokumenter / Explainer)</option>
+              <option value="cyber">🌌 Dark Cyber / Tech (Neon Yellow)</option>
               <option value="islamic">🕌 Islamic Emerald (Gold Amber)</option>
               <option value="business">💼 Modern Business (Neon Green)</option>
               <option value="motivation">🔥 High Energy Motivasi (Ruby Red)</option>
@@ -291,7 +314,7 @@
           <!-- Header Tag / Banner -->
           <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-1">
             <label class="block font-bold text-slate-300">🏷️ Label Banner Atas</label>
-            <input type="text" id="faceless-header-input" placeholder="⚡ INSIGHT PENTING"
+            <input type="text" id="faceless-header-input" placeholder="📜 VOX EXPLAINER • 2.5D COLLAGE"
                    class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white font-semibold focus:outline-none focus:border-amber-400 text-xs">
           </div>
         </div>
@@ -546,6 +569,36 @@
             </div>
           </div>
 
+          <!-- AI Thumbnail & Content Ideas Box -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div class="bg-slate-900/90 border border-amber-500/30 rounded-xl p-3.5 space-y-2">
+              <div class="font-extrabold text-amber-300 flex items-center justify-between">
+                <span>🖼️ AI Thumbnail Generator:</span>
+                <a id="modal-thumb-download" href="#" download class="hidden text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">⬇️ Unduh JPG</a>
+              </div>
+              <div class="flex gap-2">
+                <input type="text" id="modal-thumb-headline" placeholder="Teks Hook Thumbnail (2-4 Kata)..."
+                       class="flex-grow bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs font-bold focus:outline-none focus:border-amber-400">
+                <button type="button" id="btn-regen-thumb" onclick="handleRegenerateThumbnail()"
+                        class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-black text-[11px] transition flex-shrink-0">
+                  🎨 Buat
+                </button>
+              </div>
+              <div id="modal-thumb-preview-wrap" class="hidden pt-1">
+                <img id="modal-thumb-img" src="" alt="Thumbnail Preview" class="w-28 rounded-lg border border-slate-700 mx-auto shadow-md">
+              </div>
+            </div>
+
+            <div class="bg-emerald-950/30 border border-emerald-800/40 rounded-xl p-3.5 space-y-1.5">
+              <div class="font-extrabold text-emerald-300 flex items-center gap-1.5">
+                <span>💡</span> Ide Konten Lanjutan (Rekomendasi AI):
+              </div>
+              <div id="modal-content-ideas" class="text-[11px] text-slate-300 space-y-1 leading-relaxed">
+                • Aktifkan AI Router (Gemini / SumoPod / 9Router) untuk mendapatkan rekomendasi ide konten turunan otomatis.
+              </div>
+            </div>
+          </div>
+
           <!-- Schedule Recommendation Box -->
           <div class="bg-indigo-950/30 border border-indigo-900/40 rounded-xl p-3.5 flex items-start gap-3">
             <div class="text-lg">⏰</div>
@@ -771,6 +824,154 @@
     </div>
   </div>
 
+  <!-- MODAL: AI BRAIN & MULTI-KEY ROUTER (GEMINI / SUMOPOD / 9ROUTER / OPENROUTER) -->
+  <div id="ai-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
+    <div class="glass-card w-full max-w-2xl rounded-3xl border border-emerald-500/40 shadow-2xl overflow-hidden my-8">
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center text-xl shadow-lg">
+            🧠
+          </div>
+          <div>
+            <h3 class="text-base font-black text-white flex items-center gap-2">
+              AI Brain & Multi-Provider API Router
+              <span id="ai-modal-badge" class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">SIAP</span>
+            </h3>
+            <p class="text-[11px] text-slate-400">Mendukung Google Gemini (Free & Pro), SumoPod, 9Router, OpenRouter, Groq & Auto-Rotasi API Key</p>
+          </div>
+        </div>
+        <button onclick="closeAIConfigModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2">✕</button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 space-y-4 text-xs max-h-[78vh] overflow-y-auto">
+        <!-- Enable Toggle & Auto-Rotate Toggle -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="flex items-center justify-between bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 cursor-pointer">
+            <div>
+              <div class="font-extrabold text-white">Aktifkan Otak AI</div>
+              <div class="text-[10px] text-slate-400">Kurasi Klip, Koreksi Teks, SEO & Ide</div>
+            </div>
+            <input type="checkbox" id="ai-cfg-enabled" checked class="w-4 h-4 accent-emerald-500">
+          </label>
+          <label class="flex items-center justify-between bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 cursor-pointer">
+            <div>
+              <div class="font-extrabold text-emerald-300">Auto-Rotasi API Key jika Limit</div>
+              <div class="text-[10px] text-slate-400">Pindah ke Key cadangan otomatis saat HTTP 429</div>
+            </div>
+            <input type="checkbox" id="ai-cfg-autorotate" checked class="w-4 h-4 accent-emerald-500">
+          </label>
+        </div>
+
+        <!-- Provider Selector -->
+        <div class="space-y-1.5">
+          <label class="font-extrabold text-slate-200 block">1. Pilih Provider AI / Router:</label>
+          <select id="ai-cfg-provider" onchange="onAIProviderChange(this.value)"
+                  class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-emerald-400 cursor-pointer">
+            <option value="gemini">✨ Google Gemini Resmi (Google AI Studio Gratis / Akun Gemini Pro)</option>
+            <option value="sumopod">🚀 SumoPod AI (ai.sumopod.com — Provider Token AI)</option>
+            <option value="9router">🔀 9Router (Multi-AI Router Lokal / Cloud)</option>
+            <option value="openrouter">🌐 OpenRouter (openrouter.ai — Semua Model AI)</option>
+            <option value="groq">⚡ Groq Cloud (Llama 3.3 70B Super Cepat)</option>
+            <option value="custom">🔧 Custom OpenAI-Compatible Endpoint</option>
+          </select>
+        </div>
+
+        <!-- Base URL -->
+        <div class="space-y-1">
+          <label class="font-extrabold text-slate-200 block">2. Endpoint Base URL:</label>
+          <input type="text" id="ai-cfg-baseurl" placeholder="https://generativelanguage.googleapis.com/v1beta"
+                 class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-indigo-300 font-mono text-xs focus:outline-none focus:border-emerald-400">
+          <div class="text-[10px] text-slate-500">Otomatis terisi sesuai provider. Bisa diubah jika memakai URL 9Router / proxy sendiri.</div>
+        </div>
+
+        <!-- Model Selection (Dropdown + Custom Input + Fetch Button) -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="font-extrabold text-slate-200">3. Pilih atau Ketik Nama Model AI:</label>
+            <button type="button" onclick="fetchAIModelsFromServer()" id="btn-fetch-models"
+                    class="text-[11px] px-2.5 py-1 rounded-lg bg-indigo-950 hover:bg-indigo-800 text-indigo-300 border border-indigo-700/60 font-bold transition">
+              🔄 Tarik Daftar Model dari Server
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <select id="ai-cfg-model-select" onchange="document.getElementById('ai-cfg-model').value = this.value"
+                    class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-emerald-400 cursor-pointer">
+              <option value="gemini-4-argon">gemini-4-argon (Gemini Argon)</option>
+              <option value="gemini-3.8-argon">gemini-3.8-argon (Gemini 3.8 Argon)</option>
+              <option value="gemini-3.8-pro">gemini-3.8-pro (Gemini 3.8 Pro)</option>
+              <option value="gemini-3.8-flash">gemini-3.8-flash (Gemini 3.8 Flash)</option>
+              <option value="gemini-3.8-pro-preview">gemini-3.8-pro-preview</option>
+              <option value="gemini-3.8-flash-preview">gemini-3.8-flash-preview</option>
+              <option value="gemini-3.1-pro-preview">gemini-3.1-pro-preview (Gemini 3.1 Pro)</option>
+              <option value="gemini-3.1-flash-preview">gemini-3.1-flash-preview (Gemini 3.1 Flash)</option>
+              <option value="gemini-3.1-flash-lite-preview">gemini-3.1-flash-lite-preview</option>
+              <option value="gemini-3-pro-preview">gemini-3-pro-preview (Gemini 3 Pro)</option>
+              <option value="gemini-3-flash-preview">gemini-3-flash-preview (Gemini 3 Flash)</option>
+              <option value="gemini-2.5-pro">gemini-2.5-pro (Gemini 2.5 Pro)</option>
+              <option value="gemini-2.5-flash">gemini-2.5-flash (Gemini 2.5 Flash)</option>
+            </select>
+            <input type="text" id="ai-cfg-model" value="gemini-3.8-pro" placeholder="Ketik ID model bebas..."
+                   class="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-emerald-300 font-mono font-bold focus:outline-none focus:border-emerald-400">
+          </div>
+          <!-- Quick Select Pills for Latest Models -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-1">
+            <span class="text-[10px] text-slate-400 font-bold">Pilih Cepat:</span>
+            <button type="button" onclick="selectQuickAIModel('gemini-4-argon')" class="text-[10px] px-2 py-0.5 rounded-md bg-emerald-950 hover:bg-emerald-800 text-emerald-300 border border-emerald-600/40 font-mono font-bold transition">⚡ gemini-4-argon</button>
+            <button type="button" onclick="selectQuickAIModel('gemini-3.8-argon')" class="text-[10px] px-2 py-0.5 rounded-md bg-emerald-950 hover:bg-emerald-800 text-emerald-300 border border-emerald-600/40 font-mono font-bold transition">💎 gemini-3.8-argon</button>
+            <button type="button" onclick="selectQuickAIModel('gemini-3.8-pro')" class="text-[10px] px-2 py-0.5 rounded-md bg-indigo-950 hover:bg-indigo-800 text-indigo-300 border border-indigo-600/40 font-mono font-bold transition">🔥 gemini-3.8-pro</button>
+            <button type="button" onclick="selectQuickAIModel('gemini-3.8-flash')" class="text-[10px] px-2 py-0.5 rounded-md bg-indigo-950 hover:bg-indigo-800 text-indigo-300 border border-indigo-600/40 font-mono font-bold transition">✨ gemini-3.8-flash</button>
+            <button type="button" onclick="selectQuickAIModel('gemini-3.1-pro-preview')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono font-bold transition">gemini-3.1-pro-preview</button>
+            <button type="button" onclick="selectQuickAIModel('gemini-2.5-flash')" class="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono font-bold transition">gemini-2.5-flash</button>
+          </div>
+        </div>
+
+        <!-- Multi-API Keys Textarea -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="font-extrabold text-slate-200">4. Daftar API Key (Satu per Baris untuk Cadangan / Rotasi Limit):</label>
+            <a href="https://aistudio.google.com/apikey" target="_blank" class="text-[11px] text-amber-400 underline font-bold hover:text-amber-300">🔑 Ambil API Key Gemini Gratis ↗</a>
+          </div>
+          <textarea id="ai-cfg-keys" rows="4"
+                    placeholder="AIzaSy... (Key Utama)&#10;AIzaSy... (Key Cadangan 2 - otomatis dipakai jika Key 1 terkena limit)&#10;AIzaSy... (Key Cadangan 3)"
+                    class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-emerald-200 font-mono text-xs focus:outline-none focus:border-emerald-400 leading-relaxed"></textarea>
+          <div id="ai-cfg-key-hint" class="text-[11px] text-slate-400">
+            Masukkan 1 atau beberapa API Key (pisahkan dengan Enter/baris baru). Jika Key #1 terkena limit kuota (429), sistem otomatis beralih ke Key berikutnya tanpa menghentikan proses!
+          </div>
+        </div>
+
+        <!-- Active Key Selector -->
+        <div class="flex items-center justify-between bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-300 font-bold">API Key Aktif Saat Ini:</span>
+          <select id="ai-cfg-active-index" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 text-emerald-300 font-mono text-xs font-bold">
+            <option value="0">Key #1 (Utama)</option>
+          </select>
+        </div>
+
+        <!-- Test Result Box -->
+        <div id="ai-test-result" class="hidden p-3.5 rounded-xl border text-xs leading-relaxed"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="p-4 sm:p-5 border-t border-slate-800 bg-slate-900/90 flex flex-wrap items-center justify-between gap-2">
+        <button type="button" id="btn-test-ai" onclick="testAIConnection()"
+                class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs transition flex items-center gap-1.5 shadow-md">
+          <span>⚡</span> Simpan & Tes Koneksi AI
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeAIConfigModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition">
+            Tutup
+          </button>
+          <button type="button" onclick="saveAIConfig(true)"
+                  class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black text-xs uppercase tracking-wider transition shadow-lg">
+            💾 Simpan Pengaturan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     let activeJobId = null;
     let pollInterval = null;
@@ -790,6 +991,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadHistory();
       checkYouTubeConnection();
+      loadAIConfig();
       if (window.location.hash === '#youtube') {
         setTimeout(() => openYouTubeStudio('690ad7e5_clip_1.mp4'), 600);
       }
@@ -850,6 +1052,7 @@
               clip_id: `clip_${i+1}`,
               filename: c.filename,
               video_url: c.url,
+              thumb_url: c.thumb_url || null,
               title: seo.title || "HIGHLIGHT VIRAL PILIHAN AI",
               score: seo.seo_score || 96.0,
               duration: dur,
@@ -1084,21 +1287,30 @@
 
           <!-- Action Buttons -->
           <div class="space-y-2 pt-1">
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-3 gap-1.5">
               <a href="${clip.video_url}" download="${clip.filename}" 
-                 class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
-                <span>⬇️</span> Download
+                 class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[11px] uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
+                <span>⬇️</span> MP4
               </a>
+              ${clip.thumb_url ? `
+              <a href="${clip.thumb_url}" download="${clip.filename.replace('.mp4', '_thumb.jpg')}"
+                 class="py-2.5 rounded-xl bg-amber-600/90 hover:bg-amber-500 text-white font-black text-[11px] uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
+                <span>🖼️</span> Thumb
+              </a>` : `
+              <button onclick="openYouTubeStudio('${safeFilename}')"
+                      class="py-2.5 rounded-xl bg-amber-600/80 hover:bg-amber-500 text-white font-black text-[11px] uppercase tracking-wider text-center transition flex items-center justify-center gap-1 shadow-md">
+                <span>🖼️</span> Thumb
+              </button>`}
               <button onclick="copyCaption('${safeTitle}', '${safeSummary}', '${safeHashtags}')" 
-                      class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center justify-center gap-1 border border-slate-700">
-                <span>📋</span> Salin Teks
+                      class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] transition flex items-center justify-center gap-1 border border-slate-700">
+                <span>📋</span> Teks
               </button>
             </div>
 
             <!-- YouTube Studio Button -->
             <button onclick="openYouTubeStudio('${safeFilename}')" 
                     class="w-full py-2.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-indigo-600 hover:from-red-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/30 transition">
-              <span>🚀</span> YouTube Studio & Upload
+              <span>🚀</span> YouTube Studio, SEO & Thumbnail
             </button>
           </div>
         `;
@@ -1175,6 +1387,41 @@
           • <strong>Malam</strong>: ${data.best_schedule.evening_peak}<br>
           • <strong>Hari Terbaik</strong>: ${data.best_schedule.best_days}
         `;
+      }
+
+      // Thumbnail Headline & Preview
+      const thumbHeadlineEl = document.getElementById('modal-thumb-headline');
+      if (thumbHeadlineEl) {
+        thumbHeadlineEl.value = data.thumbnail_text || (data.title ? data.title.replace(/#\S+/g, '').trim().slice(0, 24) : "WAJIB SIMAK!");
+      }
+      if (currentClipFilename && currentClipFilename.endsWith('.mp4')) {
+        const stem = currentClipFilename.split(/[\\/]/).pop().replace('.mp4', '');
+        const thumbUrl = `/outputs/${stem}_thumb.jpg`;
+        const imgEl = document.getElementById('modal-thumb-img');
+        const wrapEl = document.getElementById('modal-thumb-preview-wrap');
+        const dlEl = document.getElementById('modal-thumb-download');
+        if (imgEl && wrapEl && dlEl) {
+          imgEl.src = `${thumbUrl}?t=${Date.now()}`;
+          imgEl.onload = () => {
+            wrapEl.classList.remove('hidden');
+            dlEl.href = thumbUrl;
+            dlEl.classList.remove('hidden');
+          };
+          imgEl.onerror = () => {
+            wrapEl.classList.add('hidden');
+            dlEl.classList.add('hidden');
+          };
+        }
+      }
+
+      // Content Ideas from AI
+      const ideasEl = document.getElementById('modal-content-ideas');
+      if (ideasEl) {
+        if (data.content_ideas && data.content_ideas.length > 0) {
+          ideasEl.innerHTML = data.content_ideas.map(id => `• <strong>${id}</strong>`).join('<br>');
+        } else {
+          ideasEl.innerHTML = '• Klik tombol <strong>🧠 AI Router</strong> di atas untuk mengaktifkan ide konten otomatis dari Gemini / SumoPod / 9Router.';
+        }
       }
     }
 
@@ -1749,25 +1996,35 @@
     // AI FACELESS MAKER STUDIO SCRIPT
     // ==========================================
     const FACELESS_TEMPLATES = {
+      vox: {
+        script: "Pernah nggak kamu penasaran, kenapa video dokumenter seperti Vox selalu terasa hidup dan enak ditonton? Rahasianya ada pada layered parallax dan potongan kertas sobek yang bergerak dinamis mengikuti ketukan suara narator!",
+        header: "📜 VOX EXPLAINER • 2.5D COLLAGE",
+        theme: "vox",
+        voice: "ardi"
+      },
       bisnis: {
         script: "Tahukah kamu, 90 persen orang gagal kaya bukan karena mereka kurang kerja keras, tapi karena tidak pernah membuat uang bekerja untuk mereka. Mulai hari ini, bangun aset digitalmu sebelum terlambat!",
         header: "💡 RAHASIA SUKSES & FINANSIAL",
-        theme: "business"
+        theme: "business",
+        voice: "ardi"
       },
       hikmah: {
         script: "Jangan pernah merasa bangga dengan banyaknya amalanmu. Karena kita tidak pernah tahu amalan mana yang ikhlas dan diterima di sisi Allah. Tetaplah rendah hati dan terus berbuat kebaikan.",
         header: "🕌 RENUNGAN & MUTIARA HIKMAH",
-        theme: "islamic"
+        theme: "islamic",
+        voice: "gadis"
       },
       motivasi: {
         script: "Saat kamu merasa lelah dan ingin menyerah hari ini, ingat kembali rasa sakit saat kamu pertama kali memulai. Orang yang bertahan di saat sulit adalah orang yang akan tersenyum di garis akhir!",
         header: "🔥 DENGAR INI SAAT INGIN MENYERAH",
-        theme: "motivation"
+        theme: "motivation",
+        voice: "ardi"
       },
       gas: {
         script: "Belajar Google Apps Script itu seperti punya asisten pribadi yang bekerja 24 jam nonstop. Cukup tulis kode sekali, pekerjaan manual berjam-jam selesai dalam hitungan detik!",
         header: "⚡ OTOMATISASI WEB & SPREADSHEET",
-        theme: "cyber"
+        theme: "cyber",
+        voice: "ardi"
       }
     };
 
@@ -1803,6 +2060,10 @@
       scriptInput.value = item.script;
       headerInput.value = item.header;
       themeSelect.value = item.theme;
+      if (item.voice) {
+        const voiceSelect = document.getElementById('faceless-voice-select');
+        if (voiceSelect) voiceSelect.value = item.voice;
+      }
       updateFacelessCount();
     }
 
@@ -1875,6 +2136,316 @@
         alert("Koneksi gagal: " + err.message);
         btn.disabled = false;
         btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    // =========================================================================
+    // AI BRAIN & MULTI-KEY ROUTER (GEMINI / SUMOPOD / 9ROUTER / OPENROUTER)
+    // =========================================================================
+    let aiRouterState = null;
+
+    async function loadAIConfig() {
+      try {
+        const res = await fetch('/api/ai/config');
+        const st = await res.json();
+        aiRouterState = st;
+        updateAINavbarBadge(st);
+        populateAIModalFields(st);
+      } catch (e) {
+        console.error("Failed to load AI config:", e);
+      }
+    }
+
+    function updateAINavbarBadge(st) {
+      const dot = document.getElementById('nav-ai-dot');
+      const label = document.getElementById('nav-ai-status');
+      const modalBadge = document.getElementById('ai-modal-badge');
+      if (!dot || !label) return;
+
+      if (st.ready && st.enabled) {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        const keyInfo = st.key_count > 1 ? ` (${st.key_count} Key Auto-Rotate)` : '';
+        label.innerText = `🧠 AI: ${st.model}${keyInfo}`;
+        if (modalBadge) {
+          modalBadge.innerText = `AKTIF • ${st.model}`;
+          modalBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
+        }
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+        label.innerText = '🧠 AI Router: Atur API Key';
+        if (modalBadge) {
+          modalBadge.innerText = 'BELUM ADA KEY';
+          modalBadge.className = 'text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold';
+        }
+      }
+    }
+
+    function populateAIModalFields(st) {
+      if (!st) return;
+      document.getElementById('ai-cfg-enabled').checked = !!st.enabled;
+      document.getElementById('ai-cfg-autorotate').checked = st.auto_rotate_on_limit !== false;
+      document.getElementById('ai-cfg-provider').value = st.provider || 'gemini';
+      document.getElementById('ai-cfg-baseurl').value = st.base_url || '';
+      document.getElementById('ai-cfg-model').value = st.model || 'gemini-2.5-flash';
+      document.getElementById('ai-cfg-keys').value = st.api_keys_raw || '';
+
+      const preset = (st.presets && st.presets[st.provider]) ? st.presets[st.provider] : null;
+      if (preset) {
+        document.getElementById('ai-cfg-key-hint').innerText = preset.key_hint || '';
+        populateModelDropdown(preset.models || [], st.model);
+      }
+      populateActiveKeyDropdown(st.keys_masked || [], st.active_key_index || 0);
+    }
+
+    function populateModelDropdown(models, currentModel) {
+      const sel = document.getElementById('ai-cfg-model-select');
+      if (!sel) return;
+      sel.innerHTML = '';
+      const list = [...models];
+      if (currentModel && !list.includes(currentModel)) {
+        list.unshift(currentModel);
+      }
+      list.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.innerText = m;
+        if (m === currentModel) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function selectQuickAIModel(modelName) {
+      const inp = document.getElementById('ai-cfg-model');
+      if (inp) inp.value = modelName;
+      const sel = document.getElementById('ai-cfg-model-select');
+      if (sel) {
+        const existing = Array.from(sel.options).map(o => o.value);
+        populateModelDropdown(existing, modelName);
+      }
+    }
+
+    function populateActiveKeyDropdown(maskedKeys, activeIdx) {
+      const sel = document.getElementById('ai-cfg-active-index');
+      if (!sel) return;
+      sel.innerHTML = '';
+      if (!maskedKeys || maskedKeys.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '0';
+        opt.innerText = 'Key #1 (Utama)';
+        sel.appendChild(opt);
+        return;
+      }
+      maskedKeys.forEach((mk, idx) => {
+        const opt = document.createElement('option');
+        opt.value = String(idx);
+        opt.innerText = `Key #${idx + 1}: ${mk}`;
+        if (idx === activeIdx) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function onAIProviderChange(prov) {
+      if (!aiRouterState || !aiRouterState.presets) return;
+      const preset = aiRouterState.presets[prov];
+      const savedProv = (aiRouterState.provider_configs && aiRouterState.provider_configs[prov]) || null;
+      if (!preset) return;
+
+      document.getElementById('ai-cfg-baseurl').value = (savedProv && savedProv.base_url) ? savedProv.base_url : preset.base_url;
+      const targetModel = (savedProv && savedProv.model) ? savedProv.model : preset.default_model;
+      document.getElementById('ai-cfg-model').value = targetModel;
+      populateModelDropdown(preset.models || [], targetModel);
+      document.getElementById('ai-cfg-key-hint').innerText = preset.key_hint || '';
+
+      if (savedProv && savedProv.api_keys) {
+        document.getElementById('ai-cfg-keys').value = savedProv.api_keys.join('\n');
+      }
+    }
+
+    function openAIConfigModal() {
+      document.getElementById('ai-modal').classList.remove('hidden');
+      document.getElementById('ai-test-result').classList.add('hidden');
+      loadAIConfig();
+    }
+
+    function closeAIConfigModal() {
+      document.getElementById('ai-modal').classList.add('hidden');
+    }
+
+    async function fetchAIModelsFromServer() {
+      const btn = document.getElementById('btn-fetch-models');
+      const prov = document.getElementById('ai-cfg-provider').value;
+      const baseUrl = document.getElementById('ai-cfg-baseurl').value.trim();
+      const rawKeys = document.getElementById('ai-cfg-keys').value.trim();
+      const firstKey = rawKeys.split(/[\r\n]+/)[0] || '';
+
+      btn.disabled = true;
+      btn.innerText = '⏳ Mengambil model...';
+      try {
+        const res = await fetch('/api/ai/models', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ provider: prov, base_url: baseUrl, api_key: firstKey })
+        });
+        const data = await res.json();
+        if (data.ok && data.models) {
+          const cur = document.getElementById('ai-cfg-model').value.trim() || data.models[0];
+          populateModelDropdown(data.models, cur);
+          btn.innerText = `✅ ${data.models.length} Model Tersedia`;
+        } else {
+          btn.innerText = '🔄 Tarik Daftar Model dari Server';
+        }
+      } catch (e) {
+        btn.innerText = '🔄 Tarik Daftar Model dari Server';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function saveAIConfig(showFeedback = true) {
+      const payload = {
+        enabled: document.getElementById('ai-cfg-enabled').checked,
+        auto_rotate_on_limit: document.getElementById('ai-cfg-autorotate').checked,
+        provider: document.getElementById('ai-cfg-provider').value,
+        base_url: document.getElementById('ai-cfg-baseurl').value.trim(),
+        model: document.getElementById('ai-cfg-model').value.trim(),
+        api_keys: document.getElementById('ai-cfg-keys').value,
+        active_key_index: parseInt(document.getElementById('ai-cfg-active-index').value || '0', 10)
+      };
+
+      const res = await fetch('/api/ai/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.ok && data.status) {
+        aiRouterState = data.status;
+        updateAINavbarBadge(data.status);
+        populateAIModalFields(data.status);
+        if (showFeedback) {
+          const box = document.getElementById('ai-test-result');
+          box.className = 'p-3.5 rounded-xl border text-xs leading-relaxed bg-emerald-950/50 border-emerald-500/40 text-emerald-200';
+          box.innerHTML = `✅ Pengaturan AI berhasil disimpan! Provider aktif: <strong>${data.status.provider_name}</strong> (${data.status.model}) dengan <strong>${data.status.key_count} API Key</strong>.`;
+          box.classList.remove('hidden');
+        }
+      }
+      return data;
+    }
+
+    async function testAIConnection() {
+      const btn = document.getElementById('btn-test-ai');
+      const box = document.getElementById('ai-test-result');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Menguji Koneksi AI...';
+      box.classList.add('hidden');
+
+      try {
+        await saveAIConfig(false);
+        const res = await fetch('/api/ai/test', { method: 'POST' });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          box.className = 'p-3.5 rounded-xl border text-xs leading-relaxed bg-emerald-950/60 border-emerald-500/50 text-emerald-200';
+          box.innerHTML = `🎉 <strong>Koneksi Berhasil (${data.latency_ms} ms)!</strong><br>• Provider: <strong>${data.provider}</strong><br>• Model: <code>${data.model}</code><br>• Key Aktif: <code>${data.active_key}</code>`;
+          box.classList.remove('hidden');
+          await loadAIConfig();
+        } else {
+          box.className = 'p-3.5 rounded-xl border text-xs leading-relaxed bg-rose-950/60 border-rose-500/50 text-rose-200';
+          box.innerHTML = `❌ <strong>Gagal Terhubung:</strong> ${data.detail || 'Periksa kembali API Key, Base URL, atau nama model.'}`;
+          box.classList.remove('hidden');
+        }
+      } catch (e) {
+        box.className = 'p-3.5 rounded-xl border text-xs leading-relaxed bg-rose-950/60 border-rose-500/50 text-rose-200';
+        box.innerHTML = `❌ <strong>Error Koneksi:</strong> ${e.message}`;
+        box.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡</span> Simpan & Tes Koneksi AI';
+      }
+    }
+
+    async function generateFacelessScriptWithAI() {
+      const topicEl = document.getElementById('faceless-ai-topic');
+      const topic = topicEl.value.trim();
+      if (!topic) {
+        alert("Ketik topik atau ide video terlebih dahulu!");
+        topicEl.focus();
+        return;
+      }
+      const btn = document.getElementById('btn-ai-write-script');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Menulis...';
+      try {
+        const res = await fetch('/api/ai/ideas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic: topic, style: 'fakta', duration_sec: 38 })
+        });
+        const data = await res.json();
+        if (data.ok && data.script) {
+          document.getElementById('faceless-script-input').value = data.script;
+          if (data.header_title) {
+            document.getElementById('faceless-header-input').value = data.header_title;
+          }
+          updateFacelessCount();
+          const ideasWrap = document.getElementById('faceless-ai-ideas');
+          if (ideasWrap && data.ideas && data.ideas.length > 0) {
+            ideasWrap.innerHTML = '<span class="text-[10px] text-slate-400 font-bold">Ide Topik Lanjutan:</span>';
+            data.ideas.forEach(idea => {
+              const b = document.createElement('button');
+              b.type = 'button';
+              b.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-emerald-700 text-emerald-300 border border-slate-700 transition';
+              b.innerText = idea;
+              b.onclick = () => { topicEl.value = idea; generateFacelessScriptWithAI(); };
+              ideasWrap.appendChild(b);
+            });
+            ideasWrap.classList.remove('hidden');
+          }
+        }
+      } catch (e) {
+        alert("Gagal membuat naskah: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✨</span> Tulis Naskah AI';
+      }
+    }
+
+    async function handleRegenerateThumbnail() {
+      if (!currentClipFilename) return;
+      const hl = document.getElementById('modal-thumb-headline').value.trim() || 'WAJIB SIMAK!';
+      const niche = document.getElementById('tune-niche').value;
+      const badge = document.getElementById('tune-watermark').value.trim();
+      const btn = document.getElementById('btn-regen-thumb');
+      btn.disabled = true;
+      btn.innerText = '⏳...';
+      try {
+        const res = await fetch('/api/thumbnail/regenerate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: currentClipFilename.split(/[\\/]/).pop(),
+            headline: hl,
+            sub_badge: badge || null,
+            niche: niche
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.ok) {
+          const imgEl = document.getElementById('modal-thumb-img');
+          const wrapEl = document.getElementById('modal-thumb-preview-wrap');
+          const dlEl = document.getElementById('modal-thumb-download');
+          imgEl.src = data.thumb_url;
+          wrapEl.classList.remove('hidden');
+          dlEl.href = data.thumb_url.split('?')[0];
+          dlEl.classList.remove('hidden');
+          loadHistory();
+        } else {
+          alert("Gagal membuat thumbnail: " + (data.detail || "Error"));
+        }
+      } catch (e) {
+        alert("Gagal membuat thumbnail: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '🎨 Buat';
       }
     }
   </script>

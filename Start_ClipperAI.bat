@@ -8,7 +8,10 @@ echo ========================================================
 echo Membuka server aplikasi lokal di http://127.0.0.1:8000 ...
 cd /d "%~dp0"
 
-start "" http://127.0.0.1:8000
-python -m uvicorn app:app --host 127.0.0.1 --port 8000
+:: Buka browser secara otomatis setelah server siap (jeda 2 detik)
+start "" cmd /c "timeout /t 2 /nobreak >nul & start http://127.0.0.1:8000"
+
+:: Jalankan server FastAPI Uvicorn
+python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload
 
 pause

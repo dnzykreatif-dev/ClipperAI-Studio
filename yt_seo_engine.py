@@ -127,6 +127,25 @@ def generate_shorts_seo_package(
     - Mode 'long_form': High CTR Long Video Title (up to 100 chars, no #Shorts), Chapters, Deep Description.
     """
     clean_text = transcript_text.strip() if transcript_text else ""
+
+    # 1. Coba generate SEO via AI (Gemini / SumoPod / 9Router) terlebih dahulu
+    try:
+        import ai_brain
+        ai_pkg = ai_brain.generate_seo_with_ai(
+            transcript_text=clean_text,
+            title_hint=title_hint,
+            niche=niche,
+            speaker=speaker,
+            mode=mode,
+        )
+        if ai_pkg:
+            # Perkaya dengan live YouTube Autocomplete keywords
+            trend_data = research_viral_keywords(topic=(title_hint or clean_text[:25]), niche=niche, limit=12)
+            ai_pkg["trending_scouted"] = trend_data.get("trending_keywords", [])
+            return ai_pkg
+    except Exception as e:
+        print(f"[SEO AI Fallback] {e}")
+
     sentences = [s.strip() for s in re.split(r'[.!?\n]+', clean_text) if len(s.strip()) > 8]
 
     first_sentence = sentences[0] if sentences else "Kebenaran Mengejutkan Yang Wajib Kamu Ketahui"
@@ -221,15 +240,17 @@ def generate_shorts_seo_package(
             f"{niche_data['secret']} - Trik Mendalam"
         ]
     else:
-        # Shorts title (< 60 chars with #Shorts)
-        if len(base_title) > 36:
-            short_base = base_title[:33].strip() + "..."
+        # Shorts title (< 60 chars with #Shorts) — potong di batas kata utuh
+        if len(base_title) > 40:
+            cut = base_title[:40].rsplit(" ", 1)[0].strip()
+            short_base = cut if len(cut) >= 14 else base_title[:37].strip()
         else:
             short_base = base_title
 
         main_title = f"{short_base} {niche_data['emoji']} #Shorts"
-        if len(main_title) > 65:
-            main_title = f"{short_base[:28]}... {niche_data['emoji']} #Shorts"
+        if len(main_title) > 68:
+            cut2 = short_base[:32].rsplit(" ", 1)[0].strip()
+            main_title = f"{cut2} {niche_data['emoji']} #Shorts"
 
         alt_titles = [
             f"{niche_data['curiosity']} #Shorts",

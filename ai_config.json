@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "provider": "gemini",
+  "base_url": "https://generativelanguage.googleapis.com/v1beta",
+  "model": "gemini-2.5-flash",
+  "api_keys": [
+    "AIzaSyAK_k6_iQGlt4gDkkNzobLJ4pR11MUP9Sw"
+  ],
+  "active_key_index": 0,
+  "temperature": 0.4,
+  "auto_rotate_on_limit": true,
+  "provider_configs": {
+    "gemini": {
+      "base_url": "https://generativelanguage.googleapis.com/v1beta",
+      "model": "gemini-2.5-flash",
+      "api_keys": [
+        "AIzaSyAK_k6_iQGlt4gDkkNzobLJ4pR11MUP9Sw"
+      ],
+      "active_key_index": 0
+    }
+  }
+}

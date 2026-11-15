@@ -27,11 +27,23 @@ OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 VOICES = {
-    "ardi": {"id": "id-ID-ArdiNeural", "name": "🎙️ Ardi (Pria Hangat & Berwibawa)"},
-    "gadis": {"id": "id-ID-GadisNeural", "name": "🎙️ Gadis (Wanita Ramah & Edukatif)"}
+    "ardi": {"id": "id-ID-ArdiNeural", "name": "🎙️ Ardi (Pria Hangat & Berwibawa - ID)"},
+    "gadis": {"id": "id-ID-GadisNeural", "name": "🎙️ Gadis (Wanita Ramah & Edukatif - ID)"},
+    "osman": {"id": "ms-MY-OsmanNeural", "name": "🇲🇾 Osman (Pria Santai Melayu / Korang - MS)"},
+    "yasmin": {"id": "ms-MY-YasminNeural", "name": "🇲🇾 Yasmin (Wanita Lembut Melayu / Korang - MS)"},
 }
 
 THEMES = {
+    "vox": {
+        "name": "📜 Vox 2.5D Torn-Paper & Parallax (Dokumenter / Explainer)",
+        "bg_color1": "0xE8E1D3",
+        "bg_color2": "0xD8CEBA",
+        "header_tag": "📜 VOX EXPLAINER • 2.5D COLLAGE",
+        "header_bg": "0xB91C1C",  # Vox Crimson Red
+        "highlight_color": "&H001818B9",  # Deep Red Accent in ASS (BGR)
+        "border_color": "&H00000000",
+        "is_vox": True,
+    },
     "cyber": {
         "name": "🌌 Dark Cyber / Tech",
         "bg_color1": "0x060913",
@@ -72,19 +84,156 @@ THEMES = {
 
 
 async def _synthesize_speech(text: str, voice_id: str, output_path: str):
-    """Generates natural neural audio from text using Edge-TTS."""
+    """Generates natural neural audio from text using Edge-TTS with generous timeout."""
     communicate = edge_tts.Communicate(text=text, voice=voice_id)
-    await communicate.save(output_path)
+    await asyncio.wait_for(communicate.save(output_path), timeout=60.0)
 
 
 def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional[str] = None) -> str:
-    """Synchronous wrapper for Edge-TTS synthesis."""
+    """Synchronous wrapper for Edge-TTS synthesis with retry and validation."""
     if not output_path:
         output_path = str(UPLOADS_DIR / f"tts_{uuid.uuid4().hex[:8]}.mp3")
-    
+
     voice_id = VOICES.get(voice_key, VOICES["ardi"])["id"]
-    asyncio.run(_synthesize_speech(text, voice_id, output_path))
-    return output_path
+    last_err = None
+    for attempt in range(3):
+        try:
+            if os.path.exists(output_path):
+                try:
+                    os.remove(output_path)
+                except Exception:
+                    pass
+            asyncio.run(_synthesize_speech(text, voice_id, output_path))
+            if os.path.exists(output_path) and os.path.getsize(output_path) > 2000:
+                return output_path
+        except Exception as e:
+            last_err = e
+            time.sleep(1.5)
+
+    # Offline SAPI fallback jika koneksi internet terputus
+    wav_tmp = output_path + ".wav"
+    ps_cmd = (
+        "Add-Type -AssemblyName System.Speech; "
+        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+        f"$s.SetOutputToWaveFile('{wav_tmp}'); "
+        f"$s.Speak({json.dumps(text)}); $s.Dispose()"
+    )
+    subprocess.run(["powershell", "-NoProfile", "-Command", ps_cmd],
+                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if os.path.exists(wav_tmp) and os.path.getsize(wav_tmp) > 2000:
+        subprocess.run(["ffmpeg", "-y", "-i", wav_tmp, "-c:a", "libmp3lame", "-q:a", "2", output_path],
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            os.remove(wav_tmp)
+        except Exception:
+            pass
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 2000:
+            return output_path
+
+    raise RuntimeError(f"Gagal menghasilkan audio suara narator TTS ({last_err or 'Koneksi suara terputus'}). Mohon periksa koneksi internet.")
+
+
+def direct_ai_storyboard(script_text: str, theme_key: str = "vox") -> Dict[str, Any]:
+    """
+    Menggunakan Otak AI (Gemini 2.5 Flash / Router) untuk bertindak sebagai Video Director:
+    1. Memoles naskah suara agar mengalir natural dan padat.
+    2. Memecah naskah menjadi 3-5 scene visual yang sangat dinamis dengan berbagai gaya:
+       - 'stat_shock': Angka/statistik raksasa
+       - 'comparison': Dua kartu sobek kontras (Sebelum vs Sesudah)
+       - 'checklist': Kertas memo centang fitur bergantian
+       - 'cta_slam': Ajakan bertindak tombol aksi
+       - 'torn_headline': Judul punchy dengan stabilo
+    """
+    import ai_brain
+    import re
+
+    sys_prompt = (
+        "Kamu adalah AI Executive Video Director kelas dunia untuk video vertikal 9:16 (Shorts/TikTok/Reels) "
+        "bergaya Vox Explainer, Ali Abdaal, dan dokumenter modern. "
+        "Tugasmu: Menganalisis naskah pengguna dan menyusun STORYBOARD VISUAL DINAMIS agar video SANGAT MENARIK, "
+        "TIDAK MONOTON, dan memanjakan mata penonton. "
+        "\n\nPILIHAN GAYA VISUAL (style) UNTUK SETIAP ADEGAN:\n"
+        "1. 'stat_shock': Untuk angka/persentase mencengangkan (misal: '87%', '1 KLIK', '100+ SANTRI', 'Rp 0'). "
+        "Wajib sertakan field 'stat_number' dan 'stat_label'.\n"
+        "2. 'comparison': Untuk membandingkan cara lama vs cara baru (SEBELUM vs SESUDAH / MASALAH vs SOLUSI). "
+        "Wajib sertakan field 'compare_left' dan 'compare_right'.\n"
+        "3. 'checklist': Untuk daftar poin atau fitur unggulan yang dicentang. Wajib sertakan 'items' (array 2-3 string pendek).\n"
+        "4. 'torn_headline': Untuk judul masalah, hook, atau pernyataan dramatis dengan kartu kertas sobek dan stabilo.\n"
+        "5. 'cta_slam': Untuk adegan terakhir (Call to Action), ajakan komentar atau coba demo. Wajib sertakan 'cta_text'.\n"
+        "\nATURAN KETAT:\n"
+        "- Pastikan gaya visual BERBEDA-BEDA untuk tiap adegan berurutan (JANGAN ada 2 adegan berurutan dengan style sama).\n"
+        "- Jika ada ajakan aksi di akhir naskah, adegan terakhir WAJIB ber-style 'cta_slam'.\n"
+        "- Bahasa: Bahasa Indonesia natural, santai, dan edukatif.\n"
+        "- Output: Wajib format JSON murni sesuai skema berikut:\n"
+        "{\n"
+        "  \"narration_script\": \"naskah lengkap yang akan dibacakan oleh narator suara (TTS)\",\n"
+        "  \"scenes\": [\n"
+        "    {\n"
+        "      \"scene_num\": 1,\n"
+        "      \"style\": \"torn_headline\" | \"stat_shock\" | \"comparison\" | \"checklist\" | \"cta_slam\",\n"
+        "      \"tag\": \"LABEL SINGKAT PENDUKUNG (2-3 KATA)\",\n"
+        "      \"headline\": \"Judul Inti Adegan (Maksimal 6 kata)\",\n"
+        "      \"stat_number\": \"87%\",\n"
+        "      \"stat_label\": \"Keterangan Angka\",\n"
+        "      \"compare_left\": \"Cara Lama: Data Tercecer\",\n"
+        "      \"compare_right\": \"Cara Baru: 1 Klik Rapi di HP\",\n"
+        "      \"items\": [\"Absensi Realtime\", \"Pantau Hafalan\", \"Raport Digital\"],\n"
+        "      \"cta_text\": \"KOMEN 'MAU DEMO' DI BAWAH\"\n"
+        "    }\n"
+        "  ]\n"
+        "}"
+    )
+
+    try:
+        if ai_brain.is_ai_ready():
+            res_str = ai_brain.generate_text(
+                system_prompt=sys_prompt,
+                user_prompt=f"Naskah Pengguna:\n{script_text}",
+                json_mode=True,
+                timeout=35
+            )
+            cleaned = res_str.strip()
+            if cleaned.startswith("```"):
+                cleaned = re.sub(r"^```[a-zA-Z]*\n", "", cleaned)
+                cleaned = re.sub(r"\n```$", "", cleaned)
+            data = json.loads(cleaned)
+            if data.get("scenes") and len(data["scenes"]) >= 2:
+                if not data.get("narration_script"):
+                    data["narration_script"] = script_text
+                return data
+    except Exception as e:
+        print(f"[AI Director Warning] AI Storyboard fallback triggered: {e}")
+
+    # Heuristic Fallback Storyboard jika AI sedang offline
+    tokens = script_text.split()
+    scenes = []
+    scenes.append({
+        "scene_num": 1,
+        "style": "torn_headline",
+        "tag": "MASALAH UTAMA",
+        "headline": " ".join(tokens[:5]).upper() if tokens else "INSIGHT PENTING"
+    })
+    scenes.append({
+        "scene_num": 2,
+        "style": "comparison" if len(tokens) > 20 else "checklist",
+        "tag": "SOLUSI TERPADU",
+        "headline": "TRANSFORMASI TOTAL",
+        "compare_left": "Sebelum: Manual & Pusing",
+        "compare_right": "Sesudah: 1 Klik HP Beres",
+        "items": ["Absensi Otomatis", "Data Terpusat", "Akses Mudah"]
+    })
+    scenes.append({
+        "scene_num": 3,
+        "style": "cta_slam",
+        "tag": "LANGKAH SEKARANG",
+        "headline": "SIAP TINGKATKAN KUALITAS?",
+        "cta_text": "HUBUNGI KAMI SEKARANG"
+    })
+    return {
+        "narration_script": script_text,
+        "scenes": scenes
+    }
+
 
 
 def format_ass_time(seconds: float) -> str:
@@ -224,20 +373,28 @@ def render_faceless_video(
     if not clean_header:
         clean_header = "INSIGHT PENTING"
 
-    # Step 1: TTS Generation
+    # Step 1: AI Video Director (Storyboard & Narration Polish)
     if progress_callback:
-        progress_callback(15, f"AI sedang menghasilkan suara narasi alami ({VOICES.get(voice_key, VOICES['ardi'])['name']})...")
+        progress_callback(10, "Otak AI (Gemini) sedang menganalisis naskah & menyusun storyboard animasi dinamis...")
+
+    storyboard = direct_ai_storyboard(script_text, theme_key=theme_key)
+    narration_text = storyboard.get("narration_script") or script_text
+    sb_scenes = storyboard.get("scenes") or []
+
+    # Step 2: TTS Generation
+    if progress_callback:
+        progress_callback(25, f"AI sedang menghasilkan suara narasi alami ({VOICES.get(voice_key, VOICES['ardi'])['name']})...")
 
     audio_path = str(UPLOADS_DIR / f"faceless_audio_{uuid.uuid4().hex[:6]}.mp3")
-    generate_tts_audio(text=script_text, voice_key=voice_key, output_path=audio_path)
+    generate_tts_audio(text=narration_text, voice_key=voice_key, output_path=audio_path)
 
     total_dur = clipper_engine.get_video_duration(audio_path)
     if total_dur <= 0:
         total_dur = 15.0
 
-    # Step 2: High-Speed Word Alignment with Faster-Whisper
+    # Step 3: High-Speed Word Alignment with Faster-Whisper
     if progress_callback:
-        progress_callback(40, "Menyelaraskan animasi kata-demi-kata (Hormozi Pop Subtitles)...")
+        progress_callback(45, "Menyelaraskan animasi kata-demi-kata (Hormozi Pop Subtitles)...")
 
     transcript = clipper_engine.transcribe_audio_with_progress(
         audio_path=audio_path,
@@ -257,7 +414,7 @@ def render_faceless_video(
 
     # Fallback if no words found
     if not all_words:
-        tokens = script_text.split()
+        tokens = narration_text.split()
         interval = total_dur / max(1, len(tokens))
         for idx, t in enumerate(tokens):
             all_words.append({
@@ -266,53 +423,188 @@ def render_faceless_video(
                 "end": (idx + 1) * interval
             })
 
-    # Step 3: Build Animated ASS + Multi-Scene Cards & Argon SFX cues
+    # Step 4: Build Animated ASS (fallback) + Motion Graphics Timeline & Argon SFX cues
     import pro_editor
+    import motion_gfx as mg
     ass_path = str(UPLOADS_DIR / f"faceless_{uuid.uuid4().hex[:6]}.ass")
     _, cut_times, sfx_events = create_faceless_ass(all_words, ass_path, theme_key=theme_key, header_title=clean_header)
-    escaped_ass = ass_path.replace("\\", "/").replace(":", "\\:")
+
+    accent_map = {
+        "vox": "0xB91C1C",
+        "cyber": "0x38BDF8",
+        "islamic": "0xF59E0B",
+        "business": "0x10B981",
+        "motivation": "0xF43F5E",
+    }
+    accent_rgb = mg.hex_rgb(accent_map.get(theme_key, theme["header_bg"]))
+    emoji_map = getattr(clipper_engine, "EMOJI_MAP", {}) or {}
+
+    # Bangun scene kata dari all_words untuk sinkronisasi waktu & fallback
+    scenes = []
+    cur_sc = []
+    for w in all_words:
+        cur_sc.append(w)
+        dur_sc = w["end"] - cur_sc[0]["start"]
+        punct = w["word"].strip()[-1:] in ".,?!;:"
+        if dur_sc >= 3.2 or (punct and dur_sc >= 2.0):
+            scenes.append(cur_sc)
+            cur_sc = []
+    if cur_sc:
+        scenes.append(cur_sc)
+    if not scenes and all_words:
+        scenes = [all_words]
+
+    elements: List[Any] = []
+    is_vox_style = theme.get("is_vox", False)
+    whoosh_ids = ["VL0501", "VL0502", "VL0503", "VL0504", "VL0505"]
+
+    # 1. Background Kanvas
+    if is_vox_style:
+        # Kertas kusut krem (Wrinkled parchment floor) untuk Vox 2.5D
+        elements.append(mg.VoxParchmentBackground(total_dur, accent_rgb))
+    # Untuk tema modern (islamic, cyber, dll), ffmpeg memproses radial gradient + argon light-leak di bawah
+
+    # 2. Top Header Pill (Safe Zone Atas: y=110)
+    elements.append(mg.TopHeaderPill(raw_header, total_dur, accent_rgb, y=110))
+
+    # 3. Dynamic AI Storyboard Scenes (Hero Stage: y=680..720)
+    # Satu adegan menampilkan SATU Hero Visual Card terpusat (stat_shock, comparison, checklist, cta_slam, atau headline)
+    # Card is_paper=True jika tema Vox, is_paper=False (Remotion Glassmorphic) jika tema modern!
+    n_scenes = max(1, len(sb_scenes))
+
+    for s_idx, sc in enumerate(sb_scenes):
+        t0 = round(s_idx * (total_dur / n_scenes), 2)
+        t1 = round((s_idx + 1) * (total_dur / n_scenes) + (0.12 if s_idx < n_scenes - 1 else 0.0), 2)
+        style = sc.get("style", "torn_headline")
+        tag = sc.get("tag") or f"SCENE 0{s_idx + 1} • {raw_header}"
+        head = sc.get("headline") or ""
+
+        # Whoosh transisi antar adegan
+        if s_idx > 0:
+            sfx_events.append(dict(id=whoosh_ids[s_idx % len(whoosh_ids)], t=max(0.0, t0 - 0.06), gain=0.32))
+
+        if style == "stat_shock":
+            stat_n = sc.get("stat_number") or "100%"
+            elements.append(mg.VoxBigStatCard(
+                tag=tag,
+                stat_num=stat_n,
+                headline=head or sc.get("stat_label", "Fakta Mengejutkan"),
+                t0=t0, t1=t1,
+                accent=accent_rgb,
+                y_top=700,
+                seed=s_idx * 23 + 11,
+                is_paper=is_vox_style
+            ))
+            sfx_events.append(dict(id="VL0511", t=t0 + 0.05, gain=0.34))
+
+        elif style == "comparison":
+            left_t = sc.get("compare_left") or "SEBELUM: CARA LAMA MANUAL"
+            right_t = sc.get("compare_right") or "SESUDAH: SOLUSI OTOMATIS"
+            elements.append(mg.VoxComparisonCard(
+                tag=tag,
+                left_text=left_t,
+                right_text=right_t,
+                t0=t0, t1=t1,
+                accent=accent_rgb,
+                y_top=680,
+                seed=s_idx * 31 + 47,
+                is_paper=is_vox_style
+            ))
+            sfx_events.append(dict(id="VL0541" if is_vox_style else "VL0503", t=t0 + 0.02, gain=0.36))
+            sfx_events.append(dict(id="VL0542" if is_vox_style else "VL0504", t=t0 + 0.20, gain=0.36))
+
+        elif style == "checklist":
+            items = sc.get("items") or ["Poin 1", "Poin 2", "Poin 3"]
+            elements.append(mg.VoxChecklistCard(
+                tag=tag,
+                headline=head or "FITUR UTAMA",
+                items=items,
+                t0=t0, t1=t1,
+                accent=accent_rgb,
+                y_top=700,
+                seed=s_idx * 19 + 63,
+                is_paper=is_vox_style
+            ))
+            sfx_events.append(dict(id="VL0541" if is_vox_style else "VL0502", t=t0 + 0.02, gain=0.34))
+            for item_i in range(len(items)):
+                sfx_events.append(dict(id="VL0531", t=t0 + 0.22 + item_i * 0.28, gain=0.28))
+
+        elif style == "cta_slam":
+            cta_txt = sc.get("cta_text") or "COBA SEKARANG!"
+            elements.append(mg.VoxCtaCard(
+                tag=tag or "LANGKAH SEKARANG",
+                headline=head or "SIAP MEMULAI?",
+                cta_text=cta_txt,
+                t0=t0, t1=t1,
+                accent=accent_rgb,
+                y_top=720,
+                seed=s_idx * 37 + 91,
+                is_paper=is_vox_style
+            ))
+            sfx_events.append(dict(id="VL0516", t=t0 + 0.05, gain=0.35))
+
+        else:  # torn_headline / default
+            rot_val = (-2.0 if s_idx % 2 == 0 else 1.8) if is_vox_style else 0.0
+            elements.append(mg.VoxTornCardHero(
+                tag=tag,
+                headline=head,
+                t0=t0, t1=t1,
+                accent=accent_rgb,
+                y_top=680,
+                rot=rot_val,
+                seed=s_idx * 17 + 43,
+                is_paper=is_vox_style
+            ))
+            sfx_events.append(dict(id="VL0541" if is_vox_style else "VL0501", t=max(0.0, t0 - 0.04), gain=0.36))
+
+    # 4. Kinetic Subtitle Karaoke di Safe Zone Bawah (y_center=1520)
+    # Terpisah lebih dari 550px dari Hero Stage di atasnya — NOL OVERLAP!
+    elements.append(mg.CaptionTrack(
+        all_words, accent_rgb, power_words=pro_editor.POWER_WORDS,
+        emoji_map=emoji_map, y_center=1520
+    ))
+
+    # 5. Glowing Bottom Progress Bar
+    elements.append(mg.ProgressBar(total_dur, accent_rgb))
+    timeline = mg.Timeline(total_dur, elements)
 
     # Step 4: Multi-Track Argon SFX Bed
     sfx_wav = UPLOADS_DIR / f"faceless_sfx_{uuid.uuid4().hex[:6]}.wav"
     pro_editor.build_sfx_bed(sfx_events, total_dur, sfx_wav)
 
-    # Step 5: Render with FFmpeg Procedural Motion Canvas + Argon Light-Leak Overlay + Scene Card Viewport
+    # Step 5: Render with FFmpeg Procedural Motion Canvas + Argon Light-Leak + Motion Graphics RGBA Overlay
     if progress_callback:
-        progress_callback(70, "Merender video 9:16 dengan Argon Light-Leak, Scene Cards & Audio -14 LUFS...")
+        progress_callback(70, "Merender video 9:16 dengan Motion Graphics Remotion-Style, Argon Light-Leak & Audio -14 LUFS...")
 
     c1 = theme["bg_color1"]
     c2 = theme["bg_color2"]
-    font_file = "C\\:/Windows/Fonts/arialbd.ttf"
-    if not os.path.exists("C:/Windows/Fonts/arialbd.ttf"):
-        font_file = "C\\:/Windows/Fonts/arial.ttf"
-
     ov_name = "VL0201" if theme_key in ("islamic", "motivation") else "VL0281"
     ov_path = BASE_DIR / "assets" / "argon" / "overlays" / f"{ov_name}.mp4"
-    has_ov = ov_path.exists()
+    has_ov = ov_path.exists() and not is_vox_style
 
-    flash_terms = [f"between(t\\,{ct - 0.05:.2f}\\,{ct + 0.09:.2f})" for ct in cut_times[:16]]
-    flash_enable = "+".join(flash_terms) if flash_terms else "0"
-
-    v_chain = [
-        f"gradients=s=1080x1920:d={total_dur:0.2f}:c0={c1}:c1={c2}:x0=540:y0=960:x1=1080:y1=1920:type=radial:speed=0.008[grad]"
-    ]
+    if is_vox_style:
+        # Pada gaya Vox, lantai kanvas krem kusut sudah dirender presisi di dalam layer RGBA Motion Graphics
+        v_chain = [
+            f"color=c=0xEDE7DA:s=1080x1920:r=30:d={total_dur:0.2f}[grad]"
+        ]
+    else:
+        v_chain = [
+            f"gradients=s=1080x1920:r=30:d={total_dur:0.2f}:c0={c1}:c1={c2}:x0=540:y0=960:x1=1080:y1=1920:type=radial:speed=0.008[grad]"
+        ]
     last_v = "grad"
+    cmd = ["ffmpeg", "-y", "-i", audio_path, "-i", str(sfx_wav)]
+    idx = 2
     if has_ov:
-        v_chain.append("[2:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p[ov]")
-        v_chain.append(f"[{last_v}][ov]blend=all_mode=screen:all_opacity=0.28:shortest=1[bgfx]")
+        cmd.extend(["-stream_loop", "-1", "-i", str(ov_path)])
+        v_chain.append(f"[{idx}:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,format=yuv420p[ov]")
+        v_chain.append(f"[{last_v}][ov]blend=all_mode=screen:all_opacity=0.25:shortest=1[bgfx]")
         last_v = "bgfx"
+        idx += 1
 
-    v_chain.append(
-        f"[{last_v}]vignette=PI/6,"
-        f"drawbox=x=0:y=0:w='1080*(t/{total_dur:0.2f})':h=12:color=0x10B981@1:t=fill,"
-        f"drawbox=x=80:y=200:w=920:h=92:color={theme['header_bg']}@0.92:t=fill,"
-        f"drawbox=x=80:y=200:w=920:h=92:color=0xFFFFFF@0.35:t=3,"
-        f"drawtext=fontfile='{font_file}':text='{clean_header}':fontsize=34:fontcolor=white:x=(w-text_w)/2:y=230,"
-        f"drawbox=x=80:y=540:w=920:h=390:color=0x090D16@0.72:t=fill,"
-        f"drawbox=x=80:y=540:w=920:h=390:color={theme['header_bg']}@0.85:t=4,"
-        f"drawbox=x=0:y=0:w=1080:h=1920:color=white@0.22:t=fill:enable='{flash_enable}',"
-        f"ass='{escaped_ass}'[v]"
-    )
+    cmd.extend(["-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{mg.W}x{mg.H}", "-framerate", "30", "-i", "pipe:0"])
+    v_chain.append(f"[{last_v}]vignette=PI/6[vg]")
+    v_chain.append(f"[{idx}:v]format=rgba[mg]")
+    v_chain.append("[vg][mg]overlay=0:0:format=auto:eof_action=pass,format=yuv420p[v]")
 
     audio_filter = (
         "[0:a]aresample=48000,volume=1.0[vce];"
@@ -320,10 +612,6 @@ def render_faceless_video(
         "[vce][sfx]amix=inputs=2:duration=first:normalize=0,"
         "loudnorm=I=-14:TP=-1.5:LRA=11[a]"
     )
-
-    cmd = ["ffmpeg", "-y", "-i", audio_path, "-i", str(sfx_wav)]
-    if has_ov:
-        cmd.extend(["-stream_loop", "-1", "-i", str(ov_path)])
 
     cmd.extend([
         "-filter_complex", ";".join(v_chain) + ";" + audio_filter,
@@ -340,7 +628,13 @@ def render_faceless_video(
         output_mp4
     ])
 
-    subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    log_file = UPLOADS_DIR / f"faceless_ffmpeg_{uuid.uuid4().hex[:6]}.log"
+    pro_editor._encode_with_overlay(cmd, timeline, log_file)
+    if log_file.exists():
+        try:
+            log_file.unlink()
+        except Exception:
+            pass
 
     # Clean up temp files
     for p in [audio_path, ass_path, str(sfx_wav)]:

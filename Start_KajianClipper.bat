@@ -9,6 +9,6 @@ echo Membuka server aplikasi lokal di http://127.0.0.1:8000 ...
 cd /d "E:\PROJECTS\kajian_clipper"
 
 start "" http://127.0.0.1:8000
-python -m uvicorn app:app --host 127.0.0.1 --port 8000
+python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload
 
 pause
