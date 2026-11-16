@@ -1,11 +1,11 @@
 """
-ClipperAI Studio - WallMedia Cloned Suite (wallmedia_bridge.py)
-Reverse engineered and extracted from WallMedia v5.3.1.
+ClipperAI Studio - Remote & Mobile Automation Suite (automation_bridge.py)
+Industrial-grade automation modules for mobile control, cross-posting, and video optimization.
 
 Contains 5 High-Impact Automation Modules:
 1. Cloudflare Quick Tunnel (Zero-Config Smartphone Remote Access)
 2. Google Drive Session Uploader (Direct Chrome Profile upload - No API Key needed)
-3. Wireless ADB Android Bridge (Shopee Video & TikTok Auto-Poster)
+3. Wireless ADB Android Bridge (Shopee Video & Mobile Device Auto-Poster)
 4. Mathematical Seamless Video Looper & Audio Sync (Cross-Fade Loop Algorithm)
 5. High-Contrast Hook & Subtitle Styler (Upper-Third Gold Accent Box)
 """
@@ -24,7 +24,7 @@ import threading
 from pathlib import Path
 from typing import Optional, Dict, Any, List, Tuple
 
-logger = logging.getLogger("wallmedia_bridge")
+logger = logging.getLogger("automation_bridge")
 
 BASE_DIR = Path(__file__).resolve().parent
 TOOLS_DIR = BASE_DIR / "tools"
@@ -228,7 +228,7 @@ def upload_via_chrome_ke_folder_gdrive(
     """
     Uploads a file to Google Drive using an active logged-in Chrome Profile session
     without needing any Google Cloud Service Account or API credentials!
-    Uses JavaScript input prototype interception reverse-engineered from WallMedia.
+    Uses JavaScript input prototype interception to bypass cloud API limits.
     """
     if not folder_id:
         if callback_status:
@@ -528,7 +528,7 @@ def create_seamless_loop(
 ) -> bool:
     """
     Creates a mathematically smooth cross-fade video loop (Seamless Looper)
-    using the WallMedia FFmpeg Alpha Crossfade Filtergraph.
+    using the ClipperAI FFmpeg Alpha Crossfade Filtergraph.
     Completely eliminates jump cuts when looping short AI video clips (8-10s)!
     """
     input_p = Path(input_path)
@@ -696,7 +696,7 @@ def overlay_high_contrast_hook(
 ) -> Optional[str]:
     """
     Renders high-contrast upper-third hook badge (gold/yellow text + dark translucent box)
-    optimized for vertical 9:16 Shorts / Reels, reverse-engineered from WallMedia.
+    optimized for vertical 9:16 Shorts / Reels retention.
     """
     v_p = Path(video_path)
     if not v_p.exists() or not str(hook_text).strip():

@@ -26,7 +26,7 @@ import faceless_engine
 import ai_brain
 import thumbnail_engine
 import social_poster
-import wallmedia_bridge
+import automation_bridge
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -1062,31 +1062,31 @@ async def regenerate_clip_thumbnail(payload: ThumbnailRegenPayload):
 
 
 # ==============================================================================
-# WALLMEDIA CLONED SUITE APIS (REMOTE TUNNEL, GDRIVE, WIRELESS ADB, LOOPER)
+# CLIPPERAI REMOTE & MOBILE AUTOMATION SUITE (REMOTE TUNNEL, GDRIVE, WIRELESS ADB, LOOPER)
 # ==============================================================================
 
-@app.post("/api/wallmedia/tunnel/start")
+@app.post("/api/remote/tunnel/start")
 async def start_remote_tunnel():
     """Aktivasi Cloudflare Quick Tunnel untuk remote access dari smartphone."""
-    res = wallmedia_bridge.start_cloudflare_tunnel(port_local=8000)
+    res = automation_bridge.start_cloudflare_tunnel(port_local=8000)
     return {"ok": True, "tunnel": res}
 
 
-@app.post("/api/wallmedia/tunnel/stop")
+@app.post("/api/remote/tunnel/stop")
 async def stop_remote_tunnel():
     """Menghentikan Cloudflare Quick Tunnel."""
-    res = wallmedia_bridge.stop_cloudflare_tunnel()
+    res = automation_bridge.stop_cloudflare_tunnel()
     return {"ok": True, "tunnel": res}
 
 
-@app.get("/api/wallmedia/tunnel/status")
+@app.get("/api/remote/tunnel/status")
 async def get_remote_tunnel_status():
     """Mengecek status dan URL publik Cloudflare Quick Tunnel."""
-    res = wallmedia_bridge.get_cloudflare_tunnel_status()
+    res = automation_bridge.get_cloudflare_tunnel_status()
     return {"ok": True, "tunnel": res}
 
 
-@app.post("/api/wallmedia/gdrive/upload")
+@app.post("/api/cloud/gdrive/upload")
 async def upload_gdrive_session(payload: GDriveUploadPayload):
     """Mengunggah video ke Folder Google Drive via sesi login Chrome (Tanpa API Key)."""
     safe_name = Path(payload.filename).name
@@ -1096,7 +1096,7 @@ async def upload_gdrive_session(payload: GDriveUploadPayload):
     if not video_path.exists():
         raise HTTPException(status_code=404, detail=f"File {safe_name} tidak ditemukan.")
 
-    success = wallmedia_bridge.upload_via_chrome_ke_folder_gdrive(
+    success = automation_bridge.upload_via_chrome_ke_folder_gdrive(
         path_file=str(video_path),
         folder_id=payload.folder_id,
         profil_chrome_target=payload.chrome_profile,
@@ -1107,28 +1107,28 @@ async def upload_gdrive_session(payload: GDriveUploadPayload):
     return {"ok": True, "message": f"'{safe_name}' berhasil diunggah ke Google Drive."}
 
 
-@app.get("/api/wallmedia/adb/status")
+@app.get("/api/mobile/adb/status")
 async def get_adb_status():
     """Mengecek ketersediaan ADB dan daftar perangkat Android yang terhubung."""
-    conn = wallmedia_bridge.connect_adb()
+    conn = automation_bridge.connect_adb()
     return {"ok": True, "adb": conn}
 
 
-@app.post("/api/wallmedia/adb/pair")
+@app.post("/api/mobile/adb/pair")
 async def pair_android_adb(payload: ADBPairPayload):
     """Pairing nirkabel 1x (Sekali Saja) ke HP Android 11+ via Wi-Fi."""
-    res = wallmedia_bridge.pair_adb_wireless(payload.ip, payload.port, payload.code)
+    res = automation_bridge.pair_adb_wireless(payload.ip, payload.port, payload.code)
     return {"ok": res.get("success", False), "result": res}
 
 
-@app.post("/api/wallmedia/adb/connect")
+@app.post("/api/mobile/adb/connect")
 async def connect_android_adb(payload: ADBConnectPayload):
     """Menghubungkan ke HP Android secara nirkabel (IP:Port) atau USB."""
-    res = wallmedia_bridge.connect_adb(payload.target)
+    res = automation_bridge.connect_adb(payload.target)
     return {"ok": res.get("success", False), "result": res}
 
 
-@app.post("/api/wallmedia/adb/upload_shopee")
+@app.post("/api/mobile/adb/upload_shopee")
 async def upload_to_shopee_via_adb(payload: ADBShopeePayload):
     """Mentransfer video ke Galeri HP dan memandu auto-upload Shopee Video via ADB."""
     safe_name = Path(payload.filename).name
@@ -1139,20 +1139,20 @@ async def upload_to_shopee_via_adb(payload: ADBShopeePayload):
         raise HTTPException(status_code=404, detail=f"File {safe_name} tidak ditemukan.")
 
     # Hubungkan ADB
-    conn = wallmedia_bridge.connect_adb(payload.target_ip)
+    conn = automation_bridge.connect_adb(payload.target_ip)
     if not conn.get("success"):
         raise HTTPException(status_code=400, detail="Tidak ada HP Android terhubung via ADB.")
 
     dev_id = conn["device_id"]
 
     # 1. Transfer video ke HP Android DCIM/Camera
-    rc_push, out_push = wallmedia_bridge.run_adb_cmd(["-s", dev_id, "push", str(video_path), "/sdcard/DCIM/Camera/"])
+    rc_push, out_push = automation_bridge.run_adb_cmd(["-s", dev_id, "push", str(video_path), "/sdcard/DCIM/Camera/"])
     if rc_push != 0:
         raise HTTPException(status_code=500, detail=f"Gagal transfer video ke HP: {out_push}")
 
     # 2. Trigger Media Scanner agar langsung muncul di Galeri HP
     remote_path = f"/sdcard/DCIM/Camera/{safe_name}"
-    wallmedia_bridge.run_adb_cmd([
+    automation_bridge.run_adb_cmd([
         "-s", dev_id, "shell", "am", "broadcast",
         "-a", "android.intent.action.MEDIA_SCANNER_SCAN_FILE",
         "-d", f"file://{remote_path}"
@@ -1160,7 +1160,7 @@ async def upload_to_shopee_via_adb(payload: ADBShopeePayload):
 
     # 3. Salin caption & hashtags ke clipboard HP Android
     if payload.caption:
-        wallmedia_bridge.set_clipboard_and_paste_adb(dev_id, payload.caption)
+        automation_bridge.set_clipboard_and_paste_adb(dev_id, payload.caption)
 
     return {
         "ok": True,
@@ -1169,7 +1169,7 @@ async def upload_to_shopee_via_adb(payload: ADBShopeePayload):
     }
 
 
-@app.post("/api/wallmedia/looper/seamless")
+@app.post("/api/video/seamless_loop")
 async def render_seamless_video_loop(payload: SeamlessLoopPayload):
     """Merender perulangan video mulus (Cross-fade Alpha) tanpa jump-cut."""
     safe_name = Path(payload.filename).name
@@ -1182,7 +1182,7 @@ async def render_seamless_video_loop(payload: SeamlessLoopPayload):
     out_name = f"{video_path.stem}_loop_{int(payload.target_duration)}s.mp4"
     out_path = OUTPUTS_DIR / out_name
 
-    ok = wallmedia_bridge.create_seamless_loop(
+    ok = automation_bridge.create_seamless_loop(
         input_path=str(video_path),
         output_path=str(out_path),
         target_duration_sec=payload.target_duration,
@@ -1198,7 +1198,7 @@ async def render_seamless_video_loop(payload: SeamlessLoopPayload):
     }
 
 
-@app.post("/api/wallmedia/overlay/hook")
+@app.post("/api/video/hook_overlay")
 async def render_high_contrast_hook(payload: HookOverlayPayload):
     """Menempelkan banner Hook berdaya pikat tinggi di bagian atas video (Shorts / Reels)."""
     safe_name = Path(payload.filename).name
@@ -1211,7 +1211,7 @@ async def render_high_contrast_hook(payload: HookOverlayPayload):
     out_name = f"{video_path.stem}_hooked.mp4"
     out_path = OUTPUTS_DIR / out_name
 
-    res = wallmedia_bridge.overlay_high_contrast_hook(
+    res = automation_bridge.overlay_high_contrast_hook(
         video_path=str(video_path),
         hook_text=payload.hook_text,
         output_path=str(out_path),

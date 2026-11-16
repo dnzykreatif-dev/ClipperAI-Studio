@@ -216,9 +216,9 @@ Semua video hasil render disimpan di folder **`outputs/`**. Video yang belum diu
 
 ---
 
-## 9. SUITE WALLMEDIA CLONED (REMOTE HP, WIRELESS ADB, GDRIVE, SEAMLESS LOOPER)
+## 9. SUITE CLIPPERAI REMOTE & MOBILE AUTOMATION (REMOTE HP, WIRELESS ADB, GDRIVE, SEAMLESS LOOPER)
 
-Modul `wallmedia_bridge.py` diekstraksi dari hasil *reverse engineering* mendalam atas biner Windows `wallmedia.5.3.1.exe`. Modul ini menambahkan 5 kapabilitas otomasi kelas industri ke dalam ClipperAI Studio:
+Modul `automation_bridge.py` menambahkan 5 kapabilitas otomasi kelas industri ke dalam ClipperAI Studio:
 
 1. **🌐 Cloudflare Quick Tunnel (Akses Remote Smartphone Tanpa Konfigurasi)**:
    - Mengunduh otomatis biner resmi `cloudflared.exe` (~35MB).

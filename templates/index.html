@@ -94,9 +94,9 @@
         </span>
         <span id="nav-social-status">Akun Medsos: YT · FB · TikTok</span>
       </button>
-      <button onclick="openWallMediaToolsHub()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/50 flex items-center gap-1.5 transition shadow-sm">
+      <button onclick="openRemoteSuiteHub()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/50 flex items-center gap-1.5 transition shadow-sm">
         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-        <span>📱</span> WallMedia Hub (Remote · ADB · Looper)
+        <span>📱</span> Mobile & Remote Hub (ADB · Looper)
       </button>
     </div>
   </nav>
@@ -555,8 +555,8 @@
         <button id="tab-btn-research" onclick="switchModalTab('research')" class="py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
           <span>🔎</span> Riset Tren Kata Kunci
         </button>
-        <button id="tab-btn-wallmedia" onclick="switchModalTab('wallmedia')" class="py-3 px-4 text-cyan-400 hover:text-cyan-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
-          <span>📱</span> WallMedia Suite (Remote · ADB · Looper)
+        <button id="tab-btn-remote" onclick="switchModalTab('remote')" class="py-3 px-4 text-cyan-400 hover:text-cyan-200 border-b-2 border-transparent flex items-center gap-1.5 transition flex-shrink-0">
+          <span>📱</span> Mobile & Remote Suite (ADB · Looper)
         </button>
       </div>
 
@@ -1099,16 +1099,16 @@
           </div>
         </div>
 
-        <!-- TAB 6: WALLMEDIA CLONED SUITE (REMOTE TUNNEL, WIRELESS ADB, GDRIVE, LOOPER) -->
-        <div id="tab-content-wallmedia" class="hidden space-y-5">
+        <!-- TAB 6: CLIPPERAI REMOTE & MOBILE AUTOMATION SUITE -->
+        <div id="tab-content-remote" class="hidden space-y-5">
           <!-- Hero Banner -->
           <div class="bg-gradient-to-r from-cyan-950/60 via-slate-900 to-indigo-950/60 p-4 rounded-2xl border border-cyan-500/40 space-y-1">
             <div class="font-extrabold text-white text-sm flex items-center justify-between">
-              <span class="flex items-center gap-2"><span>📱</span> WallMedia Cloned Suite (v5.3.1)</span>
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold">ZERO-CONFIG REVERSED</span>
+              <span class="flex items-center gap-2"><span>📱</span> ClipperAI Remote & Mobile Automation Suite</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold">ZERO-CONFIG NATIVE</span>
             </div>
             <p class="text-slate-300 text-[11px] leading-relaxed">
-              Hasil bongkar biner WallMedia 5.3.1: Kontrol remote via HP tanpa buka port, robot uploader wireless ADB ke Shopee Video, upload Google Drive tanpa API key, dan Seamless Looper tanpa patahan.
+              Otomasi tingkat lanjut: Kontrol remote via HP tanpa buka port, robot uploader wireless ADB ke Shopee Video & Galeri HP, upload Google Drive direct session, dan Seamless Looper tanpa patahan.
             </p>
           </div>
 
@@ -1128,15 +1128,15 @@
             <div class="flex flex-col sm:flex-row gap-2">
               <input type="text" id="wm-tunnel-url" readonly placeholder="Klik 'Aktifkan Remote Tunnel' untuk generate link publik..."
                      class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-cyan-300 font-mono text-xs focus:outline-none">
-              <button type="button" onclick="copyWallMediaTunnelUrl()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition flex items-center gap-1 flex-shrink-0">
+              <button type="button" onclick="copyRemoteTunnelUrl()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition flex items-center gap-1 flex-shrink-0">
                 <span>📋</span> Salin
               </button>
             </div>
             <div class="flex items-center gap-2 pt-1">
-              <button type="button" onclick="startWallMediaTunnel()" id="btn-start-tunnel" class="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow-md shadow-cyan-900/30">
+              <button type="button" onclick="startRemoteTunnel()" id="btn-start-tunnel" class="px-5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow-md shadow-cyan-900/30">
                 <span>🚀</span> Aktifkan Remote Tunnel
               </button>
-              <button type="button" onclick="stopWallMediaTunnel()" id="btn-stop-tunnel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-900/80 text-rose-300 font-bold text-xs transition flex items-center gap-1.5">
+              <button type="button" onclick="stopRemoteTunnel()" id="btn-stop-tunnel" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-900/80 text-rose-300 font-bold text-xs transition flex items-center gap-1.5">
                 <span>⏹</span> Matikan
               </button>
             </div>
@@ -1165,7 +1165,7 @@
                 <input type="text" id="wm-adb-code" placeholder="Kode Pairing (6 digit)" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white">
               </div>
               <div class="flex justify-end">
-                <button type="button" onclick="pairWallMediaADB()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+                <button type="button" onclick="pairMobileADB()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
                   🔗 Pair Perangkat
                 </button>
               </div>
@@ -1179,10 +1179,10 @@
                 <input type="text" id="wm-shopee-prod" placeholder="Kata Kunci / Link Produk Shopee (Opsional)" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white">
               </div>
               <div class="flex items-center justify-between pt-1">
-                <button type="button" onclick="connectWallMediaADB()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition">
+                <button type="button" onclick="connectMobileADB()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition">
                   📡 Tes Koneksi HP
                 </button>
-                <button type="button" onclick="uploadWallMediaShopee()" id="btn-upload-shopee-adb" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs transition shadow-md shadow-orange-900/30 flex items-center gap-1.5">
+                <button type="button" onclick="uploadShopeeViaMobileADB()" id="btn-upload-shopee-adb" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-extrabold text-xs transition shadow-md shadow-orange-900/30 flex items-center gap-1.5">
                   <span>🛍️</span> Kirim Video ke Shopee via HP
                 </button>
               </div>
@@ -1201,7 +1201,7 @@
               <input type="text" id="wm-gdrive-folder" placeholder="Link Folder Google Drive (https://drive.google.com/drive/folders/...)"
                      class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs font-mono focus:outline-none focus:border-blue-500">
               <div class="flex justify-end">
-                <button type="button" onclick="uploadWallMediaGDrive()" id="btn-gdrive-session-up" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow-md shadow-blue-900/30">
+                <button type="button" onclick="uploadGDriveDirectSession()" id="btn-gdrive-session-up" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition flex items-center gap-1.5 shadow-md shadow-blue-900/30">
                   <span>☁️</span> Upload ke Google Drive via Chrome
                 </button>
               </div>
@@ -1222,7 +1222,7 @@
                 <div class="flex items-center gap-2">
                   <input type="number" id="wm-loop-dur" value="60" min="15" max="300" placeholder="Durasi (detik)" class="w-24 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold">
                   <span class="text-slate-400 text-xs">detik target</span>
-                  <button type="button" onclick="renderWallMediaLooper()" id="btn-render-looper" class="ml-auto px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs transition">
+                  <button type="button" onclick="renderSeamlessLooper()" id="btn-render-looper" class="ml-auto px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs transition">
                     🔄 Loop Mulus
                   </button>
                 </div>
@@ -1231,7 +1231,7 @@
                 <div class="text-[11px] font-bold text-yellow-300">B. Teks Hook Kontras Tinggi:</div>
                 <div class="flex items-center gap-2">
                   <input type="text" id="wm-hook-text" placeholder="Teks Hook (contoh: JANGAN SKIP INI!)" class="flex-grow bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white">
-                  <button type="button" onclick="renderWallMediaHook()" id="btn-render-hook" class="px-4 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white font-extrabold text-xs transition">
+                  <button type="button" onclick="renderHighContrastHook()" id="btn-render-hook" class="px-4 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white font-extrabold text-xs transition">
                     🔥 Tempel
                   </button>
                 </div>
@@ -2380,7 +2380,7 @@
     }
 
     function switchModalTab(tab) {
-      const tabs = ['seo', 'course', 'cloud', 'research', 'setup', 'wallmedia'];
+      const tabs = ['seo', 'course', 'cloud', 'research', 'setup', 'remote'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-btn-${t}`);
         const content = document.getElementById(`tab-content-${t}`);
@@ -2397,22 +2397,22 @@
       if (tab === 'course') {
         prefillCourseSyncForm();
       }
-      if (tab === 'wallmedia') {
-        initWallMediaHub();
+      if (tab === 'remote') {
+        initRemoteSuiteHub();
       }
     }
 
     // =========================================================================
-    // WALLMEDIA SUITE JAVASCRIPT HANDLERS
+    // CLIPPERAI REMOTE & MOBILE AUTOMATION SUITE JAVASCRIPT HANDLERS
     // =========================================================================
 
-    function openWallMediaToolsHub() {
-      document.getElementById('modal-video-label').innerText = 'WallMedia Cloned Suite: Remote Tunnel, ADB, GDrive & Looper';
+    function openRemoteSuiteHub() {
+      document.getElementById('modal-video-label').innerText = 'ClipperAI Mobile & Remote Automation Suite';
       document.getElementById('yt-modal').classList.remove('hidden');
-      switchModalTab('wallmedia');
+      switchModalTab('remote');
     }
 
-    function showWallMediaFeedback(msg, isError = false) {
+    function showRemoteSuiteFeedback(msg, isError = false) {
       const fb = document.getElementById('wm-status-feedback');
       if (!fb) return;
       fb.classList.remove('hidden');
@@ -2424,14 +2424,14 @@
       fb.innerHTML = msg;
     }
 
-    async function initWallMediaHub() {
-      checkWallMediaTunnelStatus();
-      checkWallMediaADBStatus();
+    async function initRemoteSuiteHub() {
+      checkRemoteTunnelStatus();
+      checkMobileADBStatus();
     }
 
-    async function checkWallMediaTunnelStatus() {
+    async function checkRemoteTunnelStatus() {
       try {
-        const res = await fetch('/api/wallmedia/tunnel/status');
+        const res = await fetch('/api/remote/tunnel/status');
         const data = await res.json();
         const pill = document.getElementById('wm-tunnel-pill');
         const input = document.getElementById('wm-tunnel-url');
@@ -2451,47 +2451,47 @@
       }
     }
 
-    async function startWallMediaTunnel() {
+    async function startRemoteTunnel() {
       const btn = document.getElementById('btn-start-tunnel');
       const pill = document.getElementById('wm-tunnel-pill');
       const input = document.getElementById('wm-tunnel-url');
       btn.disabled = true;
       btn.innerText = '⏳ Memulai Tunnel...';
       pill.innerText = 'MEMULAI...';
-      showWallMediaFeedback('⏳ Memulai Cloudflare Quick Tunnel... Harap tunggu beberapa detik.');
+      showRemoteSuiteFeedback('⏳ Memulai Cloudflare Quick Tunnel... Harap tunggu beberapa detik.');
 
       try {
-        const res = await fetch('/api/wallmedia/tunnel/start', { method: 'POST' });
+        const res = await fetch('/api/remote/tunnel/start', { method: 'POST' });
         const data = await res.json();
         if (data.ok && data.tunnel.url) {
           input.value = data.tunnel.url;
           pill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
           pill.innerText = '🟢 ONLINE';
-          showWallMediaFeedback(`✅ Remote Tunnel Aktif!<br>Buka di HP Anda: <a href="${data.tunnel.url}" target="_blank" class="underline font-bold text-cyan-300">${data.tunnel.url}</a>`);
+          showRemoteSuiteFeedback(`✅ Remote Tunnel Aktif!<br>Buka di HP Anda: <a href="${data.tunnel.url}" target="_blank" class="underline font-bold text-cyan-300">${data.tunnel.url}</a>`);
         } else {
-          showWallMediaFeedback('⚠️ Tunnel sedang starting di background. Cek status dalam 5-10 detik.');
-          setTimeout(checkWallMediaTunnelStatus, 4000);
+          showRemoteSuiteFeedback('⚠️ Tunnel sedang starting di background. Cek status dalam 5-10 detik.');
+          setTimeout(checkRemoteTunnelStatus, 4000);
         }
       } catch (e) {
-        showWallMediaFeedback('❌ Gagal mengaktifkan Cloudflare Tunnel: ' + e.message, true);
+        showRemoteSuiteFeedback('❌ Gagal mengaktifkan Cloudflare Tunnel: ' + e.message, true);
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>🚀</span> Aktifkan Remote Tunnel';
       }
     }
 
-    async function stopWallMediaTunnel() {
+    async function stopRemoteTunnel() {
       try {
-        const res = await fetch('/api/wallmedia/tunnel/stop', { method: 'POST' });
+        const res = await fetch('/api/remote/tunnel/stop', { method: 'POST' });
         const data = await res.json();
-        showWallMediaFeedback('⏹ Cloudflare Tunnel telah dimatikan.');
-        checkWallMediaTunnelStatus();
+        showRemoteSuiteFeedback('⏹ Cloudflare Tunnel telah dimatikan.');
+        checkRemoteTunnelStatus();
       } catch (e) {
-        showWallMediaFeedback('Gagal mematikan tunnel: ' + e.message, true);
+        showRemoteSuiteFeedback('Gagal mematikan tunnel: ' + e.message, true);
       }
     }
 
-    function copyWallMediaTunnelUrl() {
+    function copyRemoteTunnelUrl() {
       const input = document.getElementById('wm-tunnel-url');
       if (!input.value) {
         alert("Belum ada link tunnel aktif.");
@@ -2501,10 +2501,10 @@
       alert("Link Tunnel berhasil disalin! Buka di browser smartphone Anda:\n" + input.value);
     }
 
-    async function checkWallMediaADBStatus() {
+    async function checkMobileADBStatus() {
       const pill = document.getElementById('wm-adb-pill');
       try {
-        const res = await fetch('/api/wallmedia/adb/status');
+        const res = await fetch('/api/mobile/adb/status');
         const data = await res.json();
         if (data.ok && data.adb.success && data.adb.devices.length > 0) {
           pill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
@@ -2518,7 +2518,7 @@
       }
     }
 
-    async function pairWallMediaADB() {
+    async function pairMobileADB() {
       const ip = document.getElementById('wm-adb-ip').value.trim();
       const port = document.getElementById('wm-adb-port-pair').value.trim();
       const code = document.getElementById('wm-adb-code').value.trim();
@@ -2526,47 +2526,47 @@
         alert("Harap isi IP HP, Port Pairing (5 digit), dan Kode Pairing (6 digit)!");
         return;
       }
-      showWallMediaFeedback('⏳ Mengirim kode pairing ke HP Android...');
+      showRemoteSuiteFeedback('⏳ Mengirim kode pairing ke HP Android...');
       try {
-        const res = await fetch('/api/wallmedia/adb/pair', {
+        const res = await fetch('/api/mobile/adb/pair', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ip, port, code })
         });
         const data = await res.json();
         if (data.ok) {
-          showWallMediaFeedback('✅ Berhasil pairing nirkabel dengan HP Android! Sekarang silakan klik "Tes Koneksi HP".');
-          checkWallMediaADBStatus();
+          showRemoteSuiteFeedback('✅ Berhasil pairing nirkabel dengan HP Android! Sekarang silakan klik "Tes Koneksi HP".');
+          checkMobileADBStatus();
         } else {
-          showWallMediaFeedback('❌ Gagal pairing: ' + (data.result?.message || 'Pastikan jendela pairing HP masih terbuka.'), true);
+          showRemoteSuiteFeedback('❌ Gagal pairing: ' + (data.result?.message || 'Pastikan jendela pairing HP masih terbuka.'), true);
         }
       } catch (e) {
-        showWallMediaFeedback('Error pairing: ' + e.message, true);
+        showRemoteSuiteFeedback('Error pairing: ' + e.message, true);
       }
     }
 
-    async function connectWallMediaADB() {
+    async function connectMobileADB() {
       const target = document.getElementById('wm-adb-target').value.trim();
-      showWallMediaFeedback('⏳ Menghubungkan ke HP Android...');
+      showRemoteSuiteFeedback('⏳ Menghubungkan ke HP Android...');
       try {
-        const res = await fetch('/api/wallmedia/adb/connect', {
+        const res = await fetch('/api/mobile/adb/connect', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ target })
         });
         const data = await res.json();
         if (data.ok && data.result.devices.length > 0) {
-          showWallMediaFeedback(`✅ Berhasil terhubung ke HP: <strong>${data.result.devices[0]}</strong>`);
-          checkWallMediaADBStatus();
+          showRemoteSuiteFeedback(`✅ Berhasil terhubung ke HP: <strong>${data.result.devices[0]}</strong>`);
+          checkMobileADBStatus();
         } else {
-          showWallMediaFeedback('⚠️ Tidak ada perangkat Android terdeteksi. Pastikan Wireless Debugging aktif.', true);
+          showRemoteSuiteFeedback('⚠️ Tidak ada perangkat Android terdeteksi. Pastikan Wireless Debugging aktif.', true);
         }
       } catch (e) {
-        showWallMediaFeedback('Error koneksi: ' + e.message, true);
+        showRemoteSuiteFeedback('Error koneksi: ' + e.message, true);
       }
     }
 
-    async function uploadWallMediaShopee() {
+    async function uploadShopeeViaMobileADB() {
       const filename = currentJobVideoFile || (allRenderedOutputs && allRenderedOutputs[0]?.filename) || "";
       if (!filename) {
         alert("Pilih atau render video terlebih dahulu sebelum upload ke Shopee!");
@@ -2579,29 +2579,29 @@
       const btn = document.getElementById('btn-upload-shopee-adb');
       btn.disabled = true;
       btn.innerText = '⏳ Mengirim ke HP...';
-      showWallMediaFeedback(`📲 Mentransfer video '${filename}' ke Galeri HP dan menyalin Caption...`);
+      showRemoteSuiteFeedback(`📲 Mentransfer video '${filename}' ke Galeri HP dan menyalin Caption...`);
 
       try {
-        const res = await fetch('/api/wallmedia/adb/upload_shopee', {
+        const res = await fetch('/api/mobile/adb/upload_shopee', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, caption, product_query: productQuery, target_ip: targetIp })
         });
         const data = await res.json();
         if (data.ok) {
-          showWallMediaFeedback(`✅ <strong>SUKSES!</strong><br>${data.message}<br>👉 Sekarang buka aplikasi Shopee di HP Anda, pilih video pertama di galeri, dan tekan Paste!`);
+          showRemoteSuiteFeedback(`✅ <strong>SUKSES!</strong><br>${data.message}<br>👉 Sekarang buka aplikasi Shopee di HP Anda, pilih video pertama di galeri, dan tekan Paste!`);
         } else {
-          showWallMediaFeedback('❌ Gagal transfer ke Shopee ADB: ' + (data.detail || 'Error'), true);
+          showRemoteSuiteFeedback('❌ Gagal transfer ke Shopee ADB: ' + (data.detail || 'Error'), true);
         }
       } catch (e) {
-        showWallMediaFeedback('Error Shopee ADB: ' + e.message, true);
+        showRemoteSuiteFeedback('Error Shopee ADB: ' + e.message, true);
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>🛍️</span> Kirim Video ke Shopee via HP';
       }
     }
 
-    async function uploadWallMediaGDrive() {
+    async function uploadGDriveDirectSession() {
       const filename = currentJobVideoFile || (allRenderedOutputs && allRenderedOutputs[0]?.filename) || "";
       if (!filename) {
         alert("Pilih atau render video terlebih dahulu!");
@@ -2615,29 +2615,29 @@
       const btn = document.getElementById('btn-gdrive-session-up');
       btn.disabled = true;
       btn.innerText = '⏳ Mengunggah via Chrome...';
-      showWallMediaFeedback(`☁️ Mengunggah '${filename}' langsung ke Google Drive via sesi profil Chrome...`);
+      showRemoteSuiteFeedback(`☁️ Mengunggah '${filename}' langsung ke Google Drive via sesi profil Chrome...`);
 
       try {
-        const res = await fetch('/api/wallmedia/gdrive/upload', {
+        const res = await fetch('/api/cloud/gdrive/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, folder_id: folderId, headless: true })
         });
         const data = await res.json();
         if (data.ok) {
-          showWallMediaFeedback(`✅ ${data.message}`);
+          showRemoteSuiteFeedback(`✅ ${data.message}`);
         } else {
-          showWallMediaFeedback('❌ Gagal upload GDrive: ' + (data.detail || 'Error'), true);
+          showRemoteSuiteFeedback('❌ Gagal upload GDrive: ' + (data.detail || 'Error'), true);
         }
       } catch (e) {
-        showWallMediaFeedback('Error GDrive: ' + e.message, true);
+        showRemoteSuiteFeedback('Error GDrive: ' + e.message, true);
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<span>☁️</span> Upload ke Google Drive via Chrome';
       }
     }
 
-    async function renderWallMediaLooper() {
+    async function renderSeamlessLooper() {
       const filename = currentJobVideoFile || (allRenderedOutputs && allRenderedOutputs[0]?.filename) || "";
       if (!filename) {
         alert("Pilih atau render video terlebih dahulu!");
@@ -2647,30 +2647,30 @@
       const btn = document.getElementById('btn-render-looper');
       btn.disabled = true;
       btn.innerText = '⏳ Merender...';
-      showWallMediaFeedback(`🔄 Merender Seamless Alpha Cross-Fade Loop untuk '${filename}' (durasi target: ${dur}s)...`);
+      showRemoteSuiteFeedback(`🔄 Merender Seamless Alpha Cross-Fade Loop untuk '${filename}' (durasi target: ${dur}s)...`);
 
       try {
-        const res = await fetch('/api/wallmedia/looper/seamless', {
+        const res = await fetch('/api/video/seamless_loop', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, target_duration: dur, overlap_sec: 1.0 })
         });
         const data = await res.json();
         if (data.ok) {
-          showWallMediaFeedback(`✅ Video Loop Sukses: <a href="${data.download_url}" target="_blank" class="underline font-bold text-amber-300">Unduh ${data.output_filename}</a>`);
+          showRemoteSuiteFeedback(`✅ Video Loop Sukses: <a href="${data.download_url}" target="_blank" class="underline font-bold text-amber-300">Unduh ${data.output_filename}</a>`);
           if (typeof fetchHistory === 'function') fetchHistory();
         } else {
-          showWallMediaFeedback('❌ Gagal render looper: ' + (data.detail || 'Error'), true);
+          showRemoteSuiteFeedback('❌ Gagal render looper: ' + (data.detail || 'Error'), true);
         }
       } catch (e) {
-        showWallMediaFeedback('Error Looper: ' + e.message, true);
+        showRemoteSuiteFeedback('Error Looper: ' + e.message, true);
       } finally {
         btn.disabled = false;
         btn.innerText = '🔄 Loop Mulus';
       }
     }
 
-    async function renderWallMediaHook() {
+    async function renderHighContrastHook() {
       const filename = currentJobVideoFile || (allRenderedOutputs && allRenderedOutputs[0]?.filename) || "";
       if (!filename) {
         alert("Pilih atau render video terlebih dahulu!");
@@ -2684,23 +2684,23 @@
       const btn = document.getElementById('btn-render-hook');
       btn.disabled = true;
       btn.innerText = '⏳ Menempel...';
-      showWallMediaFeedback(`🔥 Menempelkan teks hook kontras tinggi pada '${filename}'...`);
+      showRemoteSuiteFeedback(`🔥 Menempelkan teks hook kontras tinggi pada '${filename}'...`);
 
       try {
-        const res = await fetch('/api/wallmedia/overlay/hook', {
+        const res = await fetch('/api/video/hook_overlay', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename, hook_text: hookText, duration: 4.0 })
         });
         const data = await res.json();
         if (data.ok) {
-          showWallMediaFeedback(`✅ Teks Hook Berhasil Ditempel: <a href="${data.download_url}" target="_blank" class="underline font-bold text-yellow-300">Unduh ${data.output_filename}</a>`);
+          showRemoteSuiteFeedback(`✅ Teks Hook Berhasil Ditempel: <a href="${data.download_url}" target="_blank" class="underline font-bold text-yellow-300">Unduh ${data.output_filename}</a>`);
           if (typeof fetchHistory === 'function') fetchHistory();
         } else {
-          showWallMediaFeedback('❌ Gagal menempel hook: ' + (data.detail || 'Error'), true);
+          showRemoteSuiteFeedback('❌ Gagal menempel hook: ' + (data.detail || 'Error'), true);
         }
       } catch (e) {
-        showWallMediaFeedback('Error Hook: ' + e.message, true);
+        showRemoteSuiteFeedback('Error Hook: ' + e.message, true);
       } finally {
         btn.disabled = false;
         btn.innerText = '🔥 Tempel';
