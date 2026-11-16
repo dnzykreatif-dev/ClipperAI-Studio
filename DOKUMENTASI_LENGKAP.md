@@ -41,10 +41,19 @@ E:\PROJECTS\kajian_clipper/
 │
 ├── app.py                      # [FastAPI] Backend server utama: REST API, Background Jobs, routing
 ├── clipper_engine.py           # [AI Clipper Engine] Transkripsi Faster-Whisper, Dynamic Punch-In zoom, Alex Hormozi Pop ASS, Deteksi Viral Hook
+├── pro_editor.py               # [Pro Video Editor Engine] Face-tracking YuNet, multi-shot jump cuts (close/medium/broll/wide), Argon 3D LUTs, light-leaks, SFX
 ├── faceless_engine.py          # [AI Faceless Engine] Text-to-Video Engine: Edge-TTS natural voice, Hormozi sync, Procedural Radial Motion Canvas
 ├── yt_seo_engine.py            # [AI SEO Engine] Generator Judul Viral, Timestamps, Deskripsi SEO, Tags (<500 char), dan Riset Tren YouTube
 ├── yt_uploader.py              # [YouTube Engine] Google OAuth2 & YouTube Data API v3 Uploader (Mendukung Publik & Unlisted)
 ├── course_sync.py              # [LMS Sync Engine] Sinkronisasi otomatis ke Google Spreadsheet Web dnzykreatif (Sheet 'Lessons')
+│
+├── remotion_studio/            # [3D Cartoon Remotion Engine] Mesin animasi 3D Three.js + Remotion untuk video kartun vertikal bergaya Kurzgesagt/OverSimplified
+│   ├── src/videos/bridge/      # Pipeline 3D: Bridge.tsx, toon.ts (karakter 2D bean-head), world.ts (dunia 3D), story.ts (kamera sinematik)
+│   ├── package.json            # Dependensi React 19, Three.js 0.178, @remotion/three, @react-three/fiber
+│   └── Start_Animated_Studio.bat # Skrip membuka preview visual real-time di browser (http://localhost:3000)
+│
+├── Start_ClipperAI.bat         # Skrip 1-klik menjalankan server lokal ClipperAI Studio (http://127.0.0.1:8000)
+├── Start_3D_Studio.bat         # Skrip 1-klik menjalankan Remotion 3D Animation Studio (http://localhost:3000)
 │
 ├── templates/
 │   └── index.html              # [Frontend UI] Antarmuka web modern (Tailwind CSS, Glassmorphism, Dual Mode Switcher, Studio Modal)
@@ -93,6 +102,13 @@ E:\PROJECTS\kajian_clipper/
 - **Materi Kursus (Unlisted)**:
   - Otomatis diset sebagai *Unlisted* agar tidak bisa ditonton publik gratis.
   - 1-Klik sinkronisasi langsung menambahkan baris baru ke Google Spreadsheet database kursus [Web dnzykreatif](file:///E:/PROJECTS/apps-script/Web%20dnzykreatif/CourseView.html) pada sheet `Lessons` dengan format HTML `.hadith-box` (`Faedah:`, `Artinya:`) dan navigasi timestamps.
+
+### Mode 4: AI 3D Cartoon Story Animator (Three.js + Remotion)
+- **Konsep**: Membuat video animasi kartun 3D storytelling berdurasi 55–70 detik (ala *Kurzgesagt*, *OverSimplified*, atau animasi sejarah/sains viral).
+- **100% Render Lokal**: Tidak memerlukan AI video cloud mahal (seperti Runway atau Kling). Seluruh visual 3D dirender secara lokal menggunakan Three.js di dalam Remotion.
+- **Karakter Bean-Head 2D di Dunia 3D**: Karakter prosedural di `remotion_studio/src/videos/bridge/toon.ts` dengan ekspresi wajah dinamis, bayangan kontak, dan seragam.
+- **Sinematografi Dinamis**: Kamera meluncur (*smootherstep glides*), *creeping push-in* terus-menerus pada setiap hold (0.15%–0.35%/frame), dan preset pencahayaan Siang Terang vs *Golden Hour* Sunset.
+- **Cara Preview**: Klik dua kali file `Start_3D_Studio.bat` untuk membuka dashboard visual real-time di `http://localhost:3000`.
 
 ---
 

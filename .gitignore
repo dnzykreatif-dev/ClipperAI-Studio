@@ -31,6 +31,10 @@ $RECYCLE.BIN/
 # Node / Scratch temp
 temp_chrome_profile/
 node_modules/
+remotion_studio/node_modules/
+remotion_studio/.remotion/
+remotion_studio/out/
+Skill Argon/
 *.log
 
 # Google OAuth & YouTube Credentials

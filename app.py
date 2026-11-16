@@ -25,6 +25,7 @@ import course_sync
 import faceless_engine
 import ai_brain
 import thumbnail_engine
+import social_poster
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -62,6 +63,30 @@ class YouTubeUploadPayload(BaseModel):
     made_for_kids: bool = False
 
 
+class SocialPublishPayload(BaseModel):
+    filename: str
+    title: str
+    caption: str
+    tags: str = ""
+    platforms: List[str] = ["youtube", "facebook", "tiktok"]
+    privacy: str = "public"
+
+
+class YouTubeKeysPayload(BaseModel):
+    client_id: str
+    client_secret: str
+
+
+class FacebookConfigPayload(BaseModel):
+    page_id: str
+    access_token: str
+
+
+class TikTokConfigPayload(BaseModel):
+    access_token: str
+    username: Optional[str] = None
+
+
 def process_video_pipeline(
     job_id: str,
     video_path: Optional[str] = None,
@@ -73,10 +98,24 @@ def process_video_pipeline(
     scan_range: str = "15min",
     min_dur: float = 25.0,
     max_dur: float = 60.0,
-    intensity: str = "normal"
+    intensity: str = "normal",
+    subtitle_size: str = "small",
+    watermark_image: Optional[str] = None,
+    watermark_pos: str = "top_right"
 ):
     job = JOBS[job_id]
     try:
+        # Inisialisasi status alur kerja (Workflow 1-7 sesuai Galih Pranowo)
+        job["workflow"] = {
+            "transcript": "pending",
+            "viral_scout": "pending",
+            "silence_cut": "pending",
+            "face_crop": "pending",
+            "subtitles": "pending",
+            "loudnorm": "pending",
+            "ready": "pending"
+        }
+
         # Step 0: Download YouTube / Google Drive / Web video if requested
         if youtube_url and youtube_url.strip():
             job["status"] = "processing"
@@ -111,16 +150,17 @@ def process_video_pipeline(
         effective_dur = max_extract if max_extract else total_vid_dur
 
         job["status"] = "processing"
-        job["step"] = f"Mengekstrak audio (16kHz mono)... [Durasi: {int(effective_dur//60)} menit]"
+        job["workflow"]["transcript"] = "running"
+        job["step"] = f"1. Transkrip: Mengekstrak audio (16kHz mono)... [Durasi: {int(effective_dur//60)} menit]"
         job["progress"] = 15
 
         audio_path = str(UPLOADS_DIR / f"{job_id}_audio.wav")
         clipper_engine.extract_audio(video_path, audio_path, max_duration=max_extract)
 
-        # Step 2: High-Speed Multi-Threaded Whisper Transcription
+        # Step 1: High-Speed Multi-Threaded Whisper Transcription
         def on_transcribe_progress(pct: int, msg: str):
             job["progress"] = pct
-            job["step"] = msg
+            job["step"] = f"1. Transkrip kata-per-kata: {msg}"
 
         transcript = clipper_engine.transcribe_audio_with_progress(
             audio_path=audio_path,
@@ -130,9 +170,11 @@ def process_video_pipeline(
             progress_callback=on_transcribe_progress
         )
         job["transcript"] = transcript
+        job["workflow"]["transcript"] = "done"
 
-        # Step 3: Viral Hook Scouting with Niche Awareness
-        job["step"] = f"AI Viral Scout sedang menganalisis hook ({niche.title()})..."
+        # Step 2: Viral Hook Scouting with Niche Awareness
+        job["workflow"]["viral_scout"] = "running"
+        job["step"] = f"2. AI Viral Scout sedang menganalisis & memilih momen paling viral ({niche.title()})..."
         job["progress"] = 62
 
         candidates = clipper_engine.find_viral_clips(
@@ -142,6 +184,7 @@ def process_video_pipeline(
             max_duration=max_dur,
             top_k=target_clips
         )
+        job["workflow"]["viral_scout"] = "done"
 
         if not candidates:
             clip_dur = min(effective_dur, 45.0)
@@ -160,12 +203,30 @@ def process_video_pipeline(
         job["candidates"] = candidates
         job["clips"] = []
 
-        # Step 4: Render 9:16 Shorts with Pro Editor (Face Track + Multi-Shot + B-Roll Card + Argon LUT/SFX)
+        # Step 3: Suruh AI edit (Jeda kosong terbuang, Crop 9:16 ikutin wajah, Subtitle per kata, Suara rata -14 LUFS)
         total_cand = len(candidates)
         for idx, cand in enumerate(candidates):
-            pct = 65 + int((idx / total_cand) * 32)
-            job["step"] = f"Pro Editing Short {idx+1}/{total_cand} (Face Track + Multi-Shot + B-Roll Card + Argon LUT/SFX)..."
-            job["progress"] = pct
+            pct_base = 65 + int((idx / total_cand) * 30)
+            job["step"] = f"3. Suruh AI edit klip {idx+1}/{total_cand}..."
+            job["progress"] = pct_base
+
+            def on_render_subtask(task_key: str, msg: str):
+                wf = job.get("workflow", {})
+                if task_key == "silence_cut":
+                    wf["silence_cut"] = "running"
+                elif task_key == "face_crop":
+                    wf["silence_cut"] = "done"
+                    wf["face_crop"] = "running"
+                elif task_key == "subtitles":
+                    wf["silence_cut"] = "done"
+                    wf["face_crop"] = "done"
+                    wf["subtitles"] = "running"
+                elif task_key == "loudnorm":
+                    wf["silence_cut"] = "done"
+                    wf["face_crop"] = "done"
+                    wf["subtitles"] = "done"
+                    wf["loudnorm"] = "running"
+                job["step"] = f"3. Suruh AI edit ({idx+1}/{total_cand}): {msg}"
 
             out_filename = f"{job_id}_{cand['clip_id']}.mp4"
             out_path = str(OUTPUTS_DIR / out_filename)
@@ -177,7 +238,11 @@ def process_video_pipeline(
                 niche=niche,
                 custom_watermark=custom_watermark,
                 add_sfx=True,
-                intensity=intensity
+                intensity=intensity,
+                subtitle_size=subtitle_size,
+                watermark_image=watermark_image,
+                watermark_pos=watermark_pos,
+                progress_callback=on_render_subtask
             )
 
             # Auto-generate broadcast-grade YouTube SEO Package (gunakan hasil AI Curation jika sudah ada)
@@ -218,8 +283,13 @@ def process_video_pipeline(
                 "edl": cand.get("edl")
             })
 
+        job["workflow"]["silence_cut"] = "done"
+        job["workflow"]["face_crop"] = "done"
+        job["workflow"]["subtitles"] = "done"
+        job["workflow"]["loudnorm"] = "done"
+        job["workflow"]["ready"] = "done"
         job["status"] = "completed"
-        job["step"] = "Selesai! Video siap diunduh & diunggah ke YouTube."
+        job["step"] = "Selesai! Klip langsung siap ditonton & diunggah."
         job["progress"] = 100
 
     except Exception as e:
@@ -232,8 +302,9 @@ def process_faceless_job(
     job_id: str,
     script_text: str,
     voice_key: str = "ardi",
-    theme_key: str = "cyber",
-    header_title: Optional[str] = None
+    theme_key: str = "anymotion",
+    header_title: Optional[str] = None,
+    storyboard: Optional[Dict[str, Any]] = None
 ):
     job = JOBS[job_id]
     try:
@@ -250,7 +321,8 @@ def process_faceless_job(
             voice_key=voice_key,
             theme_key=theme_key,
             header_title=header_title,
-            progress_callback=on_progress
+            progress_callback=on_progress,
+            storyboard=storyboard
         )
 
         seo_res = res.get("seo", {})
@@ -283,7 +355,8 @@ def process_faceless_job(
             "end": res.get("duration", 15.0),
             "summary": script_text[:160] + ("..." if len(script_text) > 160 else ""),
             "hashtags": " ".join(seo_res.get("tags", ["#shorts", "#faceless", "#viral"])),
-            "seo": seo_res
+            "seo": seo_res,
+            "qa_montage_url": res.get("qa_montage_url")
         }]
         job["status"] = "completed"
         job["step"] = "Selesai! Video Faceless siap ditonton & diunggah ke YouTube."
@@ -298,7 +371,14 @@ def process_faceless_job(
 class FacelessPayload(BaseModel):
     script_text: str
     voice_key: str = "ardi"
-    theme_key: str = "cyber"
+    theme_key: str = "anymotion"
+    header_title: Optional[str] = None
+    storyboard: Optional[Dict[str, Any]] = None
+
+
+class StoryboardRequest(BaseModel):
+    script_text: str
+    theme_key: str = "anymotion"
     header_title: Optional[str] = None
 
 
@@ -311,10 +391,33 @@ async def get_faceless_presets():
     }
 
 
+@app.post("/api/faceless/storyboard")
+async def plan_faceless_storyboard(req: StoryboardRequest):
+    """
+    Rancangan Storyboard AI (Visual Director) sebelum render:
+    Memecah naskah menjadi deck adegan visual AnyMotion / Vox yang bisa ditinjau & diedit pengguna.
+    """
+    text = req.script_text.strip()
+    if not text or len(text) < 5:
+        raise HTTPException(status_code=400, detail="Teks naskah terlalu pendek (minimal 5 karakter).")
+
+    import ai_director
+    theme = faceless_engine.THEMES.get(req.theme_key, faceless_engine.THEMES["anymotion"])
+    palette_hint = theme.get("theme_palette", "mint")
+
+    import asyncio
+    sb = await asyncio.to_thread(ai_director.direct_visual_storyboard, text, theme_hint=palette_hint)
+    return {
+        "ok": True,
+        "storyboard": sb,
+        "theme_key": req.theme_key
+    }
+
+
 @app.post("/api/faceless/generate")
 async def generate_faceless(payload: FacelessPayload, background_tasks: BackgroundTasks):
     """
-    Starts an AI Faceless Video generation pipeline from raw text/script.
+    Starts an AI Faceless Video generation pipeline from raw text/script or pre-approved storyboard.
     """
     text = payload.script_text.strip()
     if not text or len(text) < 5:
@@ -336,7 +439,8 @@ async def generate_faceless(payload: FacelessPayload, background_tasks: Backgrou
         script_text=text,
         voice_key=payload.voice_key,
         theme_key=payload.theme_key,
-        header_title=payload.header_title
+        header_title=payload.header_title,
+        storyboard=payload.storyboard
     )
 
     return {"ok": True, "job_id": job_id}
@@ -363,7 +467,10 @@ async def start_job(
     num_clips: int = Form(3),
     min_dur: float = Form(25.0),
     max_dur: float = Form(60.0),
-    intensity: str = Form("normal")
+    intensity: str = Form("normal"),
+    subtitle_size: str = Form("small"),
+    watermark_image: Optional[str] = Form(None),
+    watermark_pos: str = Form("top_right")
 ):
     job_id = str(uuid.uuid4())[:8]
 
@@ -387,6 +494,8 @@ async def start_job(
         "youtube_url": youtube_url,
         "niche": niche,
         "custom_watermark": custom_watermark,
+        "subtitle_size": subtitle_size,
+        "watermark_pos": watermark_pos,
         "status": "queued",
         "progress": 0,
         "step": "Menyiapkan antrean pemrosesan...",
@@ -406,7 +515,10 @@ async def start_job(
         scan_range=scan_range,
         min_dur=min_dur,
         max_dur=max_dur,
-        intensity=intensity
+        intensity=intensity,
+        subtitle_size=subtitle_size,
+        watermark_image=watermark_image,
+        watermark_pos=watermark_pos
     )
 
     return {"ok": True, "job_id": job_id}
@@ -607,6 +719,96 @@ async def youtube_upload(payload: YouTubeUploadPayload):
     if not result.get("ok"):
         raise HTTPException(status_code=400, detail=result.get("error", "Gagal upload video."))
 
+    return result
+
+
+# =========================================================================
+# MULTI-PLATFORM SOCIAL MEDIA ENDPOINTS (YOUTUBE, TIKTOK, FACEBOOK REELS)
+# =========================================================================
+
+@app.get("/api/social/status")
+async def get_social_account_status():
+    """
+    Returns unified connection status for YouTube, Facebook, and TikTok.
+    """
+    return social_poster.get_social_status()
+
+
+@app.post("/api/social/youtube_keys")
+async def save_yt_keys_endpoint(payload: YouTubeKeysPayload):
+    """
+    Saves Client ID & Client Secret directly to client_secrets.json.
+    """
+    res = social_poster.save_youtube_keys(payload.client_id, payload.client_secret)
+    if not res.get("ok"):
+        raise HTTPException(status_code=400, detail=res.get("error"))
+    return res
+
+
+@app.post("/api/social/youtube_secrets_file")
+async def save_yt_secrets_file_endpoint(file: UploadFile = File(...)):
+    """
+    Accepts client_secrets.json uploaded directly from browser.
+    """
+    try:
+        content = await file.read()
+        res = social_poster.save_youtube_secrets_file(content.decode("utf-8"))
+        if not res.get("ok"):
+            raise HTTPException(status_code=400, detail=res.get("error"))
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Gagal membaca file: {str(e)}")
+
+
+@app.post("/api/social/facebook_config")
+async def save_fb_config_endpoint(payload: FacebookConfigPayload):
+    """
+    Validates and saves Facebook Page ID & Access Token.
+    """
+    res = social_poster.save_facebook_config(payload.page_id, payload.access_token)
+    if not res.get("ok"):
+        raise HTTPException(status_code=400, detail=res.get("error"))
+    return res
+
+
+@app.post("/api/social/tiktok_config")
+async def save_tt_config_endpoint(payload: TikTokConfigPayload):
+    """
+    Saves TikTok Access Token & Username.
+    """
+    res = social_poster.save_tiktok_config(payload.access_token, payload.username)
+    if not res.get("ok"):
+        raise HTTPException(status_code=400, detail=res.get("error"))
+    return res
+
+
+@app.post("/api/social/publish")
+async def publish_social_all(payload: SocialPublishPayload):
+    """
+    One-Click Cross-Post to all selected platforms (YouTube Shorts, TikTok, Facebook Reels).
+    """
+    # Locate video file
+    if os.path.isabs(payload.filename) and os.path.exists(payload.filename):
+        video_path = Path(payload.filename)
+    else:
+        video_path = OUTPUTS_DIR / payload.filename
+        if not video_path.exists():
+            upl_path = UPLOADS_DIR / payload.filename
+            if upl_path.exists():
+                video_path = upl_path
+            else:
+                raise HTTPException(status_code=404, detail=f"File {payload.filename} tidak ditemukan.")
+
+    tags_list = [t.strip() for t in payload.tags.split(",") if t.strip()]
+
+    result = social_poster.publish_to_all_platforms(
+        video_path=str(video_path),
+        title=payload.title,
+        caption=payload.caption,
+        tags=tags_list,
+        platforms=payload.platforms,
+        privacy=payload.privacy
+    )
     return result
 
 
