@@ -347,6 +347,66 @@ class TopHeaderPill(Element):
         paste_center(canvas, transform(self.dot_glow, 0.9 + 0.15 * pulse, pulse), dx, self.y)
 
 
+class LogoWatermark(Element):
+    """Watermark logo brand transparan berbayang halus di safe area video (atas/bawah)."""
+
+    def __init__(self, image_path: str, total: float, pos: str = "top_right",
+                 width: int = 180, opacity: float = 0.92, y: Optional[int] = None, x: Optional[int] = None):
+        self.t0, self.t1 = 0.0, total
+        self.opacity = float(opacity)
+        self.pos = pos
+        self.img = None
+
+        try:
+            p = Path(image_path)
+            if not p.is_absolute():
+                p = BASE_DIR / p
+            if p.exists():
+                im = Image.open(str(p)).convert("RGBA")
+                bbox = im.getbbox()
+                if bbox:
+                    pad = 8
+                    im = im.crop((max(0, bbox[0] - pad), max(0, bbox[1] - pad),
+                                  min(im.width, bbox[2] + pad), min(im.height, bbox[3] + pad)))
+                target_w = width
+                target_h = max(10, int(im.height * (target_w / max(1, im.width))))
+                resized = im.resize((target_w, target_h), Image.Resampling.LANCZOS)
+                self.img = with_shadow(resized, blur=8, offset=(0, 3), opacity=0.55)
+        except Exception as e:
+            print(f"[Warning] Failed to load logo watermark from {image_path}: {e}")
+            self.img = None
+
+        if self.img:
+            self.w, self.h = self.img.size
+            if x is not None and y is not None:
+                self.x, self.y = x, y
+            elif pos == "top_left":
+                self.x = 35 + self.w // 2
+                self.y = 110
+            elif pos == "top_center":
+                self.x = W // 2
+                self.y = 100
+            elif pos == "bottom_right":
+                self.x = W - 35 - self.w // 2
+                self.y = 1720
+            elif pos == "bottom_left":
+                self.x = 35 + self.w // 2
+                self.y = 1720
+            else:  # top_right default
+                self.x = W - 35 - self.w // 2
+                self.y = 110
+        else:
+            self.x, self.y = 0, 0
+
+    def draw(self, canvas: Image.Image, t: float) -> None:
+        if self.img is None:
+            return
+        a = clamp(t / 0.35) * self.opacity
+        if a <= 0.01:
+            return
+        paste_center(canvas, fade(self.img, a), self.x, self.y)
+
+
 class CinemaParticles(Element):
     """Partikel bokeh sinematik halus di area atas & bawah layar agar visual terasa hidup dan mewah."""
 
@@ -378,15 +438,20 @@ class CinemaParticles(Element):
 class CaptionTrack(Element):
     """Caption karaoke modern: word-pop spring + highlight pill berpendar + emoji pop cerdas."""
 
-    SIZE = 86
+    SIZE = 56
     MAX_WORDS = 3
     MAX_W = 920
-    GAP = 36
+    GAP = 24
 
     def __init__(self, words: List[Dict[str, Any]], accent: Tuple[int, int, int],
                  power_words: Sequence[str] = (), emoji_map: Optional[Dict[str, str]] = None,
-                 y_center: int = 1490, alt_zones: Sequence[Tuple[float, float, int]] = (),
+                 font_size: Optional[int] = None,
+                 y_center: int = 1520, alt_zones: Sequence[Tuple[float, float, int]] = (),
                  card_zones: Sequence[Tuple[float, float]] = ()):
+        if font_size and font_size > 0:
+            self.SIZE = int(font_size)
+            self.GAP = max(14, int(self.SIZE * 0.42))
+        self.stroke_w = max(4, int(self.SIZE * 0.09))
         self.accent = accent
         self.dark_text = luminance(accent) > 0.5
         self.power = set(power_words)
@@ -420,13 +485,13 @@ class CaptionTrack(Element):
                 im = text_img(text, self.f, col)
             else:
                 col = self.accent + (255,) if kind == "power" else (255, 255, 255, 255)
-                im = text_img(text, self.f, col, stroke=8, stroke_fill=(0, 0, 0, 255))
-                im = with_shadow(im, blur=12, offset=(0, 7), opacity=0.68)
+                im = text_img(text, self.f, col, stroke=self.stroke_w, stroke_fill=(0, 0, 0, 255))
+                im = with_shadow(im, blur=max(6, int(self.SIZE * 0.14)), offset=(0, max(3, int(self.SIZE * 0.08))), opacity=0.68)
             self._cache[k] = im
         return self._cache[k]
 
     def _wwidth(self, text: str) -> int:
-        l, _, r, _ = self.f.getbbox(text, stroke_width=8)
+        l, _, r, _ = self.f.getbbox(text, stroke_width=self.stroke_w)
         return r - l
 
     def _paginate(self, ws):
@@ -498,10 +563,12 @@ class CaptionTrack(Element):
             px = page["xs"][act]
             pw = page["widths"][act]
             pop = 0.88 + 0.12 * spring(since, 18, 9.5)
-            ph = (self.SIZE * 1.22) * sc
-            pill = rrect(int(pw + 48 * sc), int(ph), int(24 * sc), self.accent + (255,),
-                         outline=lighten(self.accent, 0.55) + (240,), width=3)
-            pill = glow(pill, self.accent, blur=14, strength=0.55)
+            ph = (self.SIZE * 1.25) * sc
+            pw_pill = pw + (self.SIZE * 0.45) * sc
+            prad = int(ph * 0.35)
+            pill = rrect(int(pw_pill), int(ph), prad, self.accent + (255,),
+                         outline=lighten(self.accent, 0.55) + (240,), width=max(2, int(self.SIZE * 0.04)))
+            pill = glow(pill, self.accent, blur=max(8, int(self.SIZE * 0.2)), strength=0.55)
             paste_center(canvas, transform(pill, pop, exit_a, 0.0), W / 2 + px, cy + 2)
 
         for j, w in enumerate(ws):
@@ -534,13 +601,15 @@ class CaptionTrack(Element):
                     bob = 6 * math.sin(t * 4.0)
                     ex = W / 2 + clamp(page["xs"][j], -300, 300)
                     card_busy = any(ca - 0.1 <= t <= cb + 0.1 for (ca, cb) in self.card_zones)
-                    ey = (cy + 135 * max(sc, 0.85) + bob) if card_busy else (cy - 142 * max(sc, 0.85) + bob)
+                    ey_offset = int(self.SIZE * 1.65) * max(sc, 0.85)
+                    ey = (cy + ey_offset + bob) if card_busy else (cy - ey_offset + bob)
                     paste_center(canvas, transform(img, s, exit_a * clamp(dt / 0.06), rot), ex, ey)
 
     @lru_cache(maxsize=32)
     def _emoji(self, em: str) -> Optional[Image.Image]:
-        im = emoji_img(em, 134)
-        return with_shadow(im, blur=10, offset=(0, 8), opacity=0.50) if im is not None else None
+        sz = max(72, int(self.SIZE * 1.45))
+        im = emoji_img(em, sz)
+        return with_shadow(im, blur=max(6, int(sz * 0.08)), offset=(0, max(4, int(sz * 0.06))), opacity=0.50) if im is not None else None
 
 
 class HookTitle(Element):

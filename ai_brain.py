@@ -310,8 +310,11 @@ def _call_gemini_native(base_url: str, model: str, api_key: str, system_prompt: 
             return "\n".join(texts).strip()
         except urllib.error.HTTPError as he:
             last_http_err = he
-            # Jika 404 (model belum tersedia) atau 429/400/403 pada model Pro/Preview, otomatis coba model Flash di fallback_chain
-            if he.code in (400, 403, 404, 429) and idx_m + 1 < len(fallback_chain):
+            # Jika 404 (model belum tersedia) atau 429 (kuota model habis), otomatis coba model berikutnya di fallback_chain
+            # Jika 403 (API Key leaked / invalid), langsung stop dan raise agar tidak membuang waktu
+            if he.code == 403:
+                raise
+            if he.code in (404, 429) and idx_m + 1 < len(fallback_chain):
                 continue
             raise
     if last_http_err:
@@ -536,12 +539,14 @@ def curate_viral_clips_with_ai(
 
     transcript_block = "\n".join(seg_lines)
 
+    target_clips_str = "SEMUA bagian klip potensial (sebanyak mungkin momen menarik yang memenuhi kriteria)" if top_k >= 90 else f"{top_k} bagian klip"
+
     system_prompt = (
         "Kamu adalah Sutradara Video Shorts/Reels Viral & Editor Bahasa Indonesia profesional sekelas tim kreator papan atas.\n"
         "Tugasmu:\n"
         "1. BACA transkrip video ber-timestamp berikut (Niche: " + niche.upper() + ").\n"
         "2. KOREKSI salah dengar (typo ASR Whisper) yang terlihat jelas berdasarkan konteks kalimat (contoh: 'marau lama' -> 'para ulama', 'anak perumpuan' -> 'anak perempuan', 'daripang' -> 'gampang', 'sebeginak' -> 'sebegitu'). Masukkan koreksi kata per kata di kamus `word_replacements`.\n"
-        f"3. PILIH {top_k} bagian klip paling menarik, menyentuh, atau membuka wawasan dengan durasi masing-masing antara {min_duration:.0f} hingga {max_duration:.0f} detik (tidak boleh tumpang tindih).\n"
+        f"3. PILIH {target_clips_str} paling menarik, menyentuh, atau membuka wawasan dengan durasi masing-masing antara {min_duration:.0f} hingga {max_duration:.0f} detik (tidak boleh tumpang tindih).\n"
         "   - Wajib dimulai dari kalimat pembuka (Hook) yang kuat dan berhenti tepat di akhir kalimat kesimpulan/punchline (cerita utuh, tidak gantung!).\n"
         "4. Untuk setiap klip, buatkan:\n"
         "   - `start_time` (float detik, sesuai awal segmen pembuka)\n"

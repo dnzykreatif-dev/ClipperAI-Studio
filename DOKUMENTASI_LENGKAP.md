@@ -215,4 +215,32 @@ Semua video hasil render disimpan di folder **`outputs/`**. Video yang belum diu
 - **Download GDrive / Upload YouTube**: Memerlukan internet untuk proses unduh/unggah.
 
 ---
+
+## 9. SUITE WALLMEDIA CLONED (REMOTE HP, WIRELESS ADB, GDRIVE, SEAMLESS LOOPER)
+
+Modul `wallmedia_bridge.py` diekstraksi dari hasil *reverse engineering* mendalam atas biner Windows `wallmedia.5.3.1.exe`. Modul ini menambahkan 5 kapabilitas otomasi kelas industri ke dalam ClipperAI Studio:
+
+1. **🌐 Cloudflare Quick Tunnel (Akses Remote Smartphone Tanpa Konfigurasi)**:
+   - Mengunduh otomatis biner resmi `cloudflared.exe` (~35MB).
+   - Menghasilkan tautan publik instan `https://[subdomain].trycloudflare.com`.
+   - Mengizinkan pengguna mengontrol ClipperAI Studio dari smartphone di luar jaringan Wi-Fi rumah tanpa perlu buka port router atau langganan IP publik.
+
+2. **🤖 Wireless ADB Android Bridge (Shopee Video & TikTok Auto-Poster)**:
+   - Mendukung Android 11+ Wireless Debugging (pairing 6-digit kode & port nirkabel).
+   - Mentransfer video hasil kliping langsung ke `/sdcard/DCIM/Camera/` HP dan memicu broadcast MediaScanner.
+   - Menyalin *caption* dan *#hashtag* ke clipboard HP dengan metode aman tanpa terpotong bug karakter shell.
+
+3. **☁️ Google Drive Session Uploader (Tanpa Google Cloud API)**:
+   - Mengunggah video langsung ke folder Google Drive menggunakan sesi akun Chrome yang aktif.
+   - Menggunakan teknik *JavaScript Prototype Hooking* pada `HTMLInputElement.prototype.click` sehingga dialog berkas sistem ditekan dan input berkas dialihkan secara otomatis tanpa batasan kuota OAuth.
+
+4. **🔄 Mathematical Seamless Video Looper**:
+   - Algoritma *Alpha Crossfade Filtergraph FFmpeg* untuk mengulang klip video pendek (misal animasi Veo / Remotion 8-10 detik) menjadi durasi panjang (30-180 detik) tanpa terlihat adanya patahan (*jump cut*).
+   - Pilihan *mix* atau *replace* audio untuk menyinkronkan video perulangan ke durasi lagu penuh.
+
+5. **🔥 High-Contrast Hook Styler**:
+   - Membubuhkan *banner badge* teks kontras tinggi (kuning emas `#fde047` dengan kotak gelap transparan dan lis tebal) di sepertiga atas video (area fokus retensi penonton) yang dioptimalkan untuk rasio vertikal 9:16 Shorts / Reels.
+
+---
+
 *Dokumentasi ini dibuat otomatis dan dapat terus diperbarui seiring perkembangan fitur ClipperAI Studio.*

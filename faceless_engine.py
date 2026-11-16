@@ -34,6 +34,24 @@ VOICES = {
 }
 
 THEMES = {
+    "anymotion": {
+        "name": "✨ AnyMotion SaaS & Facts (Mint / Apple Clean)",
+        "theme_palette": "mint",
+        "header_tag": "✨ SOLUSI & INSIGHT MODERN",
+        "header_bg": "0x10B981",
+        "highlight_color": "&H0081B910",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
+    "auto": {
+        "name": "🤖 Otomatis Pilihan AI (Desain Bebas / Template-Free)",
+        "theme_palette": "auto",
+        "header_tag": "⚡ SMART AI INSIGHT",
+        "header_bg": "0x6366F1",
+        "highlight_color": "&H00F16663",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
     "vox": {
         "name": "📜 Vox 2.5D Torn-Paper & Parallax (Dokumenter / Explainer)",
         "bg_color1": "0xE8E1D3",
@@ -43,50 +61,42 @@ THEMES = {
         "highlight_color": "&H001818B9",  # Deep Red Accent in ASS (BGR)
         "border_color": "&H00000000",
         "is_vox": True,
-    },
-    "cyber": {
-        "name": "🌌 Dark Cyber / Tech",
-        "bg_color1": "0x060913",
-        "bg_color2": "0x1e1b4b",
-        "header_tag": "⚡ INSIGHT PENTING",
-        "header_bg": "0x4338CA",
-        "highlight_color": "&H0000FFFF",  # Neon Yellow
-        "border_color": "&H00000000"
+        "engine": "vox",
     },
     "islamic": {
-        "name": "🕌 Islamic / Gold Emerald",
-        "bg_color1": "0x041710",
-        "bg_color2": "0x064e3b",
+        "name": "🕌 Islamic Wisdom (Warm Cream & Emerald)",
+        "theme_palette": "emerald",
         "header_tag": "🕌 RENUNGAN & MUTIARA HIKMAH",
         "header_bg": "0x059669",
-        "highlight_color": "&H0038BDF8",  # Amber / Gold
-        "border_color": "&H00000000"
+        "highlight_color": "&H00699605",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
     },
     "business": {
-        "name": "💼 Modern Business / Cuan",
-        "bg_color1": "0x090D16",
-        "bg_color2": "0x1E293B",
+        "name": "💼 Modern Business / Cuan (Obsidian Dark)",
+        "theme_palette": "obsidian",
         "header_tag": "💡 RAHASIA SUKSES & FINANSIAL",
-        "header_bg": "0xD97706",
-        "highlight_color": "&H004ADE80",  # Neon Green
-        "border_color": "&H00000000"
+        "header_bg": "0x0EA5E9",
+        "highlight_color": "&H00E9A50E",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
     },
     "motivation": {
-        "name": "🔥 High Energy / Motivasi",
-        "bg_color1": "0x18060A",
-        "bg_color2": "0x4C0519",
+        "name": "🔥 High Energy / Motivasi (Red Flame)",
+        "theme_palette": "obsidian",
         "header_tag": "🔥 DENGAR INI SAAT INGIN MENYERAH",
         "header_bg": "0xE11D48",
-        "highlight_color": "&H0000FFFF",  # Bright Yellow
-        "border_color": "&H00000000"
+        "highlight_color": "&H00481DE1",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
     }
 }
 
 
 async def _synthesize_speech(text: str, voice_id: str, output_path: str):
-    """Generates natural neural audio from text using Edge-TTS with generous timeout."""
+    """Generates natural neural audio from text using Edge-TTS with reasonable timeout."""
     communicate = edge_tts.Communicate(text=text, voice=voice_id)
-    await asyncio.wait_for(communicate.save(output_path), timeout=60.0)
+    await asyncio.wait_for(communicate.save(output_path), timeout=8.0)
 
 
 def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional[str] = None) -> str:
@@ -96,7 +106,7 @@ def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional
 
     voice_id = VOICES.get(voice_key, VOICES["ardi"])["id"]
     last_err = None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
             if os.path.exists(output_path):
                 try:
@@ -108,7 +118,7 @@ def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional
                 return output_path
         except Exception as e:
             last_err = e
-            time.sleep(1.5)
+            time.sleep(0.5)
 
     # Offline SAPI fallback jika koneksi internet terputus
     wav_tmp = output_path + ".wav"
@@ -118,8 +128,11 @@ def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional
         f"$s.SetOutputToWaveFile('{wav_tmp}'); "
         f"$s.Speak({json.dumps(text)}); $s.Dispose()"
     )
-    subprocess.run(["powershell", "-NoProfile", "-Command", ps_cmd],
-                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        subprocess.run(["powershell", "-NoProfile", "-Command", ps_cmd],
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8.0)
+    except Exception:
+        pass
     if os.path.exists(wav_tmp) and os.path.getsize(wav_tmp) > 2000:
         subprocess.run(["ffmpeg", "-y", "-i", wav_tmp, "-c:a", "libmp3lame", "-q:a", "2", output_path],
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -349,37 +362,421 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     return ass_path, cut_times, sfx_events
 
 
+def generate_visual_qa_contact_sheet(video_path: str, output_jpg: str, n_frames: int = 6) -> Optional[str]:
+    """
+    Automated Visual QA Contact Sheet Generator (inspired by huashu-motion `om qa --sheet`).
+    Extracts evenly spaced keyframes across the video and compiles them into a 3x2 contact sheet
+    for instant visual inspection of layout, typography, and zero-collision check.
+    """
+    import cv2
+    from PIL import Image
+    try:
+        cap = cv2.VideoCapture(video_path)
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        tot_f = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        if tot_f <= 0:
+            cap.release()
+            return None
+        dur = tot_f / fps
+
+        ratios = [0.08, 0.25, 0.42, 0.58, 0.75, 0.92]
+        frames = []
+        for r in ratios:
+            t = r * dur
+            cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+            ret, frame = cap.read()
+            if ret:
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                im = Image.fromarray(rgb)
+                frames.append(im.resize((360, 640), Image.BILINEAR))
+        cap.release()
+
+        if len(frames) >= 6:
+            cols, rows = 3, 2
+            sheet = Image.new("RGB", (360 * cols, 640 * rows))
+            for idx, f in enumerate(frames[:6]):
+                c = idx % cols
+                r = idx // cols
+                sheet.paste(f, (c * 360, r * 640))
+            sheet.save(output_jpg, quality=88)
+            return output_jpg
+    except Exception as e:
+        print(f"[Visual QA Warning] Failed to generate contact sheet: {e}")
+    return None
+
+
+def _parse_accent_tuple(hex_str: str, default: Tuple[int, int, int] = (16, 185, 129)) -> Tuple[int, int, int]:
+    h = str(hex_str).strip().lstrip("#").replace("0x", "")
+    if len(h) == 6:
+        try:
+            return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+        except Exception:
+            pass
+    return default
+
+
+def _render_with_visual_studio(
+    script_text: str,
+    output_mp4: str,
+    voice_key: str,
+    theme: Dict[str, Any],
+    clean_header: str,
+    progress_callback: Optional[Callable[[int, str], None]] = None,
+    storyboard: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    import visual_studio
+    import ai_director
+    import pro_editor
+
+    # Step 1: AI Visual Art Director
+    if progress_callback:
+        progress_callback(10, "Otak AI sedang menganalisis naskah & merancang Storyboard AnyMotion modern...")
+
+    palette_hint = theme.get("theme_palette", "mint")
+    if storyboard and storyboard.get("scenes"):
+        sb = storyboard
+    else:
+        sb = ai_director.direct_visual_storyboard(script_text, theme_hint=palette_hint)
+
+    narration_text = sb.get("narration_script") or script_text
+    sb_scenes = sb.get("scenes") or []
+    chosen_palette = sb.get("theme_palette") or palette_hint
+    if chosen_palette == "auto":
+        chosen_palette = "mint"
+    is_dark = chosen_palette in ("obsidian", "dark")
+    accent_rgb = _parse_accent_tuple(sb.get("accent_hex") or theme.get("header_bg", "0x10B981"))
+
+    # Step 2: TTS Audio Generation
+    if progress_callback:
+        progress_callback(25, f"AI sedang menghasilkan suara narasi alami ({VOICES.get(voice_key, VOICES['ardi'])['name']})...")
+
+    audio_path = str(UPLOADS_DIR / f"faceless_audio_{uuid.uuid4().hex[:6]}.mp3")
+    generate_tts_audio(text=narration_text, voice_key=voice_key, output_path=audio_path)
+
+    total_dur = clipper_engine.get_video_duration(audio_path)
+    if total_dur <= 0:
+        total_dur = 15.0
+
+    # Step 3: Fast-Whisper Word Alignment
+    if progress_callback:
+        progress_callback(45, "Menyelaraskan subtitle karaoke kata-demi-kata...")
+
+    transcript = clipper_engine.transcribe_audio_with_progress(
+        audio_path=audio_path,
+        total_audio_dur=total_dur,
+        model_size="base",
+        niche="universal"
+    )
+
+    all_words = []
+    for seg in transcript.get("segments", []):
+        for w in seg.get("words", []):
+            all_words.append({
+                "word": w.get("word", "").strip(),
+                "start": float(w.get("start", 0.0)),
+                "end": float(w.get("end", 0.0))
+            })
+
+    if not all_words:
+        tokens = narration_text.split()
+        interval = total_dur / max(1, len(tokens))
+        for idx, t in enumerate(tokens):
+            all_words.append({
+                "word": t,
+                "start": idx * interval,
+                "end": (idx + 1) * interval
+            })
+
+    # Step 4: Build Visual Timeline Elements & Audio SFX Events
+    if progress_callback:
+        progress_callback(60, "Membangun panggung 3D motion graphics & track audio SFX...")
+
+    elements = []
+    sfx_events = []
+    whoosh_ids = ["VL0501", "VL0502", "VL0503", "VL0504", "VL0505"]
+    n_scenes = max(1, len(sb_scenes))
+
+    for s_idx, sc in enumerate(sb_scenes):
+        t0 = round(s_idx * (total_dur / n_scenes), 2)
+        t1 = round((s_idx + 1) * (total_dur / n_scenes) + (0.12 if s_idx < n_scenes - 1 else 0.0), 2)
+        comp_type = sc.get("component_type", "phone_hero")
+
+        # Top Dual-Tone Title (Safe Zone Atas: y=160)
+        reg = sc.get("title_regular", "")
+        ita = sc.get("title_italic", "")
+        tra = sc.get("title_trailing", "")
+        if not reg and not ita:
+            reg, ita, tra = clean_header, "Solusi", "Terbaik"
+        elements.append(visual_studio.DualToneTitleElement(reg, ita, tra, t0=t0, t1=t1,
+                                                          accent=accent_rgb, is_dark=is_dark, y_pos=160))
+
+        # Transition SFX
+        if s_idx > 0:
+            sfx_events.append(dict(id=whoosh_ids[s_idx % len(whoosh_ids)], t=max(0.0, t0 - 0.06), gain=0.32))
+
+        # Hero Component on Center Stage
+        if comp_type == "phone_hero":
+            elements.append(visual_studio.PhoneHeroElement(
+                screen_title=sc.get("screen_title", "Data Terpusat"),
+                stat_title=sc.get("screen_stat_title", "STATISTIK"),
+                stat_value=sc.get("screen_stat_value", "100%"),
+                card2_title=sc.get("screen_card2_title", "EFISIENSI"),
+                card2_value=sc.get("screen_card2_value", "Otomatis"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0511", t=t0 + 0.05, gain=0.34))
+
+        elif comp_type == "app_window":
+            elements.append(visual_studio.AppWindowElement(
+                window_title=sc.get("window_title", "Clipper Dashboard"),
+                headline=sc.get("window_headline", "Sistem Manajemen Terpadu"),
+                subtext=sc.get("window_subtext", "Kelola semua data secara instan dalam satu layar."),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0541", t=t0 + 0.04, gain=0.34))
+
+        elif comp_type == "feature_list":
+            feats = sc.get("features") or [
+                {"title": "Data Terpadu", "subtitle": "Tercatat rapi dalam satu pintu", "icon": "✓"},
+                {"title": "Akses Mudah", "subtitle": "Bisa dibuka lewat smartphone", "icon": "✓"},
+                {"title": "Laporan Akurat", "subtitle": "Pantau perkembangan secara instan", "icon": "✓"}
+            ]
+            elements.append(visual_studio.FeatureListElement(
+                features=feats,
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0502", t=t0 + 0.02, gain=0.32))
+            for item_i in range(len(feats)):
+                sfx_events.append(dict(id="VL0531", t=t0 + 0.20 + item_i * 0.22, gain=0.28))
+
+        elif comp_type == "stat_shock":
+            elements.append(visual_studio.StatShockElement(
+                stat_number=sc.get("stat_number", "99.8%"),
+                stat_label=sc.get("stat_label", "Fakta Efisiensi Terbukti"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0516", t=t0 + 0.04, gain=0.35))
+
+        elif comp_type == "metric_counter":
+            elements.append(visual_studio.MetricCounterElement(
+                target_val=sc.get("counter_target") or sc.get("stat_number", "99.8%"),
+                label=sc.get("counter_label") or sc.get("stat_label", "Akurasi & Efisiensi"),
+                sublabel=sc.get("counter_sublabel", "Otomatisasi proses secara realtime"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0516", t=t0 + 0.05, gain=0.36))
+
+        elif comp_type == "tweet_quote":
+            elements.append(visual_studio.TweetQuoteElement(
+                author=sc.get("quote_author", "Ustadz H. Ahmad"),
+                handle=sc.get("quote_handle", "pondok_digital"),
+                quote=sc.get("quote_text", "Sistem ini sangat rapi, rekap santri langsung beres tanpa ribet."),
+                role=sc.get("quote_role", "Pimpinan Pesantren"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0541", t=t0 + 0.04, gain=0.34))
+
+        elif comp_type == "split_vs":
+            elements.append(visual_studio.SplitVsElement(
+                left_title=sc.get("vs_left_title", "Cara Lama Manual"),
+                left_desc=sc.get("vs_left_desc", "Rekap buku tebal & data tercecer"),
+                right_title=sc.get("vs_right_title", "Solusi Otomatis"),
+                right_desc=sc.get("vs_right_desc", "1 Klik langsung tersimpan di HP"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0503", t=t0 + 0.02, gain=0.34))
+            sfx_events.append(dict(id="VL0504", t=t0 + 0.22, gain=0.34))
+
+        elif comp_type == "code_terminal":
+            elements.append(visual_studio.CodeTerminalElement(
+                command=sc.get("term_cmd", "system-sync --database live"),
+                line1=sc.get("term_line1", "Database terhubung ke server cloud"),
+                line2=sc.get("term_line2", "Sinkronisasi data santri berhasil"),
+                status=sc.get("term_status", "100% Aktif & Aman"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0541", t=t0 + 0.04, gain=0.34))
+
+        elif comp_type == "floating_badge":
+            elements.append(visual_studio.FloatingBadgeElement(
+                badge_title=sc.get("badge_title", "Rekomendasi Utama"),
+                badge_sub=sc.get("badge_sub", "Dipercaya lebih dari 100 lembaga"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0511", t=t0 + 0.05, gain=0.35))
+
+        elif comp_type == "comparison":
+            elements.append(visual_studio.ComparisonElement(
+                compare_before=sc.get("compare_before", "Proses manual yang ribet & memakan waktu"),
+                compare_after=sc.get("compare_after", "Selesai dalam hitungan detik di HP"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0503", t=t0 + 0.02, gain=0.34))
+            sfx_events.append(dict(id="VL0504", t=t0 + 0.22, gain=0.34))
+
+        elif comp_type == "cta_slam":
+            elements.append(visual_studio.CtaSlamElement(
+                headline=sc.get("cta_headline", "Siap Memulai Sekarang?"),
+                button_text=sc.get("cta_button_text", "KIRIM PESAN"),
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0516", t=t0 + 0.05, gain=0.36))
+
+        else:
+            elements.append(visual_studio.PhoneHeroElement(
+                screen_title=clean_header[:20],
+                stat_title="PERFORMA",
+                stat_value="10X",
+                card2_title="KEMUDAHAN",
+                card2_value="100%",
+                t0=t0, t1=t1, accent=accent_rgb, is_dark=is_dark
+            ))
+            sfx_events.append(dict(id="VL0511", t=t0 + 0.05, gain=0.34))
+
+    # Safe Zone Bawah: Subtitle Karaoke Kapsul Minimalis (y=1560)
+    elements.append(visual_studio.PillCaptionElement(all_words, accent=accent_rgb, is_dark=is_dark))
+
+    # Safe Zone Dasar: Glowing Progress Line (y=1912..1920)
+    elements.append(visual_studio.ProgressLineElement(total_dur, accent=accent_rgb))
+
+    timeline = visual_studio.VisualTimeline(total_dur, elements, background_theme=chosen_palette)
+
+    # Step 5: Audio Bed & FFmpeg High-Fidelity Rendering
+    if progress_callback:
+        progress_callback(75, "Merender video AnyMotion 1080x1920 30fps dengan Audio -14 LUFS...")
+
+    sfx_wav = UPLOADS_DIR / f"faceless_sfx_{uuid.uuid4().hex[:6]}.wav"
+    pro_editor.build_sfx_bed(sfx_events, total_dur, sfx_wav)
+
+    cmd = [
+        "ffmpeg", "-y",
+        "-i", audio_path,
+        "-i", str(sfx_wav),
+        "-f", "rawvideo",
+        "-pix_fmt", "rgba",
+        "-s", f"{visual_studio.W}x{visual_studio.H}",
+        "-framerate", "30",
+        "-i", "pipe:0",
+        "-filter_complex", (
+            "[2:v]format=yuv420p[v];"
+            "[0:a]aresample=48000,volume=1.0[vce];"
+            "[1:a]volume=1.0[sfx];"
+            "[vce][sfx]amix=inputs=2:duration=first:normalize=0,"
+            "loudnorm=I=-14:TP=-1.5:LRA=11[a]"
+        ),
+        "-map", "[v]",
+        "-map", "[a]",
+        "-t", f"{total_dur:0.2f}",
+        "-c:v", "libx264",
+        "-preset", "veryfast",
+        "-crf", "20",
+        "-pix_fmt", "yuv420p",
+        "-c:a", "aac",
+        "-b:a", "192k",
+        "-movflags", "+faststart",
+        output_mp4
+    ]
+
+    log_file = UPLOADS_DIR / f"visual_studio_ffmpeg_{uuid.uuid4().hex[:6]}.log"
+    pro_editor._encode_with_overlay(cmd, timeline, log_file)
+    if log_file.exists():
+        try:
+            log_file.unlink()
+        except Exception:
+            pass
+
+    # Step 5.5: Automated Visual QA Contact Sheet (inspired by huashu-motion)
+    qa_sheet_path = output_mp4.replace(".mp4", "_qa_montage.jpg")
+    qa_url = None
+    if generate_visual_qa_contact_sheet(output_mp4, qa_sheet_path):
+        qa_url = f"/outputs/{Path(qa_sheet_path).name}"
+
+    # Cleanup temp
+    for p in [audio_path, str(sfx_wav)]:
+        if os.path.exists(p):
+            try:
+                os.remove(p)
+            except Exception:
+                pass
+
+    # Step 6: SEO Package
+    seo_package = yt_seo_engine.generate_shorts_seo_package(
+        transcript_text=script_text,
+        title_hint=clean_header,
+        niche="universal",
+        mode="shorts"
+    )
+
+    seo_json_path = output_mp4.replace(".mp4", "_seo.json")
+    try:
+        with open(seo_json_path, "w", encoding="utf-8") as f:
+            json.dump(seo_package, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+    if progress_callback:
+        progress_callback(100, "Selesai! Video AnyMotion Faceless siap ditonton & diupload.")
+
+    return {
+        "ok": True,
+        "video_path": output_mp4,
+        "filename": Path(output_mp4).name,
+        "duration": round(total_dur, 2),
+        "seo": seo_package,
+        "qa_montage_path": qa_sheet_path if qa_url else None,
+        "qa_montage_url": qa_url
+    }
+
+
 def render_faceless_video(
     script_text: str,
     output_mp4: str,
     voice_key: str = "ardi",
-    theme_key: str = "cyber",
+    theme_key: str = "anymotion",
     header_title: Optional[str] = None,
-    progress_callback: Optional[Callable[[int, str], None]] = None
+    progress_callback: Optional[Callable[[int, str], None]] = None,
+    storyboard: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
-    Renders complete 1080x1920 vertical faceless short from text:
-    1. Generates natural TTS voice.
-    2. Transcribes with Faster-Whisper to align word timestamps.
-    3. Builds animated ASS captions.
-    4. Generates procedural visual motion background with dynamic waves.
-    5. Adds whoosh SFX and normalizes audio to 0 dB.
+    Renders complete 1080x1920 vertical faceless short from text.
+    Supports both Visual Studio AnyMotion Engine (Modern SaaS/Facts) and Vox 2.5D Collage Engine.
     """
+    # Safe initialization of scene variables
+    scenes: List[Any] = []
+    sb_scenes: List[Any] = []
+    elements: List[Any] = []
+    sfx_events: List[Any] = []
+
     Path(output_mp4).parent.mkdir(parents=True, exist_ok=True)
-    theme = THEMES.get(theme_key, THEMES["cyber"])
+    theme = THEMES.get(theme_key, THEMES["anymotion"])
     import re
     raw_header = header_title.strip() if header_title else theme["header_tag"]
     clean_header = re.sub(r'[^\w\s\-\.,!?&]', '', raw_header).strip().upper()
     if not clean_header:
         clean_header = "INSIGHT PENTING"
 
+    if theme.get("engine", "visual_studio") == "visual_studio":
+        return _render_with_visual_studio(
+            script_text=script_text,
+            output_mp4=output_mp4,
+            voice_key=voice_key,
+            theme=theme,
+            clean_header=clean_header,
+            progress_callback=progress_callback,
+            storyboard=storyboard
+        )
+
     # Step 1: AI Video Director (Storyboard & Narration Polish)
     if progress_callback:
-        progress_callback(10, "Otak AI (Gemini) sedang menganalisis naskah & menyusun storyboard animasi dinamis...")
+        progress_callback(10, "Otak AI sedang menganalisis naskah & menyusun storyboard animasi dinamis...")
 
-    storyboard = direct_ai_storyboard(script_text, theme_key=theme_key)
-    narration_text = storyboard.get("narration_script") or script_text
-    sb_scenes = storyboard.get("scenes") or []
+    if storyboard and storyboard.get("scenes"):
+        sb_scenes = storyboard.get("scenes") or []
+        narration_text = storyboard.get("narration_script") or script_text
+    else:
+        sb = direct_ai_storyboard(script_text, theme_key=theme_key)
+        narration_text = sb.get("narration_script") or script_text
+        sb_scenes = sb.get("scenes") or []
 
     # Step 2: TTS Generation
     if progress_callback:
@@ -563,6 +960,17 @@ def render_faceless_video(
         all_words, accent_rgb, power_words=pro_editor.POWER_WORDS,
         emoji_map=emoji_map, y_center=1520
     ))
+
+    # Brand Logo Watermark (dn-zy)
+    default_brand = BASE_DIR / "static" / "branding" / "dnzy_watermark.png"
+    if default_brand.exists():
+        elements.append(mg.LogoWatermark(
+            image_path=str(default_brand),
+            total=total_dur,
+            pos="top_right",
+            width=185,
+            opacity=0.92
+        ))
 
     # 5. Glowing Bottom Progress Bar
     elements.append(mg.ProgressBar(total_dur, accent_rgb))

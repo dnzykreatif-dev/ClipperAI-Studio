@@ -699,7 +699,7 @@ def find_viral_clips(
             cand["clip_id"] = f"clip_{len(selected) + 1}"
             cand["hashtags"] = niche_cfg["hashtags"]
             selected.append(cand)
-            if len(selected) >= top_k:
+            if top_k > 0 and top_k < 99 and len(selected) >= top_k:
                 break
 
     return selected
@@ -847,7 +847,7 @@ def create_ass_subtitles(
     clip_start_time: float,
     ass_path: str,
     font_name: str = "Arial",
-    font_size: int = 66
+    font_size: int = 50
 ) -> str:
     header = f"""[Script Info]
 ScriptType: v4.00+
@@ -857,7 +857,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Hormozi,{font_name},{font_size},&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,8,4,2,60,60,650,1
+Style: Hormozi,{font_name},{font_size},&H00FFFFFF,&H0000FFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,6,3,2,60,60,680,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -923,7 +923,11 @@ def render_clip_to_9_16(
     niche: str = "universal",
     custom_watermark: Optional[str] = None,
     add_sfx: bool = True,
-    intensity: str = "normal"
+    intensity: str = "normal",
+    subtitle_size: str = "small",
+    watermark_image: Optional[str] = None,
+    watermark_pos: str = "top_right",
+    progress_callback: Optional[Callable[[str, str], None]] = None
 ) -> str:
     try:
         import pro_editor
@@ -934,6 +938,10 @@ def render_clip_to_9_16(
             niche=niche,
             custom_watermark=custom_watermark,
             intensity=intensity,
+            subtitle_size=subtitle_size,
+            watermark_image=watermark_image,
+            watermark_pos=watermark_pos,
+            progress_callback=progress_callback
         )
         clip_info["edl"] = edl
         if "duration" in edl:
@@ -954,7 +962,9 @@ def render_clip_to_9_16(
 
     ass_filename = f"{clip_info['clip_id']}.ass"
     ass_path = temp_dir / ass_filename
-    create_ass_subtitles(words, start_sec, str(ass_path))
+    sub_sizes = {"compact": 42, "small": 50, "medium": 64, "large": 78}
+    target_font_size = sub_sizes.get(str(subtitle_size).lower(), 50) if isinstance(subtitle_size, str) else int(subtitle_size)
+    create_ass_subtitles(words, start_sec, str(ass_path), font_size=target_font_size)
 
     relative_ass = f"uploads/temp/{ass_filename}"
     clean_title = apply_phonetic_corrections(hook_title).replace("'", "").replace(":", " -")

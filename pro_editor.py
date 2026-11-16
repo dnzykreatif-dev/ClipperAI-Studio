@@ -24,7 +24,7 @@ import subprocess
 import wave
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -512,12 +512,19 @@ def render_clip_pro(
     niche: str = "universal",
     custom_watermark: Optional[str] = None,
     intensity: str = "normal",
+    subtitle_size: str = "small",
+    watermark_image: Optional[str] = None,
+    watermark_pos: str = "top_right",
+    progress_callback: Optional[Callable[[str, str], None]] = None,
 ) -> Dict[str, Any]:
     intensity = intensity if intensity in INTENSITY else "normal"
     preset = PRESETS.get(niche, PRESETS["universal"])
     cfg = INTENSITY[intensity]
     clip_id = clip_info.get("clip_id", "clip")
     rng = random.Random(f"{clip_id}-{clip_info['start_time']:.2f}")
+
+    sub_sizes = {"compact": 46, "small": 56, "medium": 68, "large": 82}
+    target_font_size = sub_sizes.get(str(subtitle_size).lower(), 56) if isinstance(subtitle_size, str) else int(subtitle_size)
 
     tmp = BASE_DIR / "uploads" / "temp" / f"pro_{clip_id}_{rng.randint(1000, 9999)}"
     tmp.mkdir(parents=True, exist_ok=True)
@@ -526,12 +533,16 @@ def render_clip_pro(
     src_w, src_h, _ = probe_video(source_video)
     vertical = (src_w / src_h) < 0.7
 
-    # 1. Plan shots & assign 4-mode camera framing
+    # 1. Plan shots & assign 4-mode camera framing (Jeda kosong terbuang)
+    if progress_callback:
+        progress_callback("silence_cut", "Jeda kosong terbuang (Auto Jump-Cut)...")
     words = clip_info.get("words", [])
     shots = plan_shots(words, c0, c1, intensity, rng)
     assign_framing(shots, vertical, rng)
 
-    # 2. Face tracking
+    # 2. Face tracking (Crop 9:16 ikutin wajah)
+    if progress_callback:
+        progress_callback("face_crop", "Crop 9:16 mengikuti wajah (YuNet AI Face-Tracking)...")
     track = track_faces(source_video, c0, c1)
     fb = face_for_range(track, c0, c1, (0.5, 0.42, 0.22))
     for s in shots:
@@ -636,15 +647,33 @@ def render_clip_pro(
     for kev in kw_events:
         card_zones.append((kev["t"] - 0.1, kev["t"] + kev["d"] + 0.15))
 
-    # 4b. Motion graphics timeline (Multi-Layer Modern Agency Look)
+    # 4b. Motion graphics timeline (Subtitle per kata + Multi-Layer Agency Look)
+    if progress_callback:
+        progress_callback("subtitles", "Subtitle per kata (Pop-Bounce Hormozi)...")
     elements: List[Any] = [
         mg.TopGradient(total, height=240, max_alpha=185),
         mg.BottomGradient(total, height=820, max_alpha=225),
         mg.CinemaParticles(total, accent_rgb, count=12),
         mg.TopHeaderPill(header, total, accent_rgb, y=96),
         mg.CaptionTrack(remapped, accent_rgb, power_words=merged_power_words,
-                        emoji_map=emoji_map, y_center=1490, alt_zones=[], card_zones=card_zones),
+                        emoji_map=emoji_map, font_size=target_font_size, y_center=1520, alt_zones=[], card_zones=card_zones),
     ]
+
+    # Logo brand watermark (default: dn-zy / Dede Nuriman Az-Zailiy KREATIF)
+    effective_logo = watermark_image
+    if not effective_logo or not str(effective_logo).strip():
+        default_brand = BASE_DIR / "static" / "branding" / "dnzy_watermark.png"
+        if default_brand.exists():
+            effective_logo = str(default_brand)
+
+    if effective_logo and str(effective_logo).lower() != "none" and watermark_pos != "none":
+        elements.append(mg.LogoWatermark(
+            image_path=str(effective_logo),
+            total=total,
+            pos=watermark_pos,
+            width=185,
+            opacity=0.92
+        ))
     if clean_title:
         elements.append(mg.HookTitle(clean_title, header, accent_rgb, t0=0.0, t1=hook_dur, y=1090))
     for bc in broll_cards:
@@ -662,6 +691,8 @@ def render_clip_pro(
     build_sfx_bed(sfx_events, total, sfx_wav)
 
     # 5. Final Composite: Argon 3D LUT + Vignette + Light-Leak Overlay + Motion Graphics RGBA + Voice & Studio SFX Mix
+    if progress_callback:
+        progress_callback("loudnorm", "Suara rata · -14 LUFS (Mastering Broadcast)...")
     rel = lambda p: Path(p).resolve().relative_to(BASE_DIR).as_posix()
     lut = ARGON / "luts" / f"{preset['lut']}.cube"
     ovf = ARGON / "overlays" / f"{preset['overlay']}.mp4"
