@@ -390,6 +390,92 @@ def download_google_photos_video(url: str, output_dir: str, progress_callback: O
     )
 
 
+def download_tiktok_video(url: str, output_dir: str, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
+    """
+    Mengunduh video TikTok tanpa watermark (Clean HD MP4) via CDN tikwm API.
+    Bila API mengalami kendala sementara atau timeout, melakukan 1x retry otomatis,
+    dan fallback ke yt-dlp jika tetap gagal.
+    """
+    import urllib.request
+    import urllib.parse
+    import json
+
+    if progress_callback:
+        progress_callback(10, "Menghubungkan ke API TikTok (No-Watermark CDN)...")
+
+    clean_url = url.strip()
+    out_file = str(Path(output_dir) / f"tiktok_{uuid.uuid4().hex[:6]}.mp4")
+
+    # Coba tikwm API dengan 2x percobaan
+    for attempt in range(1, 3):
+        try:
+            api_url = f"https://www.tikwm.com/api/?url={urllib.parse.quote(clean_url, safe='')}"
+            req = urllib.request.Request(
+                api_url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                    "Accept": "application/json"
+                }
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode("utf-8", errors="replace"))
+
+            if data.get("code") == 0 and data.get("data") and data["data"].get("play"):
+                video_url = data["data"]["play"]
+                title = data["data"].get("title", "")
+                if progress_callback:
+                    progress_callback(15, f"Mengunduh video TikTok tanpa watermark: {title[:40]}...")
+
+                v_req = urllib.request.Request(
+                    video_url,
+                    headers={
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                        "Referer": "https://www.tiktok.com/"
+                    }
+                )
+                with urllib.request.urlopen(v_req, timeout=30) as v_resp:
+                    total_bytes = int(v_resp.headers.get("Content-Length") or 0)
+                    downloaded = 0
+                    chunk_size = 512 * 1024
+                    with open(out_file, "wb") as out:
+                        while True:
+                            buf = v_resp.read(chunk_size)
+                            if not buf:
+                                break
+                            out.write(buf)
+                            downloaded += len(buf)
+                            if progress_callback:
+                                if total_bytes > 0:
+                                    pct = min(20, 15 + int(5 * downloaded / total_bytes))
+                                    mb_done = downloaded / (1024 * 1024)
+                                    mb_tot = total_bytes / (1024 * 1024)
+                                    progress_callback(pct, f"Mengunduh TikTok HD: {mb_done:.1f} / {mb_tot:.1f} MB...")
+                                else:
+                                    progress_callback(18, "Mengunduh TikTok HD...")
+
+                if _is_valid_video_file(out_file):
+                    return out_file
+        except Exception:
+            pass
+
+    # Fallback ke yt-dlp jika API tikwm gagal
+    if YT_DLP_AVAILABLE:
+        if progress_callback:
+            progress_callback(12, "Fallback ke yt-dlp engine untuk video TikTok...")
+        try:
+            return download_youtube_video(clean_url, output_dir, progress_callback)
+        except Exception:
+            pass
+
+    if os.path.exists(out_file):
+        try:
+            os.remove(out_file)
+        except Exception:
+            pass
+
+    raise RuntimeError("Gagal mengunduh video TikTok. Pastikan akun tidak privat dan link valid.")
+
+
 def download_remote_video(url: str, output_dir: str, progress_callback: Optional[Callable[[int, str], None]] = None) -> str:
     """
     Universally downloads video from YouTube, Google Drive, Google Photos, Dropbox, or direct web URLs.
@@ -401,7 +487,11 @@ def download_remote_video(url: str, output_dir: str, progress_callback: Optional
     if any(k in clean_url for k in ("photos.app.goo.gl", "photos.google.com", "googleusercontent.com")):
         return download_google_photos_video(clean_url, output_dir, progress_callback)
 
-    # 2. Google Drive
+    # 2. TikTok (No-Watermark Direct Downloader via tikwm API)
+    if any(k in clean_url for k in ("tiktok.com", "douyin.com")):
+        return download_tiktok_video(clean_url, output_dir, progress_callback)
+
+    # 3. Google Drive
     if "drive.google.com" in clean_url or "docs.google.com" in clean_url:
         if progress_callback:
             progress_callback(10, "Menghubungkan ke Google Drive & mengunduh video...")
@@ -417,17 +507,17 @@ def download_remote_video(url: str, output_dir: str, progress_callback: Optional
         except Exception as e:
             raise RuntimeError(f"Gagal mengunduh dari Google Drive: {str(e)}. Pastikan link diatur ke 'Anyone with the link' (Siapa saja yang memiliki link).")
 
-    # 3. YouTube & Platform Sosial Media (yt-dlp)
-    if any(k in clean_url for k in ("youtube.com", "youtu.be", "tiktok.com", "instagram.com", "facebook.com", "fb.watch", "twitter.com", "x.com", "vimeo.com")):
+    # 4. YouTube & Platform Sosial Media Lainnya (yt-dlp)
+    if any(k in clean_url for k in ("youtube.com", "youtu.be", "instagram.com", "facebook.com", "fb.watch", "twitter.com", "x.com", "vimeo.com")):
         return download_youtube_video(clean_url, output_dir, progress_callback)
 
-    # 4. Dropbox
+    # 5. Dropbox
     if "dropbox.com" in clean_url:
         clean_url = clean_url.replace("?dl=0", "?dl=1")
         if "?dl=" not in clean_url:
             clean_url += "?dl=1"
 
-    # 5. Direct / Generic HTTP/HTTPS URL
+    # 6. Direct / Generic HTTP/HTTPS URL
     if clean_url.startswith("http://") or clean_url.startswith("https://"):
         if progress_callback:
             progress_callback(15, "Mengunduh video dari tautan web...")

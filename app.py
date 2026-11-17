@@ -27,6 +27,7 @@ import ai_brain
 import thumbnail_engine
 import social_poster
 import automation_bridge
+import studio_presets
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -1225,6 +1226,224 @@ async def render_high_contrast_hook(payload: HookOverlayPayload):
         "output_filename": out_name,
         "download_url": f"/outputs/{out_name}"
     }
+
+
+# ==============================================================================
+# STUDIO PRESETS & ARMAGICFLOW EXTENSIONS
+# ==============================================================================
+
+class StudioPromptPayload(BaseModel):
+    preset_type: str
+    params: Dict[str, Any] = {}
+
+
+class HookCaptionPayload(BaseModel):
+    topic: str
+    niche: str = "Umum"
+    formula: str = "campuran_terbaik"
+    tone: str = "Santai"
+
+
+class StoryboardScriptPayload(BaseModel):
+    product_or_topic: str
+    duration_sec: int = 30
+    kinetic_style: str = "Bold Impact"
+    niche: str = "Umum"
+
+
+class TikTokExtractPayload(BaseModel):
+    url: str
+
+
+@app.get("/api/studio/presets")
+async def get_studio_presets():
+    """Mengembalikan katalog master preset AI Visual & Storyboard."""
+    return {"ok": True, "catalog": studio_presets.STUDIO_CATALOG}
+
+
+@app.post("/api/studio/generate-prompt")
+async def generate_studio_master_prompt(payload: StudioPromptPayload):
+    """Menyusun master prompt berdasarkan parameter preset terpilih."""
+    p = payload.params
+    pt = payload.preset_type.lower()
+    
+    if pt == "thumbnail":
+        prompt = studio_presets.build_thumbnail_prompt(
+            headline=p.get("headline", ""),
+            subheadline=p.get("subheadline", ""),
+            ratio=p.get("ratio", "16:9"),
+            visual_style=p.get("visual_style", "high_ctr_commercial"),
+            typo_style=p.get("typo_style", "bold_3d_bevel"),
+            subject_theme=p.get("subject_theme", "")
+        )
+    elif pt == "product_studio":
+        prompt = studio_presets.build_product_studio_prompt(
+            product_name=p.get("product_name", ""),
+            backdrop=p.get("backdrop", "white_marble"),
+            lighting=p.get("lighting", "softbox"),
+            extra_details=p.get("extra_details", ""),
+            has_ref_image=p.get("has_ref_image", False)
+        )
+    elif pt == "kuliner_umkm":
+        prompt = studio_presets.build_kuliner_umkm_prompt(
+            dish_name=p.get("dish_name", ""),
+            serving_effect=p.get("serving_effect", "uap_panas"),
+            camera_angle=p.get("camera_angle", "hero_45"),
+            extra_details=p.get("extra_details", ""),
+            has_ref_image=p.get("has_ref_image", False)
+        )
+    elif pt == "figurine_3d":
+        prompt = studio_presets.build_figurine_3d_prompt(
+            character_desc=p.get("character_desc", ""),
+            toy_style=p.get("toy_style", "pop_mart"),
+            packaging=p.get("packaging", "creator_desk"),
+            material=p.get("material", "Smooth matte vinyl with gloss highlights"),
+            extra_details=p.get("extra_details", ""),
+            has_ref_image=p.get("has_ref_image", False)
+        )
+    elif pt == "virtual_tryon":
+        prompt = studio_presets.build_virtual_tryon_prompt(
+            garment_description=p.get("garment_description", ""),
+            custom_notes=p.get("custom_notes", "")
+        )
+    elif pt == "banner_promo":
+        prompt = studio_presets.build_banner_promo_prompt(
+            business_name=p.get("business_name", ""),
+            promo_text=p.get("promo_text", ""),
+            format_type=p.get("format_type", "social_square"),
+            color_scheme=p.get("color_scheme", "Kuning Merah Berani"),
+            extra_details=p.get("extra_details", ""),
+            has_ref_image=p.get("has_ref_image", False)
+        )
+    elif pt == "desain_rumah":
+        prompt = studio_presets.build_desain_rumah_prompt(
+            room_type=p.get("room_type", "Ruang Tamu"),
+            interior_style=p.get("interior_style", "japandi"),
+            lighting=p.get("lighting", "Daylight natural sunlight"),
+            extra_details=p.get("extra_details", "")
+        )
+    elif pt == "character_sheet":
+        prompt = studio_presets.build_character_sheet_prompt(
+            character_name=p.get("character_name", ""),
+            character_description=p.get("character_description", ""),
+            visual_style=p.get("visual_style", "3D Pixar Animation"),
+            costume=p.get("costume", "Casual modern streetwear")
+        )
+    else:
+        raise HTTPException(status_code=400, detail=f"Preset type '{payload.preset_type}' belum didukung.")
+        
+    return {"ok": True, "tool_type": payload.preset_type, "prompt": prompt}
+
+
+@app.post("/api/studio/hook-caption")
+async def generate_hook_and_caption(payload: HookCaptionPayload):
+    """Menghasilkan 10 Hooks + Caption + CTA + Hashtags menggunakan AI Brain."""
+    sys_prompt = studio_presets.build_hook_caption_system_prompt(
+        topic=payload.topic,
+        niche=payload.niche,
+        formula=payload.formula,
+        tone=payload.tone
+    )
+    user_prompt = f"Hasilkan 10 hooks + caption + cta + hashtags untuk topik: '{payload.topic}', kategori: '{payload.niche}'."
+
+    if ai_brain.is_ai_ready():
+        try:
+            raw_res = ai_brain.generate_text(sys_prompt, user_prompt, json_mode=True, timeout=60)
+            parsed = ai_brain.extract_json(raw_res)
+            if parsed and isinstance(parsed, dict) and "hooks" in parsed:
+                return {"ok": True, "data": parsed, "generated_by": "ai"}
+        except Exception:
+            pass
+
+    # Fallback template responsif jika API key AI belum diinput
+    return {
+        "ok": True,
+        "data": {
+            "hooks": [
+                f"Jangan tonton video ini kalau kamu masih belum tahu rahasia {payload.topic}!",
+                f"90% orang keliru saat membahas {payload.topic}, padahal caranya simpel banget...",
+                f"Ini dia 1 trik tentang {payload.topic} yang jarang dibongkar para ahli!",
+                f"Pernah kepikiran gak, kenapa {payload.topic} bisa berdampak sebesar ini?",
+                f"Hentikan kebiasaan lama kamu! Coba pahami {payload.topic} dari sudut pandang ini.",
+                f"Ternyata cuma butuh 1 menit buat menguasai konsep dasar {payload.topic}!",
+                f"Kalau kamu mau hasil maksimal di bidang {payload.niche}, pahami {payload.topic} sekarang.",
+                f"Trik tersembunyi {payload.topic} yang bakal bikin kamu geleng-geleng kepala!",
+                f"Fakta mengejutkan tentang {payload.topic} yang baru terungkap minggu ini!",
+                f"Simpan video ini sekarang, karena rahasia {payload.topic} ini jarang dibagikan gratis!"
+            ],
+            "caption": f"Banyak yang belum sadar pentingnya {payload.topic}. Padahal kalau dipraktikkan dengan konsisten, hasilnya luar biasa. Yuk tonton sampai selesai dan terapkan tips di atas!",
+            "cta": "Save video ini biar gak lupa dan share ke teman kamu yang butuh!",
+            "hashtags": f"#{payload.topic.replace(' ', '')} #{payload.niche.replace(' ', '')} #ViralTips #BelajarCepat #FYPIndonesia #EdukasiViral"
+        },
+        "system_prompt": sys_prompt,
+        "generated_by": "template_fallback"
+    }
+
+
+@app.post("/api/studio/storyboard-script")
+async def generate_storyboard_script(payload: StoryboardScriptPayload):
+    """Menghasilkan script multi-part scene dan kinetic typography words."""
+    sys_prompt = studio_presets.build_storyboard_script_prompt(
+        product_or_topic=payload.product_or_topic,
+        duration_sec=payload.duration_sec,
+        kinetic_style=payload.kinetic_style,
+        niche=payload.niche
+    )
+    user_prompt = f"Susun naskah video {payload.duration_sec} detik untuk: '{payload.product_or_topic}'."
+
+    if ai_brain.is_ai_ready():
+        try:
+            raw_res = ai_brain.generate_text(sys_prompt, user_prompt, json_mode=True, timeout=60)
+            parsed = ai_brain.extract_json(raw_res)
+            if parsed and isinstance(parsed, dict) and "narasi" in parsed:
+                return {"ok": True, "data": parsed, "generated_by": "ai"}
+        except Exception:
+            pass
+
+    return {
+        "ok": True,
+        "system_prompt": sys_prompt,
+        "message": "Model AI belum terhubung atau fallback aktif. Gunakan prompt di atas langsung di ChatGPT / Claude."
+    }
+
+
+@app.post("/api/tiktok/extract")
+async def extract_tiktok_metadata(payload: TikTokExtractPayload):
+    """Mengekstrak metadata TikTok dan direct download link tanpa watermark via tikwm API."""
+    import urllib.request
+    import urllib.parse
+    
+    clean_url = payload.url.strip()
+    if not clean_url:
+        raise HTTPException(status_code=400, detail="URL TikTok tidak boleh kosong.")
+
+    try:
+        api_url = f"https://www.tikwm.com/api/?url={urllib.parse.quote(clean_url, safe='')}"
+        req = urllib.request.Request(
+            api_url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                "Accept": "application/json"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="replace"))
+
+        if data.get("code") == 0 and data.get("data"):
+            d = data["data"]
+            return {
+                "ok": True,
+                "id": d.get("id"),
+                "title": d.get("title", ""),
+                "duration": d.get("duration", 0),
+                "play_url": d.get("play"),
+                "cover_url": d.get("cover"),
+                "author": d.get("author", {}).get("nickname", "TikTok Creator")
+            }
+        else:
+            raise HTTPException(status_code=502, detail=f"Gagal mengambil metadata TikTok: {data.get('msg', 'Error')}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal menghubungkan ke API TikTok: {str(e)}")
 
 
 if __name__ == "__main__":

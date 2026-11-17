@@ -116,8 +116,8 @@
       Dilengkapi <strong>Dynamic Punch-In Camera</strong>, <strong>Multi-Track SFX</strong>, <strong>Audio Jernih (0 dB)</strong>, <strong>Subtitle Pop-Bounce Gaya Alex Hormozi</strong>, serta <strong>Otomatisasi Upload YouTube</strong> lengkap dengan riset kata kunci dan deskripsi SEO viral.
     </p>
 
-    <!-- Studio Mode Switcher (Clipper vs Faceless Maker) -->
-    <div class="flex items-center justify-center gap-2.5 pt-2">
+    <!-- Studio Mode Switcher (Clipper vs Faceless vs Prompt Studio) -->
+    <div class="flex flex-wrap items-center justify-center gap-2.5 pt-2">
       <button id="tab-mode-clipper" onclick="switchStudioMode('clipper')"
               class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 border border-indigo-500">
         <span>🎬</span> 1. AI Video Clipper (Video ➔ Shorts)
@@ -126,6 +126,11 @@
               class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700">
         <span class="text-amber-400">✨</span> 2. AI Faceless Studio (Teks ➔ Video Motion)
         <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 font-black">100% GRATIS</span>
+      </button>
+      <button id="tab-mode-prompt-studio" onclick="switchStudioMode('prompt-studio')"
+              class="px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700">
+        <span class="text-cyan-400">🎨</span> 3. AI Visual & Storyboard Studio
+        <span class="px-2 py-0.5 rounded-full text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-black">45+ PRESETS</span>
       </button>
     </div>
 
@@ -142,7 +147,7 @@
           </button>
           <input type="file" id="file-input" class="hidden" accept="video/mp4,video/mkv,video/mov">
           <input type="text" id="unified-input" 
-                 placeholder="Tempel link YouTube, Google Drive, Google Photos, atau pilih file video PC..." 
+                 placeholder="Tempel link YouTube, TikTok, Google Drive, Google Photos, atau pilih file video PC..." 
                  class="w-full bg-transparent border-none text-white text-sm focus:outline-none placeholder-slate-500 font-medium">
         </div>
 
@@ -394,6 +399,167 @@
                     class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-sm tracking-wide uppercase transition duration-200 flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/30">
               <span>🚀</span> RENDER VIDEO SEKARANG (Sesuai Storyboard Ini)
             </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Panel 3: AI Visual & Storyboard Studio (Commercial Prompt Generator & 10 Viral Hooks) -->
+    <div id="panel-prompt-studio" class="hidden pt-4 max-w-4xl mx-auto text-left">
+      <div class="glass-card p-6 md:p-8 rounded-3xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/10 space-y-6">
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-4">
+          <div>
+            <div class="text-xl font-black text-white flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">🎨</span>
+              AI Visual & Storyboard Studio
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">45+ COMMERCIAL PRESETS</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">
+              Generator master prompt berstandar agency advertising untuk Thumbnail High-CTR, 10 Viral Hooks, Storyboard Narasi, Foto Produk E-Commerce, Kuliner UMKM, 3D Pop Mart, dan Virtual Try-On.
+            </p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <span class="text-[11px] font-bold text-cyan-300/90 bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/50">
+              💎 Precision Master Prompts
+            </span>
+          </div>
+        </div>
+
+        <!-- Preset Category Selector Grid -->
+        <div class="space-y-2">
+          <div class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+            <span>🎯</span> Pilih Format & Kategori AI Studio:
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+            <button type="button" onclick="selectStudioPreset('thumbnail')" id="pst-btn-thumbnail"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-cyan-500/20 border-cyan-400 text-white shadow-lg shadow-cyan-500/20">
+              <div class="text-lg">🖼️</div>
+              <div>
+                <div class="text-xs font-black">Thumbnail High-CTR</div>
+                <div class="text-[10px] text-cyan-200/80">YouTube, Shorts, 3:4</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('hook_caption')" id="pst-btn-hook_caption"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">🎣</div>
+              <div>
+                <div class="text-xs font-black">10 Hooks & Caption</div>
+                <div class="text-[10px] text-slate-400">Viral 3-detik + CTA</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('product_studio')" id="pst-btn-product_studio"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">📦</div>
+              <div>
+                <div class="text-xs font-black">Product Studio</div>
+                <div class="text-[10px] text-slate-400">Marble, Zen, Neon</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('kuliner_umkm')" id="pst-btn-kuliner_umkm"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">🍲</div>
+              <div>
+                <div class="text-xs font-black">Kuliner UMKM Resto</div>
+                <div class="text-[10px] text-slate-400">Uap panas, Mozzarella</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('figurine_3d')" id="pst-btn-figurine_3d"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">🧸</div>
+              <div>
+                <div class="text-xs font-black">3D Pop Mart Toy</div>
+                <div class="text-[10px] text-slate-400">Molly, Funko, Action</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('virtual_tryon')" id="pst-btn-virtual_tryon"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">👗</div>
+              <div>
+                <div class="text-xs font-black">Virtual Try-On OOTD</div>
+                <div class="text-[10px] text-slate-400">Ganti baju 100% wajah</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('banner_promo')" id="pst-btn-banner_promo"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">📢</div>
+              <div>
+                <div class="text-xs font-black">Banner Promo UMKM</div>
+                <div class="text-[10px] text-slate-400">3D Badge, Logo Halal</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('desain_rumah')" id="pst-btn-desain_rumah"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">🏡</div>
+              <div>
+                <div class="text-xs font-black">Interior & Rumah</div>
+                <div class="text-[10px] text-slate-400">Japandi, Villa Tropis</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('character_sheet')" id="pst-btn-character_sheet"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">🎭</div>
+              <div>
+                <div class="text-xs font-black">Character Sheet</div>
+                <div class="text-[10px] text-slate-400">Model Turnaround 3D</div>
+              </div>
+            </button>
+
+            <button type="button" onclick="selectStudioPreset('storyboard_script')" id="pst-btn-storyboard_script"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">🎬</div>
+              <div>
+                <div class="text-xs font-black">Storyboard Script</div>
+                <div class="text-[10px] text-slate-400">Part Scene + Kinetic</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Form Fields -->
+        <div id="studio-form-fields" class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 space-y-4">
+          <!-- Dynamically populated by selectStudioPreset() -->
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <button type="button" onclick="handleGenerateStudioPrompt()" id="btn-generate-prompt"
+                  class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs md:text-sm tracking-wide transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20">
+            <span>✨</span> Susun Master Prompt
+          </button>
+          <button type="button" onclick="handleExecuteAIWithStudio()" id="btn-execute-ai-studio"
+                  class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs md:text-sm tracking-wide transition flex items-center justify-center gap-2 border border-indigo-400/40">
+            <span>🤖</span> Eksekusi Otomatis via AI
+          </button>
+        </div>
+
+        <!-- Result Box -->
+        <div id="studio-result-card" class="hidden bg-slate-950 p-5 rounded-2xl border border-cyan-500/30 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-black text-cyan-300 uppercase tracking-wider flex items-center gap-2">
+              <span>📋</span> Hasil Master Prompt Komersial:
+            </div>
+            <button onclick="copyStudioResult()" class="px-3 py-1.5 rounded-lg bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 text-xs font-bold border border-cyan-700/60 transition flex items-center gap-1.5">
+              <span>📄</span> Salin ke Clipboard
+            </button>
+          </div>
+          <textarea id="studio-result-text" rows="8" readonly
+                    class="w-full bg-slate-900/90 text-slate-200 text-xs font-mono p-3.5 rounded-xl border border-slate-800 focus:outline-none"></textarea>
+
+          <!-- Extra Hooks Container (for 10 Hooks) -->
+          <div id="studio-hooks-container" class="hidden space-y-2 pt-2">
+            <div class="text-xs font-bold text-slate-300">🎣 10 Pilihan Hook Pembuka 3-Detik (Klik untuk Salin):</div>
+            <div id="studio-hooks-list" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>
           </div>
         </div>
 
@@ -3176,23 +3342,594 @@
     function switchStudioMode(mode) {
       const panelClipper = document.getElementById('panel-clipper');
       const panelFaceless = document.getElementById('panel-faceless');
+      const panelPrompt = document.getElementById('panel-prompt-studio');
       const tabClipper = document.getElementById('tab-mode-clipper');
       const tabFaceless = document.getElementById('tab-mode-faceless');
+      const tabPrompt = document.getElementById('tab-mode-prompt-studio');
+
+      // Reset tabs
+      const inactiveTab = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700";
+      tabClipper.className = inactiveTab;
+      tabFaceless.className = inactiveTab;
+      if (tabPrompt) tabPrompt.className = inactiveTab;
+
+      panelClipper.classList.add('hidden');
+      panelFaceless.classList.add('hidden');
+      if (panelPrompt) panelPrompt.classList.add('hidden');
 
       if (mode === 'faceless') {
-        panelClipper.classList.add('hidden');
         panelFaceless.classList.remove('hidden');
-
         tabFaceless.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-amber-600 text-white shadow-lg shadow-amber-600/30 border border-amber-500";
-        tabClipper.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700";
+        window.scrollTo({ top: 320, behavior: 'smooth' });
+      } else if (mode === 'prompt-studio') {
+        if (panelPrompt) panelPrompt.classList.remove('hidden');
+        if (tabPrompt) tabPrompt.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 border border-cyan-500";
+        if (!currentStudioPreset) selectStudioPreset('thumbnail');
         window.scrollTo({ top: 320, behavior: 'smooth' });
       } else {
-        panelFaceless.classList.add('hidden');
         panelClipper.classList.remove('hidden');
-
         tabClipper.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 border border-indigo-500";
-        tabFaceless.className = "px-5 py-2.5 rounded-xl text-xs md:text-sm font-extrabold transition flex items-center gap-2 bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700";
       }
+    }
+
+    // =========================================================================
+    // ARMAGICFLOW REVERSED ENGINE: MODERN CLIPPER UI & STUDIO PRESETS
+    // =========================================================================
+
+    // Modern Glassmorphism Notification System (ArmagicUI -> ClipperUI)
+    const ClipperUI = (function() {
+      const TOAST_HOST_ID = 'clipper-toast-host';
+      const MODAL_ID = 'clipper-dialog-root';
+      const icons = { success: '✓', error: '×', warning: '!', info: 'ℹ' };
+      const labels = { success: 'Berhasil', error: 'Gagal', warning: 'Perhatian', info: 'Informasi' };
+
+      function ensureStyle() {
+        if (document.getElementById('clipper-ui-modern-style')) return;
+        const style = document.createElement('style');
+        style.id = 'clipper-ui-modern-style';
+        style.textContent = `
+          .af-toast-host{position:fixed;right:22px;top:22px;z-index:2147483000;display:flex;flex-direction:column;gap:12px;pointer-events:none;max-width:min(420px,calc(100vw - 32px));}
+          .af-toast{pointer-events:auto;display:grid;grid-template-columns:34px minmax(0,1fr) 22px;gap:12px;align-items:flex-start;padding:14px 14px 14px 13px;border-radius:16px;background:linear-gradient(135deg,rgba(15,23,42,.96),rgba(2,6,23,.98));border:1px solid rgba(148,163,184,.18);box-shadow:0 22px 60px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(20px);color:#f8fafc;transform:translateY(-8px) scale(.98);opacity:0;transition:opacity .18s ease,transform .18s ease;overflow:hidden;}
+          .af-toast.show{opacity:1;transform:translateY(0) scale(1);}
+          .af-toast.hide{opacity:0;transform:translateY(-8px) scale(.98);}
+          .af-toast::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#38bdf8;}
+          .af-toast.success::before{background:#10b981}.af-toast.error::before{background:#f43f5e}.af-toast.warning::before{background:#f59e0b}.af-toast.info::before{background:#38bdf8}
+          .af-toast-icon{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;background:rgba(56,189,248,.12);color:#38bdf8;border:1px solid rgba(56,189,248,.22);}
+          .af-toast.success .af-toast-icon{background:rgba(16,185,129,.13);color:#34d399;border-color:rgba(16,185,129,.28)}.af-toast.error .af-toast-icon{background:rgba(244,63,94,.13);color:#fb7185;border-color:rgba(244,63,94,.28)}
+          .af-toast-title{font-size:13.5px;font-weight:900;letter-spacing:.01em;margin-top:1px;}.af-toast-msg{font-size:12.5px;line-height:1.45;color:#94a3b8;margin-top:3px;word-break:break-word;}
+          .af-toast-close{width:22px;height:22px;border:0;border-radius:8px;background:transparent;color:#94a3b8;cursor:pointer;font-size:18px;line-height:20px;}.af-toast-close:hover{background:rgba(255,255,255,.08);color:#fff;}
+        `;
+        document.head.appendChild(style);
+      }
+
+      function toast(msg, type = 'info', duration = 3500) {
+        ensureStyle();
+        let host = document.getElementById(TOAST_HOST_ID);
+        if (!host) {
+          host = document.createElement('div');
+          host.id = TOAST_HOST_ID;
+          host.className = 'af-toast-host';
+          document.body.appendChild(host);
+        }
+        const item = document.createElement('div');
+        item.className = 'af-toast ' + type;
+        item.innerHTML = `
+          <div class="af-toast-icon">${icons[type] || 'ℹ'}</div>
+          <div><div class="af-toast-title">${labels[type] || 'Info'}</div><div class="af-toast-msg">${msg}</div></div>
+          <button type="button" class="af-toast-close">×</button>
+        `;
+        host.appendChild(item);
+        const close = () => {
+          item.classList.remove('show');
+          item.classList.add('hide');
+          setTimeout(() => item.remove(), 180);
+        };
+        item.querySelector('.af-toast-close').addEventListener('click', close);
+        requestAnimationFrame(() => item.classList.add('show'));
+        if (duration > 0) setTimeout(close, duration);
+      }
+
+      return { toast };
+    })();
+    window.ClipperUI = ClipperUI;
+    window.ArmagicUI = ClipperUI; // Aliasing for compatibility
+
+    let currentStudioPreset = 'thumbnail';
+
+    function selectStudioPreset(presetKey) {
+      currentStudioPreset = presetKey;
+      const presets = ['thumbnail', 'hook_caption', 'product_studio', 'kuliner_umkm', 'figurine_3d', 'virtual_tryon', 'banner_promo', 'desain_rumah', 'character_sheet', 'storyboard_script'];
+      presets.forEach(p => {
+        const btn = document.getElementById(`pst-btn-${p}`);
+        if (!btn) return;
+        if (p === presetKey) {
+          btn.className = "p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-cyan-500/20 border-cyan-400 text-white shadow-lg shadow-cyan-500/20";
+        } else {
+          btn.className = "p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600";
+        }
+      });
+
+      const container = document.getElementById('studio-form-fields');
+      if (!container) return;
+
+      if (presetKey === 'thumbnail') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Judul Utama (Primary 3D Headline):</label>
+              <input type="text" id="pst-headline" value="RAHASIA SUKSES 2026" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Sub-Judul Badge (Secondary Badge):</label>
+              <input type="text" id="pst-subheadline" value="OMSET MELEJIT" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Platform & Rasio:</label>
+              <select id="pst-ratio" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="16:9" selected>YouTube Landscape (16:9)</option>
+                <option value="9:16">Shorts / Reels Full (9:16)</option>
+                <option value="3:4">TikTok Cover FYP (3:4)</option>
+                <option value="1:1">Instagram Feed Square (1:1)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Gaya Visual:</label>
+              <select id="pst-visual-style" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="high_ctr_commercial" selected>High-CTR Commercial (Viral)</option>
+                <option value="wealth_luxury">Executive Wealth & Luxury</option>
+                <option value="cyberpunk_neon">Cyberpunk Neon Rim</option>
+                <option value="ecommerce_flash_sale">E-Commerce Flash Sale 3D</option>
+                <option value="islamic_cinematic">Islamic Cinematic Golden Amber</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Tipografi 3D:</label>
+              <select id="pst-typo-style" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="bold_3d_bevel" selected>Bold 3D Sharp Bevels</option>
+                <option value="cyberpunk_extruded">Cyberpunk Extruded Glow Rim</option>
+                <option value="luxury_gold">Metallic Polished Gold 3D</option>
+                <option value="floating_glassmorphism">Translucent Glassmorphism Pill</option>
+                <option value="neon_glow">Electric Neon Tube</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-300">Subjek & Tema Visual:</label>
+            <input type="text" id="pst-subject-theme" placeholder="Contoh: Pengusaha muda tersenyum percaya diri memegang laptop di depan jendela gedung pencakar langit" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+          </div>
+        `;
+      } else if (presetKey === 'hook_caption') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Topik Video / Nama Produk:</label>
+              <input type="text" id="pst-topic" value="Cara Mengatur Waktu Agar Tidak Mudah Lelah" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Niche / Kategori:</label>
+              <select id="pst-niche" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="Produktivitas & Mindset" selected>Produktivitas & Mindset</option>
+                <option value="Bisnis & Finansial">Bisnis & Finansial</option>
+                <option value="Kajian & Spiritual">Kajian & Spiritual</option>
+                <option value="Fashion & Skincare">Fashion & Skincare</option>
+                <option value="Kuliner & Makanan">Kuliner & Makanan</option>
+                <option value="Edukasi & Teknologi">Edukasi & Teknologi</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Formula Gaya Hook:</label>
+              <select id="pst-formula" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="campuran_terbaik" selected>Campuran Terbaik (Penasaran, Problem, FOMO, Opini)</option>
+                <option value="penasaran">Fokus Penasaran & Rahasia Penasaran</option>
+                <option value="problem_solusi">Fokus Masalah Audiens & Solusi Cepat</option>
+                <option value="fomo_urgensi">Fokus Urgensi & FOMO Viral</option>
+                <option value="opini_kontroversial">Fokus Mitos / Opini Berlawanan yang Memancing Debat</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Tone of Voice:</label>
+              <select id="pst-tone" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="Santai & Gaul" selected>Santai & Gaul (Percakapan Alami Kreator)</option>
+                <option value="Meyakinkan & Profesional">Meyakinkan & Profesional</option>
+                <option value="Penuh Semangat & Antusias">Penuh Semangat & Antusias</option>
+                <option value="Empatik & Menyentuh Hati">Empatik & Menyentuh Hati</option>
+              </select>
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'product_studio') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Nama Produk / Botol / Kemasan:</label>
+              <input type="text" id="pst-product-name" value="Serum Wajah Glow Organik" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Backdrop / Podium Studio:</label>
+              <select id="pst-backdrop" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="white_marble" selected>Podium Marmer Putih Carrara + Bayangan Palem</option>
+                <option value="zen_stone_wood">Kayu Jati Alami + Batu Kali Hitam & Daun Bambu</option>
+                <option value="cyberpunk_mirror">Cermin Hitam Kilap + Refleksi Neon Cyberpunk</option>
+                <option value="concrete_golden_hour">Blok Beton Raw Arsitektur + Sinar Golden Hour</option>
+                <option value="granite_kitchen">Meja Bar Granit Dapur Mewah + Bokeh Hangat</option>
+                <option value="desert_dune">Pasir Gurun Halus Bergelombang + Terracotta Sunset</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Pencahayaan Studio:</label>
+              <select id="pst-lighting" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="softbox" selected>Dual Softbox Komersial Silky Smooth</option>
+                <option value="dramatic_spot">Single Editorial Spotlight + Kontras Mewah</option>
+                <option value="golden_hour">Sinar Matahari 45 Derajat Golden Hour Alami</option>
+                <option value="rim_neon">Lampu Rim Neon Tajam Mengikuti Lekuk Produk</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Instruksi Tambahan (Opsional):</label>
+              <input type="text" id="pst-extra" placeholder="Contoh: Butiran embun air segar di permukaan botol" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none">
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'kuliner_umkm') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Nama Menu / Masakan:</label>
+              <input type="text" id="pst-dish-name" value="Ayam Geprek Sambal Korek Pedas Gurih" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Efek Penyajian Menggiurkan:</label>
+              <select id="pst-serving" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="uap_panas" selected>Uap Panas Mengepul + Minyak Sambal Berkilau & Bawang Goreng</option>
+                <option value="mozzarella">Tarikan Molor Keju Mozzarella Meleleh Menggiurkan</option>
+                <option value="gerabah_daun_pisang">Piring Gerabah Tradisional + Daun Pisang & Kemangi</option>
+                <option value="meja_kafe_estetik">Meja Kayu Kafe Estetik + Cangkir Keramik & Tanaman Hijau</option>
+                <option value="gelas_berembun">Gelas Es Segar Berembun Dingin + Cipratan Air Es</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Sudut Kamera:</label>
+              <select id="pst-camera" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="hero_45" selected>Hero Angle 45 Derajat + Bokeh Lembut</option>
+                <option value="flatlay_90">Flat-Lay 90 Derajat Overhead Dari Atas</option>
+                <option value="macro_closeup">Extreme Macro Close-Up Tekstur Krispi & Renyah</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Detail Masakan:</label>
+              <input type="text" id="pst-extra" placeholder="Contoh: Taburan bawang goreng renyah dan irisan jeruk limau" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none">
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'figurine_3d') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Karakter / Subjek Orang:</label>
+              <input type="text" id="pst-character" value="Pemuda santri ramah berpeci hitam memegang tablet" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Gaya Mainan Koleksi:</label>
+              <select id="pst-toy-style" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="pop_mart" selected>Pop Mart / Molly Blind Box Chibi Lucu</option>
+                <option value="funko_pop">Funko Pop Vinyl (Kepala Kotak Ikonik)</option>
+                <option value="action_figure">1/6 Scale Collectible Action Figure Realistis</option>
+                <option value="nendoroid">Nendoroid Chibi Anime + Stand Bening</option>
+                <option value="cyberpunk_mecha">Cyberpunk Mecha Robot Toy Chibi</option>
+                <option value="claymation">Claymation Stop-Motion Lembut</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Tempat Display & Packaging:</label>
+              <select id="pst-packaging" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="creator_desk" selected>Meja Kayu Kreator + Keyboard Mekanikal & Lampu Estetik</option>
+                <option value="blister_box">Kotak Kemasan Blister Pack Display Mainan Toko</option>
+                <option value="acrylic_case">Kotak Akrilik Bening Museum + Lampu LED Mini</option>
+                <option value="turntable">Meja Putar Putih Galeri Kolektor</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Finishing Material:</label>
+              <input type="text" id="pst-material" value="Smooth matte vinyl with gloss eye highlights" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none">
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'virtual_tryon') {
+        container.innerHTML = `
+          <div class="space-y-3">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Deskripsi Pakaian & Aksesoris yang Mau Dipasangkan:</label>
+              <input type="text" id="pst-garment" value="Kemeja flanel oversize warna navy motif kotak + celana chino krem" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Catatan Kustom Presisi (Opsional):</label>
+              <input type="text" id="pst-custom-notes" value="Pencahayaan baju disesuaikan dengan cahaya foto asli, lipatan kain jatuh alami mengikuti postur tubuh." class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none">
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'banner_promo') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Nama Bisnis / Brand UMKM:</label>
+              <input type="text" id="pst-biz-name" value="Kopi Santri Nusantara" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Teks Headline Diskon / Promo:</label>
+              <input type="text" id="pst-promo-text" value="PROMO SPESIAL JUMAT BERKAH - BELI 1 GRATIS 1" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Format Tata Letak Banner:</label>
+              <select id="pst-banner-format" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="social_square" selected>Square 1:1 (Feed Instagram & FB)</option>
+                <option value="story_portrait">Vertical 9:16 (Story, WhatsApp Status, Reels)</option>
+                <option value="spanduk_landscape">Spanduk Panjang Jalanan (3m x 1m)</option>
+                <option value="xbanner_standing">Standing X-Banner / Roll Up (60x160cm)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Skema Warna & Aksen:</label>
+              <input type="text" id="pst-color" value="Kuning Merah Berani (High Contrast UMKM)" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none">
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'desain_rumah') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Tipe Ruangan:</label>
+              <input type="text" id="pst-room-type" value="Ruang Tamu & Area Santai Keluarga" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Gaya Arsitektur / Interior:</label>
+              <select id="pst-interior-style" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="japandi" selected>Japandi Wabi-Sabi Minimalist (Kayu Terang + Netral)</option>
+                <option value="scandinavian">Scandinavian Modern Hangat & Terang</option>
+                <option value="industrial_loft">Industrial Loft Dinding Bata Merah & Besi Hitam</option>
+                <option value="tropical_villa">Villa Tropis Modern Ala Bali + Kolam</option>
+                <option value="luxury_classic">Modern Luxury Classical Kemewahan Emas & Marmer</option>
+              </select>
+            </div>
+          </div>
+        `;
+      } else if (presetKey === 'character_sheet') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Nama Karakter:</label>
+              <input type="text" id="pst-char-name" value="Rayyan - Santri Tech Explorer" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Gaya Visual:</label>
+              <input type="text" id="pst-char-style" value="3D Pixar / Disney Animation" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-300">Deskripsi Karakter & Ciri Fisik:</label>
+            <input type="text" id="pst-char-desc" value="Laki-laki usia 20 tahun, senyum ramah percaya diri, memakai peci modern dan jaket bomber navy kasual" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+          </div>
+        `;
+      } else if (presetKey === 'storyboard_script') {
+        container.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <label class="text-xs font-bold text-slate-300">Nama Produk atau Topik Iklan / Konten:</label>
+              <input type="text" id="pst-sb-topic" value="Kopi Santri Robusta Organik Asli Pegunungan" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Durasi Video:</label>
+              <select id="pst-sb-duration" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="30" selected>30 Detik (3 Part x 10s)</option>
+                <option value="40">40 Detik (4 Part x 10s)</option>
+                <option value="60">60 Detik (6 Part x 10s)</option>
+              </select>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    async function handleGenerateStudioPrompt() {
+      const btn = document.getElementById('btn-generate-prompt');
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳</span> Menyusun...`;
+
+      let params = {};
+      if (currentStudioPreset === 'thumbnail') {
+        params = {
+          headline: document.getElementById('pst-headline')?.value || '',
+          subheadline: document.getElementById('pst-subheadline')?.value || '',
+          ratio: document.getElementById('pst-ratio')?.value || '16:9',
+          visual_style: document.getElementById('pst-visual-style')?.value || 'high_ctr_commercial',
+          typo_style: document.getElementById('pst-typo-style')?.value || 'bold_3d_bevel',
+          subject_theme: document.getElementById('pst-subject-theme')?.value || ''
+        };
+      } else if (currentStudioPreset === 'product_studio') {
+        params = {
+          product_name: document.getElementById('pst-product-name')?.value || '',
+          backdrop: document.getElementById('pst-backdrop')?.value || 'white_marble',
+          lighting: document.getElementById('pst-lighting')?.value || 'softbox',
+          extra_details: document.getElementById('pst-extra')?.value || ''
+        };
+      } else if (currentStudioPreset === 'kuliner_umkm') {
+        params = {
+          dish_name: document.getElementById('pst-dish-name')?.value || '',
+          serving_effect: document.getElementById('pst-serving')?.value || 'uap_panas',
+          camera_angle: document.getElementById('pst-camera')?.value || 'hero_45',
+          extra_details: document.getElementById('pst-extra')?.value || ''
+        };
+      } else if (currentStudioPreset === 'figurine_3d') {
+        params = {
+          character_desc: document.getElementById('pst-character')?.value || '',
+          toy_style: document.getElementById('pst-toy-style')?.value || 'pop_mart',
+          packaging: document.getElementById('pst-packaging')?.value || 'creator_desk',
+          material: document.getElementById('pst-material')?.value || ''
+        };
+      } else if (currentStudioPreset === 'virtual_tryon') {
+        params = {
+          garment_description: document.getElementById('pst-garment')?.value || '',
+          custom_notes: document.getElementById('pst-custom-notes')?.value || ''
+        };
+      } else if (currentStudioPreset === 'banner_promo') {
+        params = {
+          business_name: document.getElementById('pst-biz-name')?.value || '',
+          promo_text: document.getElementById('pst-promo-text')?.value || '',
+          format_type: document.getElementById('pst-banner-format')?.value || 'social_square',
+          color_scheme: document.getElementById('pst-color')?.value || ''
+        };
+      } else if (currentStudioPreset === 'desain_rumah') {
+        params = {
+          room_type: document.getElementById('pst-room-type')?.value || '',
+          interior_style: document.getElementById('pst-interior-style')?.value || 'japandi'
+        };
+      } else if (currentStudioPreset === 'character_sheet') {
+        params = {
+          character_name: document.getElementById('pst-char-name')?.value || '',
+          character_description: document.getElementById('pst-char-desc')?.value || '',
+          visual_style: document.getElementById('pst-char-style')?.value || '3D Pixar Animation'
+        };
+      }
+
+      try {
+        if (currentStudioPreset === 'hook_caption') {
+          await handleExecuteAIWithStudio();
+          return;
+        }
+
+        const res = await fetch('/api/studio/generate-prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ preset_type: currentStudioPreset, params })
+        });
+        const data = await res.json();
+        if (data.ok && data.prompt) {
+          showStudioResult(data.prompt);
+          ClipperUI.toast('Master prompt berhasil disusun!', 'success');
+        } else {
+          ClipperUI.toast(data.detail || 'Gagal menyusun prompt.', 'error');
+        }
+      } catch (err) {
+        ClipperUI.toast('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>✨</span> Susun Master Prompt`;
+      }
+    }
+
+    async function handleExecuteAIWithStudio() {
+      const btn = document.getElementById('btn-execute-ai-studio');
+      btn.disabled = true;
+      btn.innerHTML = `<span>⏳</span> Memproses AI...`;
+
+      try {
+        if (currentStudioPreset === 'hook_caption') {
+          const topic = document.getElementById('pst-topic')?.value || '';
+          const niche = document.getElementById('pst-niche')?.value || 'Umum';
+          const formula = document.getElementById('pst-formula')?.value || 'campuran_terbaik';
+          const tone = document.getElementById('pst-tone')?.value || 'Santai';
+
+          const res = await fetch('/api/studio/hook-caption', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic, niche, formula, tone })
+          });
+          const d = await res.json();
+          if (d.ok && d.data) {
+            renderHookCaptionResults(d.data);
+            ClipperUI.toast('10 Pilihan Hook & Caption berhasil disusun!', 'success');
+          }
+        } else if (currentStudioPreset === 'storyboard_script') {
+          const product = document.getElementById('pst-sb-topic')?.value || '';
+          const dur = parseInt(document.getElementById('pst-sb-duration')?.value || '30', 10);
+
+          const res = await fetch('/api/studio/storyboard-script', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_or_topic: product, duration_sec: dur })
+          });
+          const d = await res.json();
+          if (d.ok) {
+            if (d.data) {
+              showStudioResult(JSON.stringify(d.data, null, 2));
+              ClipperUI.toast('Naskah Storyboard & Kinetic berhasil disusun!', 'success');
+            } else if (d.system_prompt) {
+              showStudioResult(d.system_prompt);
+              ClipperUI.toast('Prompt Naskah siap disalin ke ChatGPT / Claude!', 'info');
+            }
+          }
+        } else {
+          await handleGenerateStudioPrompt();
+        }
+      } catch (err) {
+        ClipperUI.toast('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>🤖</span> Eksekusi Otomatis via AI`;
+      }
+    }
+
+    function showStudioResult(text) {
+      const card = document.getElementById('studio-result-card');
+      const txt = document.getElementById('studio-result-text');
+      const hooksBox = document.getElementById('studio-hooks-container');
+      if (card && txt) {
+        card.classList.remove('hidden');
+        txt.value = text;
+        if (hooksBox) hooksBox.classList.add('hidden');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function renderHookCaptionResults(data) {
+      const card = document.getElementById('studio-result-card');
+      const txt = document.getElementById('studio-result-text');
+      const hooksBox = document.getElementById('studio-hooks-container');
+      const hooksList = document.getElementById('studio-hooks-list');
+
+      let combined = `CAPTION:\n${data.caption || ''}\n\nCALL TO ACTION:\n${data.cta || ''}\n\nHASHTAGS:\n${data.hashtags || ''}\n\n10 HOOKS PEMBUKA:\n` +
+        (data.hooks || []).map((h, i) => `${i + 1}. ${h}`).join('\n');
+
+      card.classList.remove('hidden');
+      txt.value = combined;
+
+      if (hooksBox && hooksList && Array.isArray(data.hooks)) {
+        hooksBox.classList.remove('hidden');
+        hooksList.innerHTML = data.hooks.map((h, idx) => `
+          <div onclick="copyTextToClipboard('${h.replace(/'/g, "\\'")}', 'Hook #${idx+1}')"
+               class="p-3 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-400/60 hover:bg-slate-850 cursor-pointer transition text-xs text-slate-200 flex items-start gap-2.5">
+            <span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono font-bold text-[10px] flex-shrink-0">#${idx+1}</span>
+            <span class="flex-grow">${h}</span>
+            <span class="text-cyan-400 text-xs">📋</span>
+          </div>
+        `).join('');
+      }
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function copyStudioResult() {
+      const txt = document.getElementById('studio-result-text');
+      if (!txt) return;
+      navigator.clipboard.writeText(txt.value).then(() => {
+        ClipperUI.toast('Hasil berhasil disalin ke clipboard!', 'success');
+      });
+    }
+
+    function copyTextToClipboard(text, label = 'Teks') {
+      navigator.clipboard.writeText(text).then(() => {
+        ClipperUI.toast(`${label} berhasil disalin!`, 'success');
+      });
     }
 
     function fillFacelessTemplate(type) {
