@@ -28,6 +28,7 @@ import thumbnail_engine
 import social_poster
 import automation_bridge
 import studio_presets
+import motion_code_engine
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -44,13 +45,19 @@ UPLOADS_DIR = BASE_DIR / "uploads"
 OUTPUTS_DIR = BASE_DIR / "outputs"
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
+ASSETS_DIR = BASE_DIR / "assets"
+MOTIONCODE_DIR = BASE_DIR / "motioncode_studio"
 
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
+ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+MOTIONCODE_DIR.mkdir(parents=True, exist_ok=True)
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/outputs", StaticFiles(directory=str(OUTPUTS_DIR)), name="outputs")
+app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
+app.mount("/motioncode", StaticFiles(directory=str(MOTIONCODE_DIR), html=True), name="motioncode")
 
 JOBS: Dict[str, Dict[str, Any]] = {}
 
@@ -1444,6 +1451,67 @@ async def extract_tiktok_metadata(payload: TikTokExtractPayload):
             raise HTTPException(status_code=502, detail=f"Gagal mengambil metadata TikTok: {data.get('msg', 'Error')}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Gagal menghubungkan ke API TikTok: {str(e)}")
+
+
+# ==============================================================================
+# MOTIONCODE STUDIO (CANVAS CODE-TO-VIDEO ENGINE) ENDPOINTS
+# ==============================================================================
+
+class MotionPromptPayload(BaseModel):
+    theme: str
+    duration: int = 10
+    scene: int = 1
+    visual_style: str = "Flat Design & Corporate Memphis"
+    format_type: str = "16:9"
+
+
+class MotionCodeGeneratePayload(BaseModel):
+    theme: str
+    visual_style: str = "Flat Design & Corporate Memphis"
+    format_type: str = "16:9"
+    duration: int = 10
+    scene_count: int = 1
+
+
+@app.get("/api/motioncode/presets")
+async def get_motion_presets():
+    """Mengembalikan 5 preset komersial MotionCode Studio siap eksekusi."""
+    return {"ok": True, "presets": motion_code_engine.MOTION_PRESETS}
+
+
+@app.get("/api/motioncode/database")
+async def get_motion_database():
+    """Mengembalikan basis data 15 kategori industri (150 topik) dan 13 gaya visual."""
+    return {
+        "ok": True,
+        "categories": motion_code_engine.MICROSTOCK_DATABASE,
+        "visual_styles": motion_code_engine.VISUAL_STYLES
+    }
+
+
+@app.post("/api/motioncode/prompt")
+async def generate_motion_prompt_api(payload: MotionPromptPayload):
+    """Menghasilkan prompt formula Motion Graphics Canvas API untuk ChatGPT/Claude."""
+    if payload.format_type == "9:16":
+        p = motion_code_engine.generate_vertical_prompt(payload.theme, payload.duration, payload.scene, payload.visual_style)
+    elif payload.format_type == "alpha":
+        p = motion_code_engine.generate_transparent_prompt(payload.theme, payload.duration, payload.scene, payload.visual_style)
+    else:
+        p = motion_code_engine.generate_concept_prompt(payload.theme, payload.duration, payload.scene, payload.visual_style)
+    return {"ok": True, "prompt": p, "format_type": payload.format_type}
+
+
+@app.post("/api/motioncode/generate-code")
+async def generate_motion_code_api(payload: MotionCodeGeneratePayload):
+    """Menghasilkan kode JavaScript Canvas API murni menggunakan AI Brain."""
+    res = motion_code_engine.generate_motion_code_with_ai(
+        theme=payload.theme,
+        visual_style=payload.visual_style,
+        format_type=payload.format_type,
+        duration=payload.duration,
+        scene_count=payload.scene_count
+    )
+    return res
 
 
 if __name__ == "__main__":

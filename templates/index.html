@@ -84,6 +84,10 @@
       <button onclick="switchStudioMode('faceless')" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-600/50 flex items-center gap-1.5 transition shadow-sm">
         <span>✨</span> AI Faceless Maker
       </button>
+      <a href="/motioncode" target="_blank" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-cyan-950/90 to-blue-950/90 hover:opacity-90 text-cyan-300 border border-cyan-500/50 flex items-center gap-1.5 transition shadow-sm">
+        <span>⚡</span> MotionCode Studio
+        <span class="px-1.5 py-0.5 rounded bg-cyan-500/20 text-[10px] text-cyan-200 font-extrabold">CANVAS 60FPS</span>
+      </a>
       <button onclick="document.getElementById('direct-pc-file-input').click()" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/50 flex items-center gap-1.5 transition shadow-sm">
         <span>📤</span> Upload File dari PC ke YouTube
       </button>
@@ -523,6 +527,15 @@
                 <div class="text-[10px] text-slate-400">Part Scene + Kinetic</div>
               </div>
             </button>
+
+            <button type="button" onclick="selectStudioPreset('motion_code')" id="pst-btn-motion_code"
+                    class="p-3 rounded-2xl border text-left transition flex flex-col justify-between gap-2 bg-slate-900/80 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600">
+              <div class="text-lg">⚡</div>
+              <div>
+                <div class="text-xs font-black">MotionCode Canvas</div>
+                <div class="text-[10px] text-cyan-300">Microstock 60fps Code</div>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -549,9 +562,14 @@
             <div class="text-xs font-black text-cyan-300 uppercase tracking-wider flex items-center gap-2">
               <span>📋</span> Hasil Master Prompt Komersial:
             </div>
-            <button onclick="copyStudioResult()" class="px-3 py-1.5 rounded-lg bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 text-xs font-bold border border-cyan-700/60 transition flex items-center gap-1.5">
-              <span>📄</span> Salin ke Clipboard
-            </button>
+            <div class="flex items-center gap-2">
+              <a id="btn-open-motioncode" href="/motioncode" target="_blank" class="hidden px-3 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 text-xs font-bold border border-emerald-500/40 transition flex items-center gap-1.5 shadow-sm">
+                <span>🚀</span> Buka di MotionCode Studio
+              </a>
+              <button onclick="copyStudioResult()" class="px-3 py-1.5 rounded-lg bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 text-xs font-bold border border-cyan-700/60 transition flex items-center gap-1.5">
+                <span>📄</span> Salin ke Clipboard
+              </button>
+            </div>
           </div>
           <textarea id="studio-result-text" rows="8" readonly
                     class="w-full bg-slate-900/90 text-slate-200 text-xs font-mono p-3.5 rounded-xl border border-slate-800 focus:outline-none"></textarea>
@@ -3438,7 +3456,7 @@
 
     function selectStudioPreset(presetKey) {
       currentStudioPreset = presetKey;
-      const presets = ['thumbnail', 'hook_caption', 'product_studio', 'kuliner_umkm', 'figurine_3d', 'virtual_tryon', 'banner_promo', 'desain_rumah', 'character_sheet', 'storyboard_script'];
+      const presets = ['thumbnail', 'hook_caption', 'product_studio', 'kuliner_umkm', 'figurine_3d', 'virtual_tryon', 'banner_promo', 'desain_rumah', 'character_sheet', 'storyboard_script', 'motion_code'];
       presets.forEach(p => {
         const btn = document.getElementById(`pst-btn-${p}`);
         if (!btn) return;
@@ -3738,6 +3756,75 @@
             </div>
           </div>
         `;
+      } else if (presetKey === 'motion_code') {
+        container.innerHTML = `
+          <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div class="text-xs font-bold text-cyan-300 flex items-center gap-2">
+              <span>⚡</span> MotionCode In-Browser Canvas API (Microstock 60 FPS Engine)
+            </div>
+            <a href="/motioncode" target="_blank" class="px-3 py-1 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-200 text-xs font-bold border border-cyan-500/40 transition flex items-center gap-1.5 shadow-sm">
+              <span>🚀</span> Buka Studio Renderer
+            </a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="text-xs font-bold text-slate-300">Kategori Microstock (15 Industri):</label>
+              <select id="pst-mc-category" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="E-Commerce & Marketing" selected>E-Commerce & Marketing</option>
+                <option value="Finance, Trading & Crypto">Finance, Trading & Crypto</option>
+                <option value="Technology & Cybersecurity">Technology & Cybersecurity</option>
+                <option value="Medical, Health & Science">Medical, Health & Science</option>
+                <option value="Ecology & Green Energy">Ecology & Green Energy</option>
+                <option value="Business, Corporate & Startup">Business, Corporate & Startup</option>
+                <option value="Education & E-Learning">Education & E-Learning</option>
+                <option value="Social Media & Communication">Social Media & Communication</option>
+                <option value="Logistics & Supply Chain">Logistics & Supply Chain</option>
+                <option value="UI, UX & Web Elements">UI, UX & Web Elements</option>
+                <option value="Travel & Vacation">Travel & Vacation</option>
+                <option value="Automotive & Transport">Automotive & Transport</option>
+                <option value="Food & Culinary">Food & Culinary</option>
+                <option value="Real Estate & Construction">Real Estate & Construction</option>
+                <option value="Abstract & Data Visuals">Abstract & Data Visuals</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Gaya Visual Komersial:</label>
+              <select id="pst-mc-style" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="Flat Design & Corporate Memphis" selected>Flat Design & Corporate Memphis (Tier 1)</option>
+                <option value="Minimalist Line Art">Minimalist Line Art (Tier 1)</option>
+                <option value="Isometric 3D Projection">Isometric 3D Projection (Tier 1)</option>
+                <option value="Abstract Geometric & Bauhaus">Abstract Geometric & Bauhaus (Tier 1)</option>
+                <option value="Glassmorphism & Frosted UI">Glassmorphism & Frosted UI (Tier 1)</option>
+                <option value="Paper Cut Out & Layered Depth">Paper Cut Out & Layered Depth (Tier 2)</option>
+                <option value="Cyberpunk Neon & Y2K Aesthetic">Cyberpunk Neon & Y2K (Tier 2)</option>
+                <option value="Low Poly Faceted Geometric">Low Poly Faceted (Tier 2)</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Format & Rasio Target:</label>
+              <select id="pst-mc-format" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="16:9" selected>Landscape 16:9 (Adobe Stock FHD / 4K)</option>
+                <option value="9:16">Vertical 9:16 (Shorts / Reels / TikTok)</option>
+                <option value="alpha">Alpha Transparan (VFX Overlay / Lower Third)</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <label class="text-xs font-bold text-slate-300">Topik / Deskripsi Animasi:</label>
+              <input type="text" id="pst-mc-topic" value="Flash sale discount countdown with glowing 3D shopping cart" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white text-xs focus:outline-none focus:border-cyan-400">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300">Durasi Loop:</label>
+              <select id="pst-mc-duration" class="mt-1 w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white text-xs focus:outline-none">
+                <option value="10" selected>10 Detik (Standar Microstock)</option>
+                <option value="15">15 Detik (Shorts/Reels)</option>
+                <option value="5">5 Detik (Loop Cepat)</option>
+                <option value="30">30 Detik (Story Panjang)</option>
+              </select>
+            </div>
+          </div>
+        `;
       }
     }
 
@@ -3808,6 +3895,27 @@
           return;
         }
 
+        if (currentStudioPreset === 'motion_code') {
+          const theme = document.getElementById('pst-mc-topic')?.value || 'Seamless Motion Graphics';
+          const visual_style = document.getElementById('pst-mc-style')?.value || 'Flat Design & Corporate Memphis';
+          const format_type = document.getElementById('pst-mc-format')?.value || '16:9';
+          const duration = parseInt(document.getElementById('pst-mc-duration')?.value || '10', 10);
+
+          const res = await fetch('/api/motioncode/prompt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ theme, visual_style, format_type, duration })
+          });
+          const data = await res.json();
+          if (data.ok && data.prompt) {
+            showStudioResult(data.prompt);
+            ClipperUI.toast('Master prompt Canvas API berhasil disusun!', 'success');
+          } else {
+            ClipperUI.toast('Gagal menyusun prompt motion.', 'error');
+          }
+          return;
+        }
+
         const res = await fetch('/api/studio/generate-prompt', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3869,6 +3977,25 @@
               ClipperUI.toast('Prompt Naskah siap disalin ke ChatGPT / Claude!', 'info');
             }
           }
+        } else if (currentStudioPreset === 'motion_code') {
+          const theme = document.getElementById('pst-mc-topic')?.value || 'Seamless Motion Graphics';
+          const visual_style = document.getElementById('pst-mc-style')?.value || 'Flat Design & Corporate Memphis';
+          const format_type = document.getElementById('pst-mc-format')?.value || '16:9';
+          const duration = parseInt(document.getElementById('pst-mc-duration')?.value || '10', 10);
+
+          const res = await fetch('/api/motioncode/generate-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ theme, visual_style, format_type, duration })
+          });
+          const d = await res.json();
+          if (d.ok && d.code) {
+            showStudioResult(d.code);
+            ClipperUI.toast('Kode JavaScript Canvas 60 FPS berhasil dibuat!', 'success');
+          } else {
+            ClipperUI.toast('Gagal membuat kode motion.', 'error');
+          }
+          return;
         } else {
           await handleGenerateStudioPrompt();
         }
@@ -3884,10 +4011,18 @@
       const card = document.getElementById('studio-result-card');
       const txt = document.getElementById('studio-result-text');
       const hooksBox = document.getElementById('studio-hooks-container');
+      const btnMc = document.getElementById('btn-open-motioncode');
       if (card && txt) {
         card.classList.remove('hidden');
         txt.value = text;
         if (hooksBox) hooksBox.classList.add('hidden');
+        if (btnMc) {
+          if (currentStudioPreset === 'motion_code') {
+            btnMc.classList.remove('hidden');
+          } else {
+            btnMc.classList.add('hidden');
+          }
+        }
         card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
