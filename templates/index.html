@@ -364,47 +364,50 @@
         <!-- Quick Sample Templates (11 Viral Blueprints Hasil Ekstraksi REA Big Data) -->
         <div class="space-y-1.5">
           <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between flex-wrap gap-1.5">
-            <span class="flex items-center gap-1.5"><span>💡</span> 11 Blueprint Naskah Viral Hasil Ekstraksi Big Data REA (Klik Langsung Coba):</span>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-extrabold">📊 184 Shots &bull; 2.405 Overlays &bull; -17ms SFX</span>
+            <span class="flex items-center gap-1.5"><span>💡</span> Pilih Pola Storytelling Blueprint REA (Otomatis Adaptasi ke Topikmu):</span>
+            <span id="active-blueprint-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-extrabold">🎯 Pola Aktif: Kontras &amp; Bukti Nyata (AnyMotion)</span>
           </div>
-          <div class="flex flex-wrap gap-1.5">
-            <button type="button" onclick="fillFacelessTemplate('anymotion')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-200 border border-emerald-700/60 transition flex items-center gap-1.5 shadow-sm">
-              <span>✨</span> AnyMotion Pondok SaaS
+          <div class="flex flex-wrap gap-1.5" id="faceless-blueprint-buttons">
+            <button type="button" data-blueprint-btn="anymotion" onclick="fillFacelessTemplate('anymotion')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-200 border border-emerald-700/60 transition flex items-center gap-1.5 shadow-sm ring-2 ring-emerald-400">
+              <span>✨</span> Pola Kontras &amp; Bukti (AnyMotion)
             </button>
-            <button type="button" onclick="fillFacelessTemplate('agusleo_cuan')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-950/50 hover:bg-amber-900/60 text-amber-200 border border-amber-700/60 transition flex items-center gap-1.5">
-              <span>💰</span> Agusleo 4 Tangga 100 Jt
+            <button type="button" data-blueprint-btn="agusleo_cuan" onclick="fillFacelessTemplate('agusleo_cuan')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-950/50 hover:bg-amber-900/60 text-amber-200 border border-amber-700/60 transition flex items-center gap-1.5">
+              <span>💰</span> Pola 4 Babak / 4 Tangga (Agusleo)
             </button>
-            <button type="button" onclick="fillFacelessTemplate('raffi_14m')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-950/50 hover:bg-rose-900/60 text-rose-200 border border-rose-700/60 transition flex items-center gap-1.5">
-              <span>🕵️</span> Raffi 14M Investigasi
+            <button type="button" data-blueprint-btn="raffi_14m" onclick="fillFacelessTemplate('raffi_14m')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-950/50 hover:bg-rose-900/60 text-rose-200 border border-rose-700/60 transition flex items-center gap-1.5">
+              <span>🕵️</span> Pola Investigasi 3 Fakta (Raffi)
             </button>
-            <button type="button" onclick="fillFacelessTemplate('teraumroh')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-teal-950/50 hover:bg-teal-900/60 text-teal-200 border border-teal-700/60 transition flex items-center gap-1.5">
-              <span>🕋</span> TeraUmroh SaaS Travel
+            <button type="button" data-blueprint-btn="teraumroh" onclick="fillFacelessTemplate('teraumroh')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-teal-950/50 hover:bg-teal-900/60 text-teal-200 border border-teal-700/60 transition flex items-center gap-1.5">
+              <span>🕋</span> Pola Jalan Pintas vs Jujur (TeraUmroh)
             </button>
-            <button type="button" onclick="fillFacelessTemplate('interview_sdm')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-200 border border-indigo-700/60 transition flex items-center gap-1.5">
-              <span>💼</span> Skit HRD Gaji 25 Jt
+            <button type="button" data-blueprint-btn="interview_sdm" onclick="fillFacelessTemplate('interview_sdm')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-200 border border-indigo-700/60 transition flex items-center gap-1.5">
+              <span>💼</span> Pola Dialog Tanya-Jawab (Skit)
             </button>
-            <button type="button" onclick="fillFacelessTemplate('geo_prophets')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-950/50 hover:bg-cyan-900/60 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1.5">
-              <span>🗺️</span> 3D Map Geografi Nabi
+            <button type="button" data-blueprint-btn="geo_prophets" onclick="fillFacelessTemplate('geo_prophets')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-950/50 hover:bg-cyan-900/60 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1.5">
+              <span>🗺️</span> Pola Atlas Sejarah &amp; Geografi 3D
             </button>
-            <button type="button" onclick="fillFacelessTemplate('michael_ig')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-950/50 hover:bg-purple-900/60 text-purple-200 border border-purple-700/60 transition flex items-center gap-1.5">
-              <span>📈</span> Bongkar Funnel IG
+            <button type="button" data-blueprint-btn="michael_ig" onclick="fillFacelessTemplate('michael_ig')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-purple-950/50 hover:bg-purple-900/60 text-purple-200 border border-purple-700/60 transition flex items-center gap-1.5">
+              <span>📈</span> Pola Audit 3 Kunci (Michael)
             </button>
-            <button type="button" onclick="fillFacelessTemplate('buatinvideo')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-pink-950/50 hover:bg-pink-900/60 text-pink-200 border border-pink-700/60 transition flex items-center gap-1.5">
-              <span>🍬</span> BuatinVideo POV 60s
+            <button type="button" data-blueprint-btn="buatinvideo" onclick="fillFacelessTemplate('buatinvideo')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-pink-950/50 hover:bg-pink-900/60 text-pink-200 border border-pink-700/60 transition flex items-center gap-1.5">
+              <span>🍬</span> Pola POV Imersif 60s
             </button>
-            <button type="button" onclick="fillFacelessTemplate('claude_fable')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
-              <span>⚡</span> Claude vs Langganan
+            <button type="button" data-blueprint-btn="claude_fable" onclick="fillFacelessTemplate('claude_fable')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
+              <span>⚡</span> Pola Perbandingan Ekstrem
             </button>
-            <button type="button" onclick="fillFacelessTemplate('freellm_code')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
-              <span>🔓</span> FreeLLM ClaudeCode
+            <button type="button" data-blueprint-btn="freellm_code" onclick="fillFacelessTemplate('freellm_code')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
+              <span>🔓</span> Pola Fakta Tersembunyi
             </button>
-            <button type="button" onclick="fillFacelessTemplate('ig_agent_skill')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
-              <span>📸</span> IG Agent Skill
+            <button type="button" data-blueprint-btn="ig_agent_skill" onclick="fillFacelessTemplate('ig_agent_skill')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
+              <span>📸</span> Pola Peringatan Tegas
             </button>
-            <button type="button" onclick="fillFacelessTemplate('vox')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
-              <span>📜</span> Vox 2.5D Sobek
+            <button type="button" data-blueprint-btn="vox" onclick="fillFacelessTemplate('vox')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition flex items-center gap-1.5">
+              <span>📜</span> Pola Dokumenter Eksplanasi Vox
             </button>
           </div>
+          <p class="text-[11px] text-slate-400">
+            💡 <strong>Cara Pakai:</strong> Ketik judul/topikmu di kolom atas lalu klik salah satu tombol Blueprint di atas — sistem akan <strong>menyusun naskah sesuai topikmu</strong> dengan gaya bercerita &amp; visual shader dari Blueprint tersebut. (Jika kolom topik kosong, tombol akan menampilkan contoh naskah asli).
+          </p>
         </div>
 
         <!-- Textarea Script Input -->
@@ -4389,21 +4392,75 @@
       });
     }
 
+    window.selectedFacelessBlueprint = 'anymotion';
+
+    const BLUEPRINT_PATTERN_LABELS = {
+      anymotion: 'Kontras & Bukti Nyata (AnyMotion)',
+      agusleo_cuan: '4 Babak / 4 Tangga Kronologis (Agusleo)',
+      raffi_14m: 'Dokumenter Investigasi 3 Fakta (Raffi)',
+      teraumroh: 'Jalan Pintas vs Jujur (Before-After)',
+      interview_sdm: 'Dialog Tanya-Jawab Dramatis (Skit)',
+      geo_prophets: 'Atlas Sejarah & Geografi 3D',
+      michael_ig: 'Audit 3 Kesalahan vs 3 Kunci',
+      buatinvideo: 'POV Imersif 60 Detik',
+      claude_fable: 'Perbandingan Ekstrem',
+      freellm_code: 'Fakta Tersembunyi di Balik Layar',
+      ig_agent_skill: 'Peringatan Tegas & Bukti',
+      vox: 'Dokumenter Eksplanasi Vox 2.5D'
+    };
+
     function fillFacelessTemplate(type) {
       const item = FACELESS_TEMPLATES[type];
       if (!item) return;
+      window.selectedFacelessBlueprint = type;
+
+      // Update active highlight on blueprint buttons
+      document.querySelectorAll('[data-blueprint-btn]').forEach(btn => {
+        if (btn.getAttribute('data-blueprint-btn') === type) {
+          btn.classList.add('ring-2', 'ring-emerald-400', 'scale-[1.02]');
+        } else {
+          btn.classList.remove('ring-2', 'ring-emerald-400', 'scale-[1.02]');
+        }
+      });
+
+      const badgeEl = document.getElementById('active-blueprint-badge');
+      if (badgeEl) {
+        badgeEl.innerText = `🎯 Pola Aktif: ${BLUEPRINT_PATTERN_LABELS[type] || type.toUpperCase()}`;
+      }
+
       const scriptInput = document.getElementById('faceless-script-input');
       const headerInput = document.getElementById('faceless-header-input');
       const themeSelect = document.getElementById('faceless-theme-select');
+      const topicEl = document.getElementById('faceless-ai-topic');
 
-      scriptInput.value = item.script;
-      headerInput.value = item.header;
       themeSelect.value = item.theme;
       if (item.voice) {
         const voiceSelect = document.getElementById('faceless-voice-select');
         if (voiceSelect) voiceSelect.value = item.voice;
       }
+
+      // Cek apakah pengguna sudah menulis topik di kolom AI Topic ATAU di kolom Judul Header Atas
+      const templateHeaders = Object.values(FACELESS_TEMPLATES).map(t => (t.header || '').trim().toLowerCase());
+      let userTopic = (topicEl ? topicEl.value.trim() : '');
+      const currentHeader = (headerInput ? headerInput.value.trim() : '');
+      if (!userTopic && currentHeader && !templateHeaders.includes(currentHeader.toLowerCase())) {
+        userTopic = currentHeader;
+        if (topicEl) topicEl.value = userTopic;
+      }
+
+      if (userTopic) {
+        // Pengguna sudah punya topik/judul sendiri -> Terapkan pola storytelling Blueprint ini ke topik pengguna!
+        generateFacelessScriptWithAI(type);
+        return;
+      }
+
+      // Jika belum ada topik sama sekali, tampilkan contoh naskah asli Blueprint sebagai pratinjau
+      scriptInput.value = item.script;
+      headerInput.value = item.header;
       updateFacelessCount();
+      if (window.ClipperUI && ClipperUI.toast) {
+        ClipperUI.toast(`📋 Contoh pola "${BLUEPRINT_PATTERN_LABELS[type] || type}" dimuat. Ketik topikmu di atas untuk menerapkan pola ini ke judulmu!`);
+      }
     }
 
     function updateFacelessCount() {
@@ -4966,14 +5023,20 @@
       }
     }
 
-    async function generateFacelessScriptWithAI() {
+    async function generateFacelessScriptWithAI(overrideStyle = null) {
       const topicEl = document.getElementById('faceless-ai-topic');
-      const topic = topicEl.value.trim();
+      const headerEl = document.getElementById('faceless-header-input');
+      let topic = topicEl ? topicEl.value.trim() : '';
+      if (!topic && headerEl && headerEl.value.trim()) {
+        topic = headerEl.value.trim();
+        if (topicEl) topicEl.value = topic;
+      }
       if (!topic) {
         alert("Ketik topik atau ide video terlebih dahulu!");
-        topicEl.focus();
+        if (topicEl) topicEl.focus();
         return;
       }
+      const chosenStyle = overrideStyle || window.selectedFacelessBlueprint || 'fakta';
       const btn = document.getElementById('btn-ai-write-script');
       btn.disabled = true;
       btn.innerHTML = '<span>⏳</span> Menulis...';
@@ -4981,7 +5044,7 @@
         const res = await fetch('/api/ai/ideas', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic: topic, style: 'fakta', duration_sec: 38 })
+          body: JSON.stringify({ topic: topic, style: chosenStyle, duration_sec: 38 })
         });
         const rawText = await res.text();
         let data = {};
@@ -4998,6 +5061,10 @@
           if (data.header_title) {
             document.getElementById('faceless-header-input').value = data.header_title;
           }
+          if (data.recommended_theme && !overrideStyle) {
+            const themeSelect = document.getElementById('faceless-theme-select');
+            if (themeSelect) themeSelect.value = data.recommended_theme;
+          }
           updateFacelessCount();
           const ideasWrap = document.getElementById('faceless-ai-ideas');
           if (ideasWrap && data.ideas && data.ideas.length > 0) {
@@ -5007,16 +5074,17 @@
               b.type = 'button';
               b.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 hover:bg-emerald-700 text-emerald-300 border border-slate-700 transition';
               b.innerText = idea;
-              b.onclick = () => { topicEl.value = idea; generateFacelessScriptWithAI(); };
+              b.onclick = () => { topicEl.value = idea; generateFacelessScriptWithAI(window.selectedFacelessBlueprint); };
               ideasWrap.appendChild(b);
             });
             ideasWrap.classList.remove('hidden');
           }
+          const patternName = BLUEPRINT_PATTERN_LABELS[chosenStyle] || chosenStyle.toUpperCase();
           if (window.ClipperUI && ClipperUI.toast) {
             ClipperUI.toast(
               data.ai_generated
-                ? '✨ Naskah & Ide berhasil ditulis oleh Cloud AI!'
-                : '⚡ Naskah berhasil disusun dengan Mesin Naratif Lokal (API Key Cloud AI dapat diperbarui di menu AI Router).'
+                ? `✨ Naskah "${topic.slice(0, 28)}..." selesai ditulis dengan pola ${patternName}!`
+                : `⚡ Naskah "${topic.slice(0, 28)}..." berhasil disusun dengan pola ${patternName}!`
             );
           }
         }

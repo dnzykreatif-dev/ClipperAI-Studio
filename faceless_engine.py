@@ -1168,16 +1168,34 @@ def render_faceless_video(
     }
 
 
+BLUEPRINT_RECOMMENDED_THEMES: Dict[str, str] = {
+    "anymotion": "anymotion",
+    "agusleo_cuan": "business",
+    "raffi_14m": "vox",
+    "teraumroh": "anymotion",
+    "interview_sdm": "comic",
+    "geo_prophets": "particle_morph",
+    "michael_ig": "riso",
+    "buatinvideo": "anymotion",
+    "claude_fable": "blueprint",
+    "freellm_code": "synth",
+    "ig_agent_skill": "cine",
+    "vox": "vox",
+}
+
+
 def generate_rich_topic_package(topic: str, style: str = "fakta", duration_sec: int = 38) -> Dict[str, Any]:
     """
     Generator Naskah & Ide Konten Cerdas Lokal (Offline-Resilient Narrative Engine).
     Menganalisis topik pengguna, mengenali tokoh/konteks (Sejarah Islam, Kisah Sahabat,
-    Hikmah, Bisnis, SaaS, atau Umum), dan menyusun naskah 4-bagian siap render beserta
-    ide topik turunan.
+    Hikmah, Bisnis, SaaS, atau Umum), dan menyusun naskah siap render yang diadaptasi
+    ke dalam **Pola Storytelling Blueprint REA** (`style`) pilihan pengguna.
     """
     import re
     clean_topic = (topic or "Insight Penting Hari Ini").strip()
     low = clean_topic.lower()
+    bp = (style or "fakta").strip().lower()
+    rec_theme = BLUEPRINT_RECOMMENDED_THEMES.get(bp, "islamic" if any(k in low for k in ("ka'ab", "kaab", "tabuk", "nabi", "rasulullah", "sahabat", "taubat", "allah", "islam")) else "anymotion")
 
     # Pisahkan klausa utama dan sub-klausa bila pengguna mengetik koma
     parts = [p.strip() for p in re.split(r"[,;]+", clean_topic) if p.strip()]
@@ -1186,105 +1204,223 @@ def generate_rich_topic_package(topic: str, style: str = "fakta", duration_sec: 
 
     # 1. Deteksi Khusus: Kisah Taubat Ka'ab bin Malik (Perang Tabuk & Kejujuran)
     if any(k in low for k in ("ka'ab", "kaab", "ka`ab", "tabuk")):
-        header_title = "🕌 TAUBAT KA'AB BIN MALIK"
-        thumb_text = "JUJUR DI HADAPAN NABI"
-        script = (
-            "Ketika lebih dari delapan puluh orang mencari alasan palsu di hadapan Rasulullah sepulang dari Perang Tabuk, "
-            "satu sahabat justru memilih jalan yang paling berat: berkata jujur! "
-            "Dialah Ka'ab bin Malik radhiyallahu 'anhu. Padahal ia sehat, punya kendaraan, dan pandai berbicara. "
-            "Namun ia sadar, kebohongan mungkin menyelamatkannya di dunia, tapi menghancurkannya di sisi Allah. "
-            "Lima puluh hari lamanya ia diboikot, bumi terasa sempit, hingga akhirnya turun wahyu Surah At-Taubah ayat seratus delapan belas "
-            "yang mengabarkan bahwa Allah menerima taubatnya karena kejujurannya. "
-            "Ingatlah, kejujuran mungkin terasa pahit di awal, tetapi selalu berakhir dengan kemuliaan!"
-        )
         ideas = [
             "3 Sahabat yang Diterima Taubatnya dalam Surah At-Taubah Ayat 118",
             "Ujian Surat Raja Ghassan Saat Ka'ab bin Malik Diboikot 50 Hari",
             "Mengapa Kejujuran Selalu Menyelamatkan Meski Terasa Berat di Awal"
         ]
-        return {
-            "header_title": header_title,
-            "thumbnail_text": thumb_text,
-            "script": script,
-            "ideas": ideas,
-        }
-
-    # 2. Kategori Kisah Islam / Taubat / Sahabat / Hikmah
-    if any(k in low for k in ("kisah", "taubat", "sahabat", "nabi", "rasulullah", "ulama", "hikmah", "jujur", "doa", "shalat", "rezeki", "allah", "surga", "dosa", "iman")):
-        short_subj = re.sub(r"^(kisah|cerita|hikmah|rahasia)\s+", "", subject_clause, flags=re.IGNORECASE).strip()
-        header_title = f"🕌 {short_subj.upper()[:24]}"
-        thumb_text = short_subj.upper()[:20]
-        if lesson_clause:
+        if bp == "agusleo_cuan":
+            header_title = "🕌 4 BABAK TAUBAT KA'AB"
+            thumb_text = "4 BABAK KEJUJURAN"
             script = (
-                f"Pernahkah kita merenungi {subject_clause}? "
-                f"Di saat banyak orang memilih jalan pintas untuk menyelamatkan diri, kisah ini mengajarkan kita tentang keberanian {lesson_clause}. "
-                f"Ujian terberat seorang mukmin bukanlah ketika ia jatuh dalam kekhilafan, melainkan apakah ia berani kembali dengan hati yang tulus dan jujur di hadapan Allah. "
-                f"Seberat apa pun konsekuensi kejujuran dan taubat yang tulus, pertolongan Allah pasti datang mengangkat derajat hamba-Nya. "
-                f"Mari ambil hikmah dari {short_subj} ini dan mulai perbaiki langkah kita hari ini!"
+                "Bagaimana satu kejujuran di hadapan Rasulullah mampu menggetarkan langit dan diabadikan dalam Al-Qur'an? "
+                "Ini empat babak kisah taubat Ka'ab bin Malik! "
+                "Babak pertama, tertinggal dari Perang Tabuk padahal fisik sehat dan kendaraan siap. "
+                "Babak kedua, memilih jujur tanpa alasan palsu saat lebih dari delapan puluh orang berdusta. "
+                "Babak ketiga, bertahan lima puluh hari diboikot hingga membakar surat bujukan Raja Ghassan. "
+                "Dan babak keempat, turunnya Surah At-Taubah ayat seratus delapan belas sebagai bukti kemuliaan orang yang jujur!"
+            )
+        elif bp == "raffi_14m":
+            header_title = "🕵️ BEDAH KISAH KA'AB BIN MALIK"
+            thumb_text = "FAKTA PERANG TABUK"
+            script = (
+                "Lebih dari delapan puluh orang datang membawa alasan palsu sepulang Perang Tabuk, tapi hanya tiga sahabat yang memilih jujur sepenuhnya! "
+                "Jangan hanya lihat hasilnya di permukaan, mari kita bedah tiga fakta mengejutkan di balik kisah Ka'ab bin Malik! "
+                "Fakta pertama, Ka'ab adalah penyair ulung yang sebenarnya sangat mudah merangkai alasan logis di hadapan Nabi. "
+                "Fakta kedua, selama lima puluh hari boikot, tak satu pun penduduk Madinah berbicara dengannya. "
+                "Dan fakta ketiga, kejujuran pahit itulah yang justru menurunkan wahyu pengampunan langsung dari langit!"
+            )
+        elif bp == "teraumroh":
+            header_title = "🕌 ALASAN PALSU VS JUJUR"
+            thumb_text = "JUJUR VS DUSTA"
+            script = (
+                "Masih berpikir berbohong sedikit bisa menyelamatkan kita dari masalah besar? "
+                "Lihat kontras tajam dalam kisah Ka'ab bin Malik sepulang Perang Tabuk! "
+                "Mereka yang memilih jalan pintas dengan bersumpah palsu di hadapan Rasulullah justru berakhir dengan kecaman wahyu. "
+                "Sebaliknya, Ka'ab bin Malik yang memilih jalan berat dengan berkata jujur tanpa alasan, melewati ujian lima puluh hari hingga diangkat derajatnya dalam Surah At-Taubah ayat seratus delapan belas!"
+            )
+        elif bp == "interview_sdm":
+            header_title = "💬 DIALOG NABI & KA'AB"
+            thumb_text = "TANYA JAWAB DI MASJID"
+            script = (
+                "Apa yang membuatmu tertinggal dari Perang Tabuk, wahai Ka'ab? Bukankah engkau sudah membeli kendaraan? "
+                "Wahai Rasulullah, demi Allah, seandainya aku duduk di hadapan penguasa dunia, pasti aku bisa keluar dari kemarahannya dengan kepandaian bicaraku! "
+                "Tetapi demi Allah, jika hari ini aku berdusta agar engkau ridha, Allah pasti akan membongkarnya. "
+                "Maka aku memilih jujur: aku tidak punya uzur sama sekali! "
+                "Kalimat jujur itulah yang mengantarkan Ka'ab bin Malik pada taubat abadi!"
+            )
+        elif bp == "geo_prophets":
+            header_title = "🗺️ JEJAK MADINAH KE TABUK"
+            thumb_text = "700 KM MENUJU TABUK"
+            script = (
+                "Pernahkah kamu membayangkan beratnya medan geografis antara Madinah dan Tabuk sejauh tujuh ratus kilometer melintasi gurun musim panas? "
+                "Ketika tiga puluh ribu pasukan Muslim bergerak menembus terik padang pasir menuju perbatasan Syam, Ka'ab bin Malik tertinggal di Madinah. "
+                "Di titik peta bersejarah inilah, dari Masjid Nabawi hingga bukit Sal', terekam kisah lima puluh hari penantian taubat paling mengharukan dalam sejarah Islam!"
+            )
+        elif bp == "michael_ig":
+            header_title = "📈 3 KUNCI TAUBAT KA'AB"
+            thumb_text = "3 KUNCI KEJUJURAN"
+            script = (
+                "Kenapa banyak orang gagal lulus saat diuji dengan kesalahan besar? Karena mereka sibuk membela diri, bukan memperbaiki hati! "
+                "Belajar dari kisah Ka'ab bin Malik di hadapan Rasulullah, ada tiga kunci penyelamatnya. "
+                "Pertama, akui kesalahan secara jujur tanpa mengarang alasan. "
+                "Kedua, jaga kesetiaan iman meski diuji tawaran harta dan kedudukan dari Raja Ghassan. "
+                "Dan ketiga, gantungkan harapan murni hanya kepada ampunan Allah!"
+            )
+        elif bp == "buatinvideo":
+            header_title = "🕌 POV 50 HARI KA'AB BIN MALIK"
+            thumb_text = "POV 50 HARI DIBOIKOT"
+            script = (
+                "POV ketika seluruh penduduk kota mendiamkanmu selama lima puluh hari penuh, bahkan salammu tak lagi dijawab! "
+                "Itulah ujian nyata yang dialami Ka'ab bin Malik radhiyallahu 'anhu setelah ia memilih berkata jujur kepada Rasulullah sepulang Perang Tabuk. "
+                "Bumi terasa sempit, namun ia tetap teguh di atas kejujuran, hingga pada fajar hari kelima puluh, suara lantang dari puncak bukit Sal' membawa kabar gembira turunnya wahyu pengampunan Allah!"
+            )
+        elif bp in ("claude_fable", "freellm_code", "ig_agent_skill"):
+            header_title = "⚡ RAHASIA TAUBAT KA'AB"
+            thumb_text = "KEKUATAN SATU KEJUJURAN"
+            script = (
+                "Jangan pernah menukar kejujuran dengan seribu alasan manis yang menipu! "
+                "Banyak orang belum menyadari detail krusial di balik kisah Ka'ab bin Malik: ketika delapan puluh lebih orang sibuk merangkai alasan di hadapan Nabi, Ka'ab justru menelanjangi egonya dengan satu kejujuran mutlak. "
+                "Hasilnya? Alasan palsu runtuh oleh wahyu, sementara kejujuran Ka'ab bin Malik diabadikan Allah dalam Surah At-Taubah ayat seratus delapan belas!"
+            )
+        elif bp == "vox":
+            header_title = "📜 DOKUMENTER KA'AB BIN MALIK"
+            thumb_text = "SEJARAH AT-TAUBAH 118"
+            script = (
+                "Pernah nggak kamu penasaran, kenapa kisah Ka'ab bin Malik disebut sebagai salah satu kisah kejujuran paling agung dalam sejarah manusia? "
+                "Jika kita tarik garis waktunya ke tahun kesembilan Hijriah usai Perang Tabuk, Ka'ab menghadapi dilema besar: berbohong demi selamat sesaat, atau jujur di hadapan Rasulullah dengan risiko berat. "
+                "Keputusannya memilih jujur memicu ujian lima puluh hari yang akhirnya melahirkan ayat abadi tentang arti taubat sejati!"
             )
         else:
+            header_title = "🕌 TAUBAT KA'AB BIN MALIK"
+            thumb_text = "JUJUR DI HADAPAN NABI"
             script = (
-                f"Ada satu pelajaran hidup luar biasa di balik {clean_topic} yang jarang kita sadari. "
-                f"Sering kali manusia baru tersadar ketika ujian datang menyempitkan dada dan tidak ada lagi tempat bergantung selain Allah. "
-                f"Namun justru di titik terendah itulah, ketulusan taubat dan kejujuran hati membuka pintu rahmat langit yang tidak disangka-sangka. "
-                f"Simpan video ini sebagai pengingat diri, dan bagikan agar menjadi amal jariyah bersama!"
+                "Ketika lebih dari delapan puluh orang mencari alasan palsu di hadapan Rasulullah sepulang dari Perang Tabuk, "
+                "satu sahabat justru memilih jalan yang paling berat: berkata jujur! "
+                "Dialah Ka'ab bin Malik radhiyallahu 'anhu. Padahal ia sehat, punya kendaraan, dan pandai berbicara. "
+                "Namun ia sadar, kebohongan mungkin menyelamatkannya di dunia, tapi menghancurkannya di sisi Allah. "
+                "Lima puluh hari lamanya ia diboikot, bumi terasa sempit, hingga akhirnya turun wahyu Surah At-Taubah ayat seratus delapan belas "
+                "yang mengabarkan bahwa Allah menerima taubatnya karena kejujurannya. "
+                "Ingatlah, kejujuran mungkin terasa pahit di awal, tetapi selalu berakhir dengan kemuliaan!"
             )
-        ideas = [
-            f"3 Hikmah Terbesar dari {short_subj.title()}",
-            f"Mengapa { (lesson_clause or short_subj).title() } Mengubah Takdir Seseorang",
-            f"Tanda Taubat dan Kejujuran Seorang Hamba Diterima oleh Allah"
-        ]
         return {
             "header_title": header_title,
             "thumbnail_text": thumb_text,
             "script": script,
             "ideas": ideas,
+            "blueprint_style": bp,
+            "recommended_theme": rec_theme,
         }
 
-    # 3. Kategori Bisnis / Keuangan / AI / Cuan
-    if any(k in low for k in ("cuan", "bisnis", "uang", "omset", "jualan", "umkm", "kaya", "investasi", "gaji", "marketing", "ai")):
-        header_title = f"💰 {subject_clause.upper()[:24]}"
-        thumb_text = subject_clause.upper()[:20]
+    # 2. Adaptasi Pola Blueprint untuk Topik Umum / Kisah Islam / Bisnis / Edukasi
+    short_subj = re.sub(r"^(kisah|cerita|hikmah|rahasia|fakta)\s+", "", subject_clause, flags=re.IGNORECASE).strip() or subject_clause
+    lesson_phrase = lesson_clause if lesson_clause else f"prinsip utama di balik {short_subj}"
+
+    if bp == "agusleo_cuan":
+        header_title = f"📊 4 BABAK {short_subj.upper()[:18]}"
+        thumb_text = f"4 TAHAP {short_subj.upper()[:14]}"
         script = (
-            f"Banyak orang ingin sukses di bidang {subject_clause}, tapi masih terjebak memakai cara lama yang menguras waktu! "
-            f"{('Kunci utamanya justru ada pada ' + lesson_clause + '. ') if lesson_clause else ''}"
-            f"Langkah pertama, fokus selesaikan satu masalah paling mendesak yang dihadapi target pasarmu. "
-            f"Langkah kedua, kemas solusimu menjadi sistem kerja otomatis yang mudah diduplikasi. "
-            f"Dan langkah ketiga, bangun kepercayaan lewat bukti nyata, bukan sekadar janji promosi. "
-            f"Mulai terapkan strategi ini hari ini sebelum kompetitormu mendahului!"
+            f"Bagaimana cara memahami {subject_clause} secara utuh dan menerapkannya dengan benar? "
+            f"Ini empat tahapan penting yang wajib kamu ketahui! "
+            f"Tahap pertama, kenali akar masalah dan konteks utama dari {short_subj}. "
+            f"Tahap kedua, pegang teguh {lesson_phrase} saat kebanyakan orang memilih jalan pintas. "
+            f"Tahap ketiga, uji konsistensi sikapmu ketika menghadapi tekanan dan ujian nyata. "
+            f"Dan tahap keempat, rasakan hasil besar ketika prinsip yang benar mengantarkanmu pada kemuliaan!"
         )
-        ideas = [
-            f"4 Tangga Praktis Memulai {subject_clause.title()} dari Nol",
-            f"Kesalahan Fatal Pemula Saat Mencoba {subject_clause.title()}",
-            f"Studi Kasus Menggandakan Hasil {subject_clause.title()} di Tahun 2026"
-        ]
-        return {
-            "header_title": header_title,
-            "thumbnail_text": thumb_text,
-            "script": script,
-            "ideas": ideas,
-        }
+    elif bp == "raffi_14m":
+        header_title = f"🕵️ INVESTIGASI {short_subj.upper()[:16]}"
+        thumb_text = f"3 FAKTA {short_subj.upper()[:14]}"
+        script = (
+            f"Banyak yang membicarakan {subject_clause}, tapi jarang yang membedah fakta terdalam di baliknya! "
+            f"Kalau kita telusuri satu per satu, ada tiga fakta penting terkait {lesson_phrase}. "
+            f"Fakta pertama, apa yang terlihat mudah di permukaan sebenarnya menyimpan ujian keputusan yang besar. "
+            f"Fakta kedua, mayoritas orang gagal karena tergoda mencari alasan semu. "
+            f"Dan fakta ketiga, keberanian menjaga integritas selalu melahirkan akhir yang tak ternilai!"
+        )
+    elif bp == "teraumroh":
+        header_title = f"⚖️ KONTRAS {short_subj.upper()[:18]}"
+        thumb_text = f"CARA LAMA VS PRINSIP"
+        script = (
+            f"Masih terjebak memakai jalan pintas saat menghadapi {subject_clause}? "
+            f"Lihat perbedaan mencolok antara mereka yang mencari alasan sesaat dengan yang memegang teguh {lesson_phrase}! "
+            f"Jalan pintas mungkin terlihat menyelamatkan di awal, namun menyisakan penyesalan panjang. "
+            f"Sebaliknya, memilih jalan yang jujur dan terukur akan membuka pintu keberkahan dan solusi permanen!"
+        )
+    elif bp == "interview_sdm":
+        header_title = f"💬 DIALOG {short_subj.upper()[:19]}"
+        thumb_text = f"TANYA JAWAB TAJAM"
+        script = (
+            f"Kenapa kamu memilih jalan yang berat dalam {subject_clause}, padahal kamu bisa saja mencari alasan yang aman? "
+            f"Karena alasan yang dibuat-buat hanya menyelamatkan kita di hadapan manusia, bukan di hadapan kebenaran! "
+            f"Di situlah letak kekuatan {lesson_phrase}. "
+            f"Orang yang bermental besar tidak diukur dari pandainya ia berkilah, melainkan keberaniannya bertanggung jawab!"
+        )
+    elif bp == "geo_prophets":
+        header_title = f"🗺️ JEJAK {short_subj.upper()[:20]}"
+        thumb_text = f"PETA SEJARAH & FAKTA"
+        script = (
+            f"Pernahkah kamu membayangkan latar ruang dan perjalanan besar di balik {subject_clause}? "
+            f"Setiap titik perjalanan menyimpan ujian kesabaran dan pembuktian atas {lesson_phrase}. "
+            f"Ketika jarak, waktu, dan keadaan terasa menghimpit, keteguhan memegang prinsip yang benar menjadi kompas satu-satunya menuju keselamatan!"
+        )
+    elif bp == "michael_ig":
+        header_title = f"📈 3 KUNCI {short_subj.upper()[:18]}"
+        thumb_text = f"3 KUNCI UTAMA"
+        script = (
+            f"Kenapa banyak orang gagal mengambil pelajaran dari {subject_clause}? Karena mereka hanya fokus pada permukaan, bukan pada {lesson_phrase}! "
+            f"Ubah cara pandangmu dengan tiga langkah ini: pertama, jujur mengakui titik kelemahan diri. "
+            f"Kedua, tolak segala bentuk pembenaran palsu yang merusak integritas. "
+            f"Dan ketiga, buktikan komitmenmu lewat tindakan nyata secara konsisten!"
+        )
+    elif bp == "buatinvideo":
+        header_title = f"🎯 POV {short_subj.upper()[:22]}"
+        thumb_text = f"POV DETIK PENENTUAN"
+        script = (
+            f"POV ketika kamu berada di titik paling krusial dalam {subject_clause}, di mana satu kalimat saja bisa menentukan masa depanmu! "
+            f"Di saat semua orang menyarankan jalan aman yang semu, kamu memilih berdiri tegak mempertahankan {lesson_phrase}. "
+            f"Awalnya terasa berat dan menguji mental, namun di ujung ujian itulah kemuliaan sejati menantimu!"
+        )
+    elif bp == "vox":
+        header_title = f"📜 EKSPLANASI {short_subj.upper()[:15]}"
+        thumb_text = f"BEDAH {short_subj.upper()[:15]}"
+        script = (
+            f"Pernah nggak kamu penasaran, kenapa {subject_clause} selalu menjadi pelajaran penting lintas generasi? "
+            f"Jika kita bedah lapisan sebab-akibatnya, inti utamanya bermuara pada {lesson_phrase}. "
+            f"Keputusan yang diambil di saat genting bukan sekadar soal hari ini, melainkan bagaimana sejarah mencatat ketulusan dan integritas kita!"
+        )
+    elif any(k in low for k in ("kisah", "taubat", "sahabat", "nabi", "rasulullah", "ulama", "hikmah", "jujur", "doa", "shalat", "rezeki", "allah", "surga", "dosa", "iman")):
+        header_title = f"🕌 {short_subj.upper()[:24]}"
+        thumb_text = short_subj.upper()[:20]
+        script = (
+            f"Pernahkah kita merenungi {subject_clause}? "
+            f"Di saat banyak orang memilih jalan pintas untuk menyelamatkan diri, kisah ini mengajarkan kita tentang keberanian {lesson_phrase}. "
+            f"Ujian terberat seorang mukmin bukanlah ketika ia jatuh dalam kekhilafan, melainkan apakah ia berani kembali dengan hati yang tulus dan jujur di hadapan Allah. "
+            f"Seberat apa pun konsekuensi kejujuran dan taubat yang tulus, pertolongan Allah pasti datang mengangkat derajat hamba-Nya. "
+            f"Mari ambil hikmah dari {short_subj} ini dan mulai perbaiki langkah kita hari ini!"
+        )
+    else:
+        header_title = f"✨ {short_subj.upper()[:24]}"
+        thumb_text = short_subj.upper()[:20]
+        script = (
+            f"Tahukah kamu fakta penting di balik {subject_clause} yang sering dilewatkan banyak orang? "
+            f"{('Inti utamanya terletak pada ' + lesson_clause + '. ') if lesson_clause else ''}"
+            f"Kebanyakan orang hanya melihat hasil akhirnya di permukaan, tanpa memahami proses dan keputusan besar yang terjadi di baliknya. "
+            f"Ketika kita berani memilih langkah yang benar dan konsisten, perubahan kecil hari ini akan melahirkan dampak besar di masa depan. "
+            f"Tulis pendapatmu di kolom komentar dan simpan video ini agar tidak lupa!"
+        )
 
-    # 4. Kategori Umum / Edukasi / Fakta Unik
-    header_title = f"✨ {subject_clause.upper()[:24]}"
-    thumb_text = subject_clause.upper()[:20]
-    script = (
-        f"Tahukah kamu fakta penting di balik {subject_clause} yang sering dilewatkan banyak orang? "
-        f"{('Inti utamanya terletak pada ' + lesson_clause + '. ') if lesson_clause else ''}"
-        f"Kebanyakan orang hanya melihat hasil akhirnya di permukaan, tanpa memahami proses dan keputusan besar yang terjadi di baliknya. "
-        f"Ketika kita berani memilih langkah yang benar dan konsisten, perubahan kecil hari ini akan melahirkan dampak besar di masa depan. "
-        f"Tulis pendapatmu di kolom komentar dan simpan video ini agar tidak lupa!"
-    )
     ideas = [
-        f"Fakta Tersembunyi di Balik {subject_clause.title()}",
-        f"3 Pelajaran Penting dari {subject_clause.title()}",
-        f"Cara Menerapkan Prinsip {subject_clause.title()} dalam Kehidupan Sehari-hari"
+        f"3 Hikmah Terbesar dari {short_subj.title()}",
+        f"Mengapa {lesson_phrase.title()} Mengubah Akhir Sebuah Kisah",
+        f"Cara Menerapkan Prinsip {short_subj.title()} dalam Kehidupan Sehari-hari"
     ]
     return {
         "header_title": header_title,
         "thumbnail_text": thumb_text,
         "script": script,
         "ideas": ideas,
+        "blueprint_style": bp,
+        "recommended_theme": rec_theme,
     }
 
 

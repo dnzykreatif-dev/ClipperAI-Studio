@@ -738,14 +738,32 @@ def generate_seo_with_ai(
 # ==============================================================================
 # 3. AI IDEA & SCRIPT GENERATOR (UNTUK FACELESS STUDIO & RISET IDE)
 # ==============================================================================
+BLUEPRINT_STYLE_GUIDES: Dict[str, str] = {
+    "anymotion": "POLA KONTRAS & BUKTI NYATA: Bandingkan kesalahan/kebiasaan umum banyak orang dengan satu pilihan prinsip yang benar, lalu beri bukti nyata dan kesimpulan kuat.",
+    "agusleo_cuan": "POLA 4 TANGGA / 4 BABAK: Buka dengan pertanyaan memikat, lalu bedah topik/kisah menjadi 4 Tahap atau 4 Babak berurutan (Babak Pertama, Kedua, Ketiga, Keempat).",
+    "raffi_14m": "POLA DOKUMENTER INVESTIGASI: Buka dengan fakta/peristiwa besar yang mengejutkan, lalu ajak penonton membedah 3 fakta mendalam di balik layar secara investigatif.",
+    "teraumroh": "POLA JALAN PINTAS VS JALAN BENAR (BEFORE-AFTER): Kontraskan bahaya memilih jalan pintas/alasan semu dengan kemuliaan memilih jalan yang benar.",
+    "interview_sdm": "POLA DIALOG TANYA-JAWAB DRAMATIS: Gunakan gaya dialog tanya-jawab singkat yang langsung menyentak kesadaran, ditutup dengan hikmah tajam.",
+    "geo_prophets": "POLA ATLAS SEJARAH & GEOGRAFI 3D: Gambarkan latar tempat, jarak geografis, atmosfer perjalanan, dan jejak sejarah dari peristiwa tersebut secara visual.",
+    "michael_ig": "POLA AUDIT 3 KESALAHAN VS 3 KUNCI: Bongkar mengapa banyak orang gagal saat menghadapi situasi ini, lalu berikan 3 kunci penyelamatnya.",
+    "buatinvideo": "POLA POV IMERSIF: Gunakan sudut pandang 'Bayangkan ketika kamu berada di posisi...' untuk membawa penonton masuk ke titik paling genting dari kisah ini.",
+    "claude_fable": "POLA PERBANDINGAN EKSTREM: Bandingkan rumitnya seribu alasan/cara palsu dengan kekuatan satu kejujuran/prinsip utama.",
+    "freellm_code": "POLA FAKTA TERSEMBUNYI: Buka dengan 'Banyak orang belum tahu detail krusial di balik...' lalu ungkap sisi terdalam dari kisah/topik ini.",
+    "ig_agent_skill": "POLA PERINGATAN TEGAS: Buka dengan 'Jangan pernah...' yang relevan dengan inti topik, lalu jelaskan bukti dan dampaknya.",
+    "vox": "POLA DOKUMENTER EKSPLANASI VOX: Buka dengan 'Pernah nggak kamu penasaran, kenapa...' lalu kupas lapisan sebab-akibatnya secara sinematik.",
+}
+
+
 def generate_script_or_ideas_with_ai(topic: str, style: str = "fakta", duration_sec: int = 35) -> Optional[Dict[str, Any]]:
     if not is_ai_ready():
         return None
 
     target_words = max(45, int(duration_sec * 2.3))
+    style_guide = BLUEPRINT_STYLE_GUIDES.get(style.lower(), f"Gaya penulisan: {style.upper()} yang memikat dan padat.")
     system_prompt = (
         "Kamu adalah Penulis Naskah Video Pendek (Shorts/Reels/TikTok) terbaik di Indonesia.\n"
-        f"Gaya penulisan: {style.upper()}.\n"
+        f"FORMULA BLUEPRINT STORYTELLING YANG WAJIB DIIKUTI: {style_guide}\n"
+        "PENTING: Naskah WAJIB 100% membahas topik pengguna di bawah ini (JANGAN membahas topik lain di luar topik pengguna, cukup gunakan pola storytelling blueprint-nya saja).\n"
         f"Buat naskah narasi voice-over yang sangat memikat tentang topik yang diminta (sekitar {target_words} kata, "
         "kalimat pendek-pendek, mengalir natural saat dibacakan, memiliki Hook kuat di 3 detik pertama, isi padat, dan penutup yang berkesan).\n"
         "Kembalikan HANYA JSON valid dengan struktur:\n"
@@ -756,7 +774,7 @@ def generate_script_or_ideas_with_ai(topic: str, style: str = "fakta", duration_
         '  "ideas": ["Ide topik turunan 1", "Ide topik turunan 2", "Ide topik turunan 3"]\n'
         "}"
     )
-    user_prompt = f"Topik: {topic}"
+    user_prompt = f"Topik Utama: {topic}\nBlueprint Storytelling: {style}"
     try:
         raw = generate_text(system_prompt, user_prompt, json_mode=True, timeout=30)
         d = extract_json(raw)

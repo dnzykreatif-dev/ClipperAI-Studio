@@ -1029,18 +1029,24 @@ async def test_ai_router():
 @app.post("/api/ai/ideas")
 async def generate_ai_ideas(payload: AIIdeasPayload):
     """Membuat naskah & ide konten viral menggunakan AI (atau fallback lokal cerdas jika offline/key invalid)."""
+    rich_pkg = faceless_engine.generate_rich_topic_package(
+        topic=payload.topic,
+        style=payload.style,
+        duration_sec=payload.duration_sec,
+    )
     ai_res = ai_brain.generate_script_or_ideas_with_ai(
         topic=payload.topic,
         style=payload.style,
         duration_sec=payload.duration_sec,
     )
     if ai_res:
-        return {"ok": True, "ai_generated": True, **ai_res}
-    rich_pkg = faceless_engine.generate_rich_topic_package(
-        topic=payload.topic,
-        style=payload.style,
-        duration_sec=payload.duration_sec,
-    )
+        return {
+            "ok": True,
+            "ai_generated": True,
+            "blueprint_style": rich_pkg.get("blueprint_style", payload.style),
+            "recommended_theme": rich_pkg.get("recommended_theme", "anymotion"),
+            **ai_res,
+        }
     return {
         "ok": True,
         "ai_generated": False,
@@ -1048,6 +1054,8 @@ async def generate_ai_ideas(payload: AIIdeasPayload):
         "thumbnail_text": rich_pkg["thumbnail_text"],
         "script": rich_pkg["script"],
         "ideas": rich_pkg["ideas"],
+        "blueprint_style": rich_pkg.get("blueprint_style", payload.style),
+        "recommended_theme": rich_pkg.get("recommended_theme", "anymotion"),
     }
 
 
@@ -1597,18 +1605,39 @@ async def generate_rea_director_prompt(payload: ReaDirectorPromptPayload):
         aspect_ratio=payload.aspect_ratio,
         language=payload.language,
     )
-    if payload.execute_ai and ai_brain.is_ai_ready():
-        try:
-            raw_res = ai_brain.generate_text(
-                system_prompt="You are an award-winning Creative Director and JSON Storyboard Architect.",
-                user_prompt=res["prompt"],
-                json_mode=True,
-                timeout=60,
+    if payload.execute_ai:
+        if ai_brain.is_ai_ready():
+            try:
+                raw_res = ai_brain.generate_text(
+                    system_prompt="You are an award-winning Creative Director and JSON Storyboard Architect.",
+                    user_prompt=res["prompt"],
+                    json_mode=True,
+                    timeout=60,
+                )
+                parsed = ai_brain.extract_json(raw_res) if hasattr(ai_brain, "extract_json") else None
+                res["ai_storyboard"] = parsed or raw_res
+            except Exception as e:
+                res["ai_error"] = str(e)
+        if not res.get("ai_storyboard"):
+            rich_pkg = faceless_engine.generate_rich_topic_package(
+                topic=payload.topic,
+                style=payload.blueprint_id,
+                duration_sec=int(payload.duration_s),
             )
-            parsed = ai_brain.extract_json(raw_res) if hasattr(ai_brain, "extract_json") else None
-            res["ai_storyboard"] = parsed or raw_res
-        except Exception as e:
-            res["ai_error"] = str(e)
+            sb_scenes = faceless_engine.build_interactive_storyboard(
+                script_text=rich_pkg["script"],
+                theme=rich_pkg.get("recommended_theme", "anymotion"),
+            )
+            res["ai_storyboard"] = {
+                "project_title": rich_pkg["header_title"],
+                "hook_3s": sb_scenes[0]["narration"] if sb_scenes else rich_pkg["script"][:90],
+                "style_id": payload.style_id,
+                "visual_look": payload.visual_look,
+                "palette": payload.palette,
+                "full_script": rich_pkg["script"],
+                "scenes": sb_scenes,
+            }
+            res.pop("ai_error", None)
     return res
 
 
