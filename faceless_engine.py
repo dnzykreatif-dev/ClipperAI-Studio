@@ -6,8 +6,12 @@ kinetic animated typography (Hormozi style), procedural motion backgrounds, and 
 """
 
 import os
+import re
+import time
+import math
 import uuid
 import json
+import base64
 import asyncio
 import subprocess
 from pathlib import Path
@@ -157,7 +161,7 @@ THEMES = {
 async def _synthesize_speech(text: str, voice_id: str, output_path: str):
     """Generates natural neural audio from text using Edge-TTS with reasonable timeout."""
     communicate = edge_tts.Communicate(text=text, voice=voice_id)
-    await asyncio.wait_for(communicate.save(output_path), timeout=8.0)
+    await asyncio.wait_for(communicate.save(output_path), timeout=25.0)
 
 
 def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional[str] = None) -> str:
@@ -181,17 +185,21 @@ def generate_tts_audio(text: str, voice_key: str = "ardi", output_path: Optional
             last_err = e
             time.sleep(0.5)
 
-    # Offline SAPI fallback jika koneksi internet terputus
+    # Offline SAPI fallback jika koneksi internet terputus (menggunakan EncodedCommand agar aman dari tanda kutip seperti Ka'ab)
     wav_tmp = output_path + ".wav"
-    ps_cmd = (
+    safe_wav = wav_tmp.replace("'", "''")
+    safe_txt = text.replace("'", "''")
+    ps_script = (
         "Add-Type -AssemblyName System.Speech; "
         "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
-        f"$s.SetOutputToWaveFile('{wav_tmp}'); "
-        f"$s.Speak({json.dumps(text)}); $s.Dispose()"
+        f"$s.SetOutputToWaveFile('{safe_wav}'); "
+        f"$s.Speak('{safe_txt}'); "
+        "$s.Dispose()"
     )
+    encoded_cmd = base64.b64encode(ps_script.encode("utf-16le")).decode("ascii")
     try:
-        subprocess.run(["powershell", "-NoProfile", "-Command", ps_cmd],
-                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8.0)
+        subprocess.run(["powershell", "-NoProfile", "-EncodedCommand", encoded_cmd],
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=25.0)
     except Exception:
         pass
     if os.path.exists(wav_tmp) and os.path.getsize(wav_tmp) > 2000:
