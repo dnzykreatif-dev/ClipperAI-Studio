@@ -1166,3 +1166,130 @@ def render_faceless_video(
         "duration": round(total_dur, 2),
         "seo": seo_package
     }
+
+
+def generate_rich_topic_package(topic: str, style: str = "fakta", duration_sec: int = 38) -> Dict[str, Any]:
+    """
+    Generator Naskah & Ide Konten Cerdas Lokal (Offline-Resilient Narrative Engine).
+    Menganalisis topik pengguna, mengenali tokoh/konteks (Sejarah Islam, Kisah Sahabat,
+    Hikmah, Bisnis, SaaS, atau Umum), dan menyusun naskah 4-bagian siap render beserta
+    ide topik turunan.
+    """
+    import re
+    clean_topic = (topic or "Insight Penting Hari Ini").strip()
+    low = clean_topic.lower()
+
+    # Pisahkan klausa utama dan sub-klausa bila pengguna mengetik koma
+    parts = [p.strip() for p in re.split(r"[,;]+", clean_topic) if p.strip()]
+    subject_clause = parts[0] if parts else clean_topic
+    lesson_clause = parts[1] if len(parts) > 1 else ""
+
+    # 1. Deteksi Khusus: Kisah Taubat Ka'ab bin Malik (Perang Tabuk & Kejujuran)
+    if any(k in low for k in ("ka'ab", "kaab", "ka`ab", "tabuk")):
+        header_title = "🕌 TAUBAT KA'AB BIN MALIK"
+        thumb_text = "JUJUR DI HADAPAN NABI"
+        script = (
+            "Ketika lebih dari delapan puluh orang mencari alasan palsu di hadapan Rasulullah sepulang dari Perang Tabuk, "
+            "satu sahabat justru memilih jalan yang paling berat: berkata jujur! "
+            "Dialah Ka'ab bin Malik radhiyallahu 'anhu. Padahal ia sehat, punya kendaraan, dan pandai berbicara. "
+            "Namun ia sadar, kebohongan mungkin menyelamatkannya di dunia, tapi menghancurkannya di sisi Allah. "
+            "Lima puluh hari lamanya ia diboikot, bumi terasa sempit, hingga akhirnya turun wahyu Surah At-Taubah ayat seratus delapan belas "
+            "yang mengabarkan bahwa Allah menerima taubatnya karena kejujurannya. "
+            "Ingatlah, kejujuran mungkin terasa pahit di awal, tetapi selalu berakhir dengan kemuliaan!"
+        )
+        ideas = [
+            "3 Sahabat yang Diterima Taubatnya dalam Surah At-Taubah Ayat 118",
+            "Ujian Surat Raja Ghassan Saat Ka'ab bin Malik Diboikot 50 Hari",
+            "Mengapa Kejujuran Selalu Menyelamatkan Meski Terasa Berat di Awal"
+        ]
+        return {
+            "header_title": header_title,
+            "thumbnail_text": thumb_text,
+            "script": script,
+            "ideas": ideas,
+        }
+
+    # 2. Kategori Kisah Islam / Taubat / Sahabat / Hikmah
+    if any(k in low for k in ("kisah", "taubat", "sahabat", "nabi", "rasulullah", "ulama", "hikmah", "jujur", "doa", "shalat", "rezeki", "allah", "surga", "dosa", "iman")):
+        short_subj = re.sub(r"^(kisah|cerita|hikmah|rahasia)\s+", "", subject_clause, flags=re.IGNORECASE).strip()
+        header_title = f"🕌 {short_subj.upper()[:24]}"
+        thumb_text = short_subj.upper()[:20]
+        if lesson_clause:
+            script = (
+                f"Pernahkah kita merenungi {subject_clause}? "
+                f"Di saat banyak orang memilih jalan pintas untuk menyelamatkan diri, kisah ini mengajarkan kita tentang keberanian {lesson_clause}. "
+                f"Ujian terberat seorang mukmin bukanlah ketika ia jatuh dalam kekhilafan, melainkan apakah ia berani kembali dengan hati yang tulus dan jujur di hadapan Allah. "
+                f"Seberat apa pun konsekuensi kejujuran dan taubat yang tulus, pertolongan Allah pasti datang mengangkat derajat hamba-Nya. "
+                f"Mari ambil hikmah dari {short_subj} ini dan mulai perbaiki langkah kita hari ini!"
+            )
+        else:
+            script = (
+                f"Ada satu pelajaran hidup luar biasa di balik {clean_topic} yang jarang kita sadari. "
+                f"Sering kali manusia baru tersadar ketika ujian datang menyempitkan dada dan tidak ada lagi tempat bergantung selain Allah. "
+                f"Namun justru di titik terendah itulah, ketulusan taubat dan kejujuran hati membuka pintu rahmat langit yang tidak disangka-sangka. "
+                f"Simpan video ini sebagai pengingat diri, dan bagikan agar menjadi amal jariyah bersama!"
+            )
+        ideas = [
+            f"3 Hikmah Terbesar dari {short_subj.title()}",
+            f"Mengapa { (lesson_clause or short_subj).title() } Mengubah Takdir Seseorang",
+            f"Tanda Taubat dan Kejujuran Seorang Hamba Diterima oleh Allah"
+        ]
+        return {
+            "header_title": header_title,
+            "thumbnail_text": thumb_text,
+            "script": script,
+            "ideas": ideas,
+        }
+
+    # 3. Kategori Bisnis / Keuangan / AI / Cuan
+    if any(k in low for k in ("cuan", "bisnis", "uang", "omset", "jualan", "umkm", "kaya", "investasi", "gaji", "marketing", "ai")):
+        header_title = f"💰 {subject_clause.upper()[:24]}"
+        thumb_text = subject_clause.upper()[:20]
+        script = (
+            f"Banyak orang ingin sukses di bidang {subject_clause}, tapi masih terjebak memakai cara lama yang menguras waktu! "
+            f"{('Kunci utamanya justru ada pada ' + lesson_clause + '. ') if lesson_clause else ''}"
+            f"Langkah pertama, fokus selesaikan satu masalah paling mendesak yang dihadapi target pasarmu. "
+            f"Langkah kedua, kemas solusimu menjadi sistem kerja otomatis yang mudah diduplikasi. "
+            f"Dan langkah ketiga, bangun kepercayaan lewat bukti nyata, bukan sekadar janji promosi. "
+            f"Mulai terapkan strategi ini hari ini sebelum kompetitormu mendahului!"
+        )
+        ideas = [
+            f"4 Tangga Praktis Memulai {subject_clause.title()} dari Nol",
+            f"Kesalahan Fatal Pemula Saat Mencoba {subject_clause.title()}",
+            f"Studi Kasus Menggandakan Hasil {subject_clause.title()} di Tahun 2026"
+        ]
+        return {
+            "header_title": header_title,
+            "thumbnail_text": thumb_text,
+            "script": script,
+            "ideas": ideas,
+        }
+
+    # 4. Kategori Umum / Edukasi / Fakta Unik
+    header_title = f"✨ {subject_clause.upper()[:24]}"
+    thumb_text = subject_clause.upper()[:20]
+    script = (
+        f"Tahukah kamu fakta penting di balik {subject_clause} yang sering dilewatkan banyak orang? "
+        f"{('Inti utamanya terletak pada ' + lesson_clause + '. ') if lesson_clause else ''}"
+        f"Kebanyakan orang hanya melihat hasil akhirnya di permukaan, tanpa memahami proses dan keputusan besar yang terjadi di baliknya. "
+        f"Ketika kita berani memilih langkah yang benar dan konsisten, perubahan kecil hari ini akan melahirkan dampak besar di masa depan. "
+        f"Tulis pendapatmu di kolom komentar dan simpan video ini agar tidak lupa!"
+    )
+    ideas = [
+        f"Fakta Tersembunyi di Balik {subject_clause.title()}",
+        f"3 Pelajaran Penting dari {subject_clause.title()}",
+        f"Cara Menerapkan Prinsip {subject_clause.title()} dalam Kehidupan Sehari-hari"
+    ]
+    return {
+        "header_title": header_title,
+        "thumbnail_text": thumb_text,
+        "script": script,
+        "ideas": ideas,
+    }
+
+
+def generate_script_from_topic(topic: str, style: str = "fakta", duration_sec: int = 38) -> str:
+    """Mengembalikan string naskah narasi dari topik menggunakan mesin naratif lokal."""
+    pkg = generate_rich_topic_package(topic=topic, style=style, duration_sec=duration_sec)
+    return pkg["script"]
+

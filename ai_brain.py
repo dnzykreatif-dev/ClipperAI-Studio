@@ -410,8 +410,8 @@ def generate_text(system_prompt: str, user_prompt: str, json_mode: bool = True, 
                 pass
             last_err = f"HTTP {he.code} pada Key #{idx + 1} ({mask_key(key)}): {err_body or he.reason}"
             print(f"[AI Router Warning] {last_err}")
-            # Rotasi ke key berikutnya jika terkena rate limit (429), quota habis (402/403), atau server sibuk (500/503)
-            if he.code in (401, 402, 403, 429, 500, 502, 503, 504) and attempt + 1 < max_attempts:
+            # Rotasi ke key berikutnya jika key invalid (400/401), terkena rate limit (429), quota habis (402/403), atau server sibuk (500/503)
+            if he.code in (400, 401, 402, 403, 429, 500, 502, 503, 504) and attempt + 1 < max_attempts:
                 continue
             break
         except Exception as e:

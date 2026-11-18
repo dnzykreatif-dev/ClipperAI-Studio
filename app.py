@@ -1028,7 +1028,7 @@ async def test_ai_router():
 
 @app.post("/api/ai/ideas")
 async def generate_ai_ideas(payload: AIIdeasPayload):
-    """Membuat naskah & ide konten viral menggunakan AI (atau fallback lokal jika offline)."""
+    """Membuat naskah & ide konten viral menggunakan AI (atau fallback lokal cerdas jika offline/key invalid)."""
     ai_res = ai_brain.generate_script_or_ideas_with_ai(
         topic=payload.topic,
         style=payload.style,
@@ -1036,7 +1036,7 @@ async def generate_ai_ideas(payload: AIIdeasPayload):
     )
     if ai_res:
         return {"ok": True, "ai_generated": True, **ai_res}
-    fallback_script = faceless_engine.generate_script_from_topic(
+    rich_pkg = faceless_engine.generate_rich_topic_package(
         topic=payload.topic,
         style=payload.style,
         duration_sec=payload.duration_sec,
@@ -1044,10 +1044,10 @@ async def generate_ai_ideas(payload: AIIdeasPayload):
     return {
         "ok": True,
         "ai_generated": False,
-        "header_title": payload.topic.upper()[:28],
-        "thumbnail_text": payload.topic.upper()[:20],
-        "script": fallback_script,
-        "ideas": [],
+        "header_title": rich_pkg["header_title"],
+        "thumbnail_text": rich_pkg["thumbnail_text"],
+        "script": rich_pkg["script"],
+        "ideas": rich_pkg["ideas"],
     }
 
 
