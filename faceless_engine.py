@@ -89,6 +89,67 @@ THEMES = {
         "highlight_color": "&H00481DE1",
         "border_color": "&H00000000",
         "engine": "visual_studio",
+    },
+    "particle_morph": {
+        "name": "🌌 REA Particle Z-Morph 60fps (AnyMotion & TeraUmroh Code Engine)",
+        "theme_palette": "obsidian",
+        "visual_look": "auto",
+        "use_particle_morph": True,
+        "header_tag": "🌌 PARTICLE Z-ORDER MORPH",
+        "header_bg": "0x10B981",
+        "highlight_color": "&H0081B910",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
+    "comic": {
+        "name": "💥 Comic Pop Halftone (BuatinVideo & Pop Science Style)",
+        "theme_palette": "cream",
+        "visual_look": "comic",
+        "header_tag": "💥 COMIC POP EXPLAINER",
+        "header_bg": "0xF59E0B",
+        "highlight_color": "&H000B9EF5",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
+    "riso": {
+        "name": "🖨️ Risograph Duo-Ink Print (Creator Growth & Editorial)",
+        "theme_palette": "mint",
+        "visual_look": "riso",
+        "header_tag": "🖨️ RISOGRAPH EDITORIAL",
+        "header_bg": "0xE11D48",
+        "highlight_color": "&H00481DE1",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
+    "synth": {
+        "name": "🌆 Synthwave Neon Grid (Claude Fable & Tech Benchmark)",
+        "theme_palette": "obsidian",
+        "visual_look": "synth",
+        "header_tag": "🌆 SYNTHWAVE TECH BENCHMARK",
+        "header_bg": "0xA855F7",
+        "highlight_color": "&H00F755A8",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
+    "blueprint": {
+        "name": "📐 Blueprint Engineering (FreeLLM & Open-Source Architecture)",
+        "theme_palette": "azure",
+        "visual_look": "blueprint",
+        "header_tag": "📐 BLUEPRINT ARCHITECTURE",
+        "header_bg": "0x38BDF8",
+        "highlight_color": "&H00F8BD38",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
+    },
+    "cine": {
+        "name": "🎬 Cinematic Teal & Orange (Agusleo Cuan & Geo 3D Map)",
+        "theme_palette": "obsidian",
+        "visual_look": "cine",
+        "header_tag": "🎬 CINEMATIC MASTERCLASS",
+        "header_bg": "0xF59E0B",
+        "highlight_color": "&H000B9EF5",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
     }
 }
 
@@ -496,9 +557,26 @@ def _render_with_visual_studio(
     whoosh_ids = ["VL0501", "VL0502", "VL0503", "VL0504", "VL0505"]
     n_scenes = max(1, len(sb_scenes))
 
+    # Gunakan Dynamic Programming Voice-to-Scene Alignment dari REA AnyMotion (f64CrI6l.js)
+    scene_bounds: List[Tuple[float, float]] = []
+    try:
+        import rea_video_bigdata as rbd
+        speech_spans = [(w["start"], w["end"]) for w in all_words if w["end"] > w["start"]]
+        narr_lines = [sc.get("narration_line") or sc.get("title_regular") or "Scene" for sc in sb_scenes]
+        dp_aligned = rbd.align_voice_to_scenes_dp(narr_lines, total_dur, speech_spans)
+        if len(dp_aligned) == len(sb_scenes):
+            for idx_dp, item_dp in enumerate(dp_aligned):
+                pad_end = 0.12 if idx_dp < n_scenes - 1 else 0.0
+                scene_bounds.append((round(item_dp["start_s"], 2), round(item_dp["end_s"] + pad_end, 2)))
+    except Exception:
+        scene_bounds = []
+
     for s_idx, sc in enumerate(sb_scenes):
-        t0 = round(s_idx * (total_dur / n_scenes), 2)
-        t1 = round((s_idx + 1) * (total_dur / n_scenes) + (0.12 if s_idx < n_scenes - 1 else 0.0), 2)
+        if s_idx < len(scene_bounds):
+            t0, t1 = scene_bounds[s_idx]
+        else:
+            t0 = round(s_idx * (total_dur / n_scenes), 2)
+            t1 = round((s_idx + 1) * (total_dur / n_scenes) + (0.12 if s_idx < n_scenes - 1 else 0.0), 2)
         comp_type = sc.get("component_type", "phone_hero")
 
         # Top Dual-Tone Title (Safe Zone Atas: y=160)
@@ -639,7 +717,12 @@ def _render_with_visual_studio(
     # Safe Zone Dasar: Glowing Progress Line (y=1912..1920)
     elements.append(visual_studio.ProgressLineElement(total_dur, accent=accent_rgb))
 
-    timeline = visual_studio.VisualTimeline(total_dur, elements, background_theme=chosen_palette)
+    chosen_look = (sb.get("visual_look") if isinstance(sb, dict) else None) or theme.get("visual_look", "auto")
+    use_pmorph = bool(theme.get("use_particle_morph", False) or chosen_look == "particle_morph")
+    timeline = visual_studio.VisualTimeline(
+        total_dur, elements, background_theme=chosen_palette,
+        visual_look=chosen_look, use_particle_morph=use_pmorph
+    )
 
     # Step 5: Audio Bed & FFmpeg High-Fidelity Rendering
     if progress_callback:

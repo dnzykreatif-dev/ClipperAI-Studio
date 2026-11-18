@@ -63,7 +63,9 @@ POWER_WORDS = set(
     "mindset disiplin konsisten modal untung rugi gratis wajib haram halal doa shalat "
     "pendidikan keluarga anak orangtua akhlak iman takwa sedekah rezeki berkah "
     "nabi rasul rasulullah allah panglima perang pasukan pemimpin sahabat ulama sejarah "
-    "termuda pemuda berani kuat hebat bukti nyata solusi masalah".split()
+    "termuda pemuda berani kuat hebat bukti nyata solusi masalah "
+    "tangga juta miliar jamaah excel halaman jualan kartu chapter aturan permainan "
+    "audit konversi otomatis sistem kreator manajer gaji profil gurita jantung cuan omset strategi".split()
 )
 
 # Preset gaya per niche: LUT / overlay / SFX Argon + warna aksen ASS (BGR) + warna frame (RGB hex)
@@ -79,8 +81,8 @@ PRESETS: Dict[str, Dict[str, Any]] = {
 
 INTENSITY = {
     "halus":   dict(shot=(4.2, 6.2), push=0.05, punch=0.06, flash=0.0),
-    "normal":  dict(shot=(2.8, 4.4), push=0.07, punch=0.09, flash=0.0),
-    "agresif": dict(shot=(2.2, 3.5), push=0.09, punch=0.12, flash=0.0),
+    "normal":  dict(shot=(2.8, 4.3), push=0.07, punch=0.09, flash=0.0),
+    "agresif": dict(shot=(2.1, 2.9), push=0.09, punch=0.12, flash=0.0),  # Kalibrasi Big Data 24.0 CPM (~2.5s/shot)
 }
 
 GAP_CUT = 0.55
@@ -619,7 +621,7 @@ def render_clip_pro(
                     s["broll_phrase"] = phrase
                     broll_cards.append(dict(t0=bt0, t1=bt1, badge=preset["badge"], phrase=phrase))
                     sfx_events.append(dict(id="VL0511", t=max(0.0, bt0 - 0.32), gain=0.22, role="insight_riser"))
-                    sfx_events.append(dict(id="VL0566", t=bt0 + 0.05, gain=0.30, role="insight_chime"))
+                    sfx_events.append(dict(id="VL0566", t=max(0.0, round(bt0 - 0.017, 3)), gain=0.30, role="insight_chime"))
             else:
                 kw = pick_keyword(s["words"])
                 if kw:
@@ -633,7 +635,7 @@ def render_clip_pro(
                             em = mg.first_emoji(em_raw) or "🔥"
                             kw_events.append(dict(text=kw_clean, t=round(kt, 3), d=round(kdur, 3), emoji=em))
                             pid = pop_ids[len(kw_events) % len(pop_ids)]
-                            sfx_events.append(dict(id=pid, t=max(0.0, round(kt, 3)), gain=0.28, role="keyword_pop"))
+                            sfx_events.append(dict(id=pid, t=max(0.0, round(kt - 0.017, 3)), gain=0.28, role="keyword_pop"))
 
         t += d
     total = _snap(t)
@@ -734,10 +736,18 @@ def render_clip_pro(
     _encode_with_overlay(cmd, timeline, tmp / "ffmpeg_final.log")
 
     # 6. Simpan EDL + Jalankan QA Otomatis
+    try:
+        import rea_video_bigdata as rbd
+        full_transcript_str = " ".join(w.get("word", "") for w in remapped)
+        bigdata_metrics = rbd.score_clip_with_bigdata(full_transcript_str, total, len(shots), niche)
+    except Exception:
+        bigdata_metrics = {}
+
     edl = dict(
         format="9:16", style=niche, intensity=intensity, duration=total,
         source=Path(source_video).name,
         preset=dict(lut=preset["lut"], overlay=preset["overlay"]),
+        bigdata_metrics=bigdata_metrics,
         shots=[
             dict(
                 src=[s["a"], s["b"]], t0=round(s["t0"], 3), framing=s["framing"],

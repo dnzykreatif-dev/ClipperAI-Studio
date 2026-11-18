@@ -29,6 +29,7 @@ import social_poster
 import automation_bridge
 import studio_presets
 import motion_code_engine
+import rea_video_bigdata
 
 app = FastAPI(title="ClipperAI Studio", version="2.5.0")
 
@@ -1512,6 +1513,117 @@ async def generate_motion_code_api(payload: MotionCodeGeneratePayload):
         scene_count=payload.scene_count
     )
     return res
+
+
+# ==============================================================================
+# 10. REA VIDEO BIG DATA & ANYMOTION 212 STYLES ENGINE ENDPOINTS
+# ==============================================================================
+class ReaDirectorPromptPayload(BaseModel):
+    topic: str
+    style_id: str = "e-vox"
+    blueprint_id: str = "agusleo_cuan"
+    visual_look: str = "auto"
+    palette: str = "mint"
+    duration_s: int = 45
+    aspect_ratio: str = "9:16"
+    language: str = "Bahasa Indonesia"
+    execute_ai: bool = False
+
+
+class ReaScoreScriptPayload(BaseModel):
+    transcript_text: str
+    duration_s: float = 30.0
+    shots_count: int = 10
+    niche: str = "universal"
+
+
+@app.get("/api/rea-bigdata/summary")
+async def get_rea_bigdata_summary():
+    """Mengembalikan ringkasan Hukum Empiris 11 Video Viral REA, 18 Shaders, dan 10 Palet AnyMotion."""
+    corpus = rea_video_bigdata.load_rea_corpus()
+    catalog = rea_video_bigdata.load_anymotion_catalog()
+    blueprints = corpus.get("blueprints") or corpus.get("videos") or []
+    return {
+        "ok": True,
+        "empirical_laws": rea_video_bigdata.EMPIRICAL_BIGDATA_LAWS,
+        "total_blueprints": len(blueprints),
+        "total_anymotion_styles": len(catalog.get("styles", [])),
+        "total_scene_templates": len(catalog.get("scene_templates", [])),
+        "total_sfx": len(catalog.get("sfx_manifest", [])),
+        "shaders": rea_video_bigdata.VISUAL_LOOK_SHADERS,
+        "palettes": rea_video_bigdata.ANYMOTION_PALETTES,
+    }
+
+
+@app.get("/api/rea-bigdata/blueprints")
+async def get_rea_bigdata_blueprints():
+    """Mengembalikan daftar lengkap 11 Blueprint Video Viral hasil ekstraksi REA."""
+    corpus = rea_video_bigdata.load_rea_corpus()
+    blueprints = corpus.get("blueprints") or corpus.get("videos") or []
+    return {
+        "ok": True,
+        "blueprints": blueprints,
+        "empirical_laws": corpus.get("empirical_laws", rea_video_bigdata.EMPIRICAL_BIGDATA_LAWS),
+    }
+
+
+@app.get("/api/rea-bigdata/anymotion-styles")
+async def get_rea_anymotion_styles(category: Optional[str] = None):
+    """Mengembalikan katalog 212 Gaya Visual AnyMotion, 33 Template Adegan, dan 95 SFX Studio."""
+    catalog = rea_video_bigdata.load_anymotion_catalog()
+    styles = catalog.get("styles", [])
+    if category and category != "all":
+        styles = [s for s in styles if s.get("category", "").lower() == category.lower()]
+    return {
+        "ok": True,
+        "total_styles": len(styles),
+        "categories": catalog.get("categories", {}),
+        "styles": styles,
+        "scene_templates": catalog.get("scene_templates", []),
+        "sfx_manifest": catalog.get("sfx_manifest", []),
+    }
+
+
+@app.post("/api/rea-bigdata/director-prompt")
+async def generate_rea_director_prompt(payload: ReaDirectorPromptPayload):
+    """Menyusun Master Prompt Sutradara Kreatif AnyMotion + Big Data REA (opsional eksekusi AI)."""
+    res = rea_video_bigdata.build_anymotion_director_prompt(
+        topic=payload.topic,
+        style_id=payload.style_id,
+        blueprint_id=payload.blueprint_id,
+        visual_look=payload.visual_look,
+        palette=payload.palette,
+        duration_s=payload.duration_s,
+        aspect_ratio=payload.aspect_ratio,
+        language=payload.language,
+    )
+    if payload.execute_ai:
+        cfg = ai_brain.load_config()
+        if cfg.get("enabled") and (cfg.get("api_key") or cfg.get("provider") in ("9router", "custom")):
+            ai_out = ai_brain.chat_completion(
+                messages=[
+                    {"role": "system", "content": "You are an award-winning Creative Director and JSON Storyboard Architect."},
+                    {"role": "user", "content": res["prompt"]},
+                ],
+                temperature=0.7,
+                max_tokens=2200,
+                json_mode=True,
+            )
+            if ai_out:
+                res["ai_storyboard"] = ai_out
+    return res
+
+
+@app.post("/api/rea-bigdata/score-script")
+async def score_script_with_rea_bigdata(payload: ReaScoreScriptPayload):
+    """Menghitung skor retensi & pacing naskah berdasarkan Big Data 11 Video Viral REA."""
+    metrics = rea_video_bigdata.score_clip_with_bigdata(
+        transcript_text=payload.transcript_text,
+        duration_s=payload.duration_s,
+        shots_count=payload.shots_count,
+        niche=payload.niche,
+    )
+    return {"ok": True, "metrics": metrics}
 
 
 if __name__ == "__main__":

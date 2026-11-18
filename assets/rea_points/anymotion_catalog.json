@@ -1,0 +1,2453 @@
+{
+  "styles_count": 212,
+  "templates_count": 33,
+  "sfx_manifest_count": 95,
+  "styles": [
+    {
+      "id": "k-slam",
+      "name": "Impact Slam",
+      "description": "Words slam the screen with big scale and overshoot.",
+      "use_case": "Hooks, promos, openers",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-wave",
+      "name": "Letter Wave",
+      "description": "Letters rise one by one like a wave.",
+      "use_case": "Headlines, brand names",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-type",
+      "name": "Typewriter Story",
+      "description": "Text types out with a cursor. Feels personal.",
+      "use_case": "Quotes, stories",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-word",
+      "name": "Word by Word",
+      "description": "Words appear in turn at reading pace.",
+      "use_case": "Messages, narration",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-mask",
+      "name": "Mask Rise",
+      "description": "Lines rise from behind an invisible edge.",
+      "use_case": "Elegant headlines",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-outline",
+      "name": "Outline Pop",
+      "description": "Outline letters that pop. Bold and modern.",
+      "use_case": "Teaser, event",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-stack",
+      "name": "Stacked Condensed",
+      "description": "Tall condensed letters stacking upward.",
+      "use_case": "Poster, headline",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-marker",
+      "name": "Marker Highlight",
+      "description": "The keyword gets a marker highlight after the sentence appears.",
+      "use_case": "Education, tips",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-spin",
+      "name": "Spin In",
+      "description": "Text spins in, then locks into place.",
+      "use_case": "Energetic promos",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-drop",
+      "name": "Drop Bounce",
+      "description": "Text drops from above and bounces.",
+      "use_case": "Youth content",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-focus",
+      "name": "Focus Pull",
+      "description": "Text comes from blur into focus.",
+      "use_case": "Sinematik, premium",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-flip",
+      "name": "Flip Board",
+      "description": "Text flips like a departures board.",
+      "use_case": "Announcement",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-zoom",
+      "name": "Zoom Through",
+      "description": "Text glides from up close into place.",
+      "use_case": "Transisi, hook",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-stutter",
+      "name": "Digital Stutter",
+      "description": "Stuttering 12 fps motion with scanlines.",
+      "use_case": "Tech, gaming",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-number",
+      "name": "Big Number",
+      "description": "A big number counts up from zero.",
+      "use_case": "Stats from your own data",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-under",
+      "name": "Underline Punch",
+      "description": "The sentence rises, then an underline sweeps the keyword.",
+      "use_case": "Key messages",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-circle",
+      "name": "Circled Word",
+      "description": "The keyword gets circled like an editor's note.",
+      "use_case": "Tips, education",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-split",
+      "name": "Split Color",
+      "description": "The keyword switches to the accent color.",
+      "use_case": "Branding",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-quiet",
+      "name": "Quiet Kinetic",
+      "description": "Slow motion, thin type, lots of space.",
+      "use_case": "Premium, wellness",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "k-poster",
+      "name": "Poster Grid",
+      "description": "Bold text over a grid, wiped in.",
+      "use_case": "Event, poster",
+      "category": "Kinetic Typography"
+    },
+    {
+      "id": "e-map",
+      "name": "Map Explainer",
+      "description": "A textured map that leans and glides, with lines that draw themselves, pulsing places and numbers.",
+      "use_case": "Geography, data and places",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-history",
+      "name": "History Documentary",
+      "description": "A history channel map: empires, routes, big years and real archive photos with film effects.",
+      "use_case": "History, wars and empires",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-vox",
+      "name": "Editorial Collage",
+      "description": "Fast editorial collage: paper colors, photo stickers cut out of their background, highlighter bars and italic headlines.",
+      "use_case": "History of things, culture and explainers",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-mono",
+      "name": "Mono Editorial",
+      "description": "Calm black and white editorial: cut out photos, flying paper, words that come out of a blur, one accent color.",
+      "use_case": "Ideas, history and quotes",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-retro",
+      "name": "Retro Timeline",
+      "description": "Warm retro vector art on a grid floor, real photos that turn into drawings, and a sliding timeline of years.",
+      "use_case": "History of things, inventions and eras",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-flow",
+      "name": "Flow Explainer",
+      "description": "One calm motion: every shape turns into the next, on a clean page with soft light.",
+      "use_case": "Products, ideas and how things work",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-step",
+      "name": "Step Explainer",
+      "description": "A clean step by step guide played like a game, with levels, a countdown and a drawn guide.",
+      "use_case": "Tutorials, guides and how-tos",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-hud",
+      "name": "HUD Explainer",
+      "description": "A dark control panel coming alive: meters, waves, readouts and a small block creature.",
+      "use_case": "Tech, science and bold facts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-pop",
+      "name": "Pop Art Scrapbook",
+      "description": "Loud paper scrapbook: halftone print, thick ink, bouncy photo stickers and swirl backgrounds.",
+      "use_case": "Characters, people and bold stories",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-luxe",
+      "name": "Luxe Editorial",
+      "description": "Pale studio, black and white photos, serif beside heavy sans, soft shadows and one purple accent.",
+      "use_case": "Biographies, quotes and big ideas",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-moody",
+      "name": "Moody Diorama",
+      "description": "A dark room lit by one warm lamp: drawn miniature objects, dust in the light and slow depth.",
+      "use_case": "Craft, science and how things work",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-clean3d",
+      "name": "Clean 3D Editorial",
+      "description": "Pale studio, solid lit objects with soft shadows, heavy condensed type, thin construction lines, red and black.",
+      "use_case": "Objects, history of things and ideas",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-neo",
+      "name": "Neo-Classical Editorial",
+      "description": "Ivory page with grey smoke, marble figures in black and white, tall burgundy serif words.",
+      "use_case": "Business, ideas and history",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-cards",
+      "name": "Flat Cards",
+      "description": "Cream page where a viewer request becomes phone cards, with highlighter words and badges.",
+      "use_case": "Tutorials, answers and facts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-uidemo",
+      "name": "App Demo",
+      "description": "A dark app window: typed prompts, toggles, ticking lists and a result that opens.",
+      "use_case": "Tools, tips and how-tos",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-burst",
+      "name": "Float Burst 3D",
+      "description": "A pastel room out of focus, one real 3D object, then a cloud of related things bursting around it.",
+      "use_case": "Products, music, gadgets and everyday things",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-spec",
+      "name": "Spec Studio 3D",
+      "description": "A real 3D model on a dark studio floor with grid, spec tags and an x-ray scan.",
+      "use_case": "Vehicles, machines and how things are built",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-claytable",
+      "name": "Clay Table 3D",
+      "description": "A clay stop-motion set: teal wall, hanging lamps, big leaves, a clay host at a table.",
+      "use_case": "History of things, food, home and warm stories",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-neonfig",
+      "name": "Neon Figure 3D",
+      "description": "A glowing glass figure at a dark desk, neon glass cards and pills on a line of light.",
+      "use_case": "Science, money, energy and ideas",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-flatlight",
+      "name": "Flat Light Desk",
+      "description": "Flat 2D in a dark room, cut by one hard beam of screen light.",
+      "use_case": "How things work, music and tech, calm explainers",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-burst-any",
+      "name": "Float Burst 3D",
+      "description": "The Float Burst look from a plain JSON reply of any AI. Ready 3D models only.",
+      "use_case": "Products, music and gadgets, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-spec-any",
+      "name": "Spec Studio 3D",
+      "description": "The Spec Studio look from a plain JSON reply of any AI.",
+      "use_case": "Vehicles and machines, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-claytable-any",
+      "name": "Clay Table 3D",
+      "description": "The Clay Table look from a plain JSON reply of any AI.",
+      "use_case": "Everyday things, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-neonfig-any",
+      "name": "Neon Figure 3D",
+      "description": "The Neon Figure look from a plain JSON reply of any AI.",
+      "use_case": "Science and ideas, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-flatlight-any",
+      "name": "Flat Light Desk",
+      "description": "The Flat Light Desk look from a plain JSON reply of any AI.",
+      "use_case": "How things work, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-kawaiifx",
+      "name": "Kawaii Facts",
+      "description": "Flat kawaii stickers on a pastel page: things pop out of a table like soft jelly, boards drop and wobble, a little blob host cheers.",
+      "use_case": "Fun facts, science and nature for everyone",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-kawaiifx-any",
+      "name": "Kawaii Facts",
+      "description": "The Kawaii Facts look from a plain JSON reply of any AI.",
+      "use_case": "Fun facts, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-voxcut",
+      "name": "Photo Cutout",
+      "description": "One real person or object cut out full body over one real background photo: small square patterns, cast shadow, serif headline on a yellow block, torn labels, hand-drawn arrows.",
+      "use_case": "History, sport, business and famous people",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-voxcut-any",
+      "name": "Photo Cutout",
+      "description": "The Photo Cutout look from a plain JSON reply of any AI.",
+      "use_case": "History, sport, business and famous people, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-edmag",
+      "name": "Editorial Magazine",
+      "description": "A magazine spread in a dark study: archive photos in duotone halftone on torn paper, a desk lamp with drifting dust, a stamp that hits, chalk circles and arrows.",
+      "use_case": "Business and history stories, people and turning points",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-edmag-any",
+      "name": "Editorial Magazine",
+      "description": "The Editorial Magazine look from a plain JSON reply of any AI.",
+      "use_case": "Business and history stories, people and turning points, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-linelab",
+      "name": "Line Lab",
+      "description": "Thick-line flat drawing on lavender: a lab, a worker and a camera that dives through labelled layers, UI chips with hard shadows.",
+      "use_case": "Science, how it is built, layers and parts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-linelab-any",
+      "name": "Line Lab",
+      "description": "The Line Lab look from a plain JSON reply of any AI.",
+      "use_case": "Science, how it is built, layers and parts, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-grainstory",
+      "name": "Grain Story",
+      "description": "A warm risograph room: a clean flat character, a slow push from wide to close-up, a fan that never stops, a thermometer and serif speech cards.",
+      "use_case": "Body, feelings and everyday science",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-grainstory-any",
+      "name": "Grain Story",
+      "description": "The Grain Story look from a plain JSON reply of any AI.",
+      "use_case": "Body, feelings and everyday science, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-pixelpocket",
+      "name": "Pixel Pocket",
+      "description": "A pink pixel handheld floating in space: every fact is a level on its screen, pixel sprites, typed HUD text and pixel wipes.",
+      "use_case": "Space, games and quick countdowns",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-pixelpocket-any",
+      "name": "Pixel Pocket",
+      "description": "The Pixel Pocket look from a plain JSON reply of any AI.",
+      "use_case": "Space, games and quick countdowns, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-badgeloop",
+      "name": "Badge Loop",
+      "description": "Round badges in two blues: one big circle changes its scene stage by stage with liquid wipes, dotted arrows and drifting dots.",
+      "use_case": "Cycles, processes and step by step",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-badgeloop-any",
+      "name": "Badge Loop",
+      "description": "The Badge Loop look from a plain JSON reply of any AI.",
+      "use_case": "Cycles, processes and step by step, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-paperdeep",
+      "name": "Paper Deep",
+      "description": "Layered paper cut-outs with soft shadows: the camera sinks through named zones, fish, jellyfish and a glowing anglerfish, a paper depth gauge.",
+      "use_case": "Ocean, sky, depth and anything in zones",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-paperdeep-any",
+      "name": "Paper Deep",
+      "description": "The Paper Deep look from a plain JSON reply of any AI.",
+      "use_case": "Ocean, sky, depth and anything in zones, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-neonsign",
+      "name": "Neon Sign",
+      "description": "Neon tubes on a dark brick wall: words flicker on and hum, numbers roll in glowing glass, lists light up line by line.",
+      "use_case": "Quick facts, countdowns and big numbers",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-neonsign-any",
+      "name": "Neon Sign",
+      "description": "The Neon Sign look from a plain JSON reply of any AI.",
+      "use_case": "Quick facts, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-stickerpop",
+      "name": "Sticker Pop",
+      "description": "A pastel sticker page: pictures slap on as die-cut stickers with a white edge, words pop in round pills, a scalloped badge counts, the page peels to the next.",
+      "use_case": "Young kids: animals, counting, first facts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-crayon",
+      "name": "Crayon Doodle",
+      "description": "Drawing paper and crayons: a patch of color is scribbled first and the picture pops out of it, handwriting writes itself, lines shake like a hand-drawn film.",
+      "use_case": "Young kids: nature, stories, how things grow",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-blocktown",
+      "name": "Toy Blocks",
+      "description": "A playroom with wooden blocks: pictures and letters are printed on cubes that drop and bounce, titles ride in on planks, a wall of blocks changes the scene.",
+      "use_case": "Young kids: letters, numbers, spelling",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-puppet",
+      "name": "Puppet Stage",
+      "description": "A felt puppet theater: pictures come down on strings and swing, groups rise on sticks, letters hang on a line, red curtains close and open between scenes.",
+      "use_case": "Young kids: stories, animals, songs",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-stickerpop-any",
+      "name": "Sticker Pop",
+      "description": "The Sticker Pop look from a plain JSON reply of any AI.",
+      "use_case": "Young kids, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-crayon-any",
+      "name": "Crayon Doodle",
+      "description": "The Crayon Doodle look from a plain JSON reply of any AI.",
+      "use_case": "Young kids, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-blocktown-any",
+      "name": "Toy Blocks",
+      "description": "The Toy Blocks look from a plain JSON reply of any AI.",
+      "use_case": "Young kids, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-puppet-any",
+      "name": "Puppet Stage",
+      "description": "The Puppet Stage look from a plain JSON reply of any AI.",
+      "use_case": "Young kids, with any AI",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-phone",
+      "name": "Phone Stage",
+      "description": "One big phone on a dark stage whose screen becomes the story, with comment and feed rows.",
+      "use_case": "Apps, social and how phones work",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-dark2d",
+      "name": "2D Dark",
+      "description": "A quiet night picture book: soft shapes, thin lines, and a camera that drifts through one long world.",
+      "use_case": "Stories, nature and life lessons",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-low3d",
+      "name": "3D Low Poly",
+      "description": "Real 3D worlds with faceted shapes, soft sun shadows, a moving camera and a small traveller as the guide.",
+      "use_case": "Facts, nature and how things work",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-flatx",
+      "name": "Flat Explainer",
+      "description": "Flat outlined drawings, a camera that moves into things, number cards and captions lit word by word.",
+      "use_case": "Facts and how things work",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-room",
+      "name": "History",
+      "description": "A painted storybook look for any topic: layered scenes, soft light, deep parallax, morphing scene changes, captions lit word by word.",
+      "use_case": "Any story: history, science, the body, nature",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-moon",
+      "name": "Moonlit Tale",
+      "description": "A night storybook: rising moon, drifting clouds, moving hills, a road rushing past, one word at a time.",
+      "use_case": "Fables, history, mysteries, dark stories",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-flat",
+      "name": "Flat Friendly",
+      "description": "Soft organic shapes, bright colors, friendly motion.",
+      "use_case": "Penjelasan layanan",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-iso",
+      "name": "Isometric Tech",
+      "description": "Isometric blocks in the corner for a tech feel.",
+      "use_case": "Software, teknologi",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-board",
+      "name": "Whiteboard",
+      "description": "Whiteboard, handwriting and highlighter.",
+      "use_case": "Tutorials, education",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-char",
+      "name": "Character Story",
+      "description": "A small character guides the explanation.",
+      "use_case": "Friendly brands, kids",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-icon",
+      "name": "Icon & Number",
+      "description": "Marker dots and colored keywords.",
+      "use_case": "Light infographics",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-pastel",
+      "name": "Soft Pastel",
+      "description": "Pastel colors and gently floating shapes.",
+      "use_case": "Beauty, lifestyle",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-bold",
+      "name": "Bold Shapes",
+      "description": "Bold type and strong color bars.",
+      "use_case": "Promos, startups",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-line",
+      "name": "Line Art",
+      "description": "Neat thin lines without extra ornament.",
+      "use_case": "Konsultan, jasa",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-saas",
+      "name": "SaaS Clean",
+      "description": "Rounded cards with soft shadows.",
+      "use_case": "Apps, SaaS",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-dark",
+      "name": "Dark Explainer",
+      "description": "Dark background with bright accents.",
+      "use_case": "Teknologi, fintech",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-glow",
+      "name": "Gradient Glow",
+      "description": "Purple-blue gradients and glowing images.",
+      "use_case": "Digital products",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-retro70",
+      "name": "Retro 70s",
+      "description": "Bold serif and retro color stripes.",
+      "use_case": "F&B, fashion",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-kids",
+      "name": "Playful Kids",
+      "description": "Bouncing text and cheerful shapes.",
+      "use_case": "Kids education",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-health",
+      "name": "Clean Health",
+      "description": "Calm green, gentle motion, lots of space.",
+      "use_case": "Kesehatan, klinik",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-finance",
+      "name": "Finance Explainer",
+      "description": "Accent bars and underlined key words.",
+      "use_case": "Keuangan, laporan",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-eco",
+      "name": "Eco Organic",
+      "description": "Organic shapes over paper texture.",
+      "use_case": "Eco-friendly products",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-geo",
+      "name": "Geometric",
+      "description": "Circles, triangles and rings as accents.",
+      "use_case": "Brand modern",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-steps",
+      "name": "Step by Step",
+      "description": "Round markers for every step.",
+      "use_case": "Tutorials, onboarding",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-monoline",
+      "name": "Monoline Mono",
+      "description": "Black and white with a single line.",
+      "use_case": "Studio, agensi",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-sticker",
+      "name": "Sticker Pop",
+      "description": "Photos become white-bordered stickers.",
+      "use_case": "Social media promos",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "h-sketch",
+      "name": "Pencil Sketch",
+      "description": "Wobbly pencil lines on paper.",
+      "use_case": "Ideas, concepts",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-marker",
+      "name": "Marker Board",
+      "description": "Marker on a whiteboard with highlighter.",
+      "use_case": "Tutorial",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-crayon",
+      "name": "Crayon Kids",
+      "description": "Crayon colors and 8 fps motion.",
+      "use_case": "Kids, education",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-ink",
+      "name": "Ink & Brush",
+      "description": "Black ink and red circles.",
+      "use_case": "Culture, food",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-cel2",
+      "name": "Cel on Twos",
+      "description": "Classic 12 fps cel animation with flat color.",
+      "use_case": "Cartoon, promos",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-cel3",
+      "name": "Cel on Threes",
+      "description": "Choppier 8 fps, like vintage animation.",
+      "use_case": "Cartoon, music",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-notebook",
+      "name": "Notebook",
+      "description": "Notebook lines and blue ink.",
+      "use_case": "Learning, notes",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-chalk",
+      "name": "Chalkboard",
+      "description": "Chalk on a dark green board.",
+      "use_case": "Schools, courses",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-doodle",
+      "name": "Doodle Notes",
+      "description": "Scribbled arrows and circles around the text.",
+      "use_case": "Casual content",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-water",
+      "name": "Watercolor Wash",
+      "description": "Soft light like watercolor.",
+      "use_case": "Wedding, seni",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-zine",
+      "name": "Zine Cutout",
+      "description": "Torn photos and zine-style halftone.",
+      "use_case": "Musik, komunitas",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-story",
+      "name": "Storyboard",
+      "description": "Panel frames and 8 fps motion.",
+      "use_case": "Idea pitches",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-comic",
+      "name": "Comic Panel",
+      "description": "Bold type, highlight boxes, halftone.",
+      "use_case": "Fun promos",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-wobble",
+      "name": "Wobble Lines",
+      "description": "Wiggly doodles around the content.",
+      "use_case": "Funny content",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-blueprint",
+      "name": "Blueprint Sketch",
+      "description": "White sketches on blueprint blue.",
+      "use_case": "Engineering, products",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-journal",
+      "name": "Travel Journal",
+      "description": "Instant photos in a travel journal.",
+      "use_case": "Travel, kuliner",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-sticky",
+      "name": "Sticky Notes",
+      "description": "Sticky notes and handwriting.",
+      "use_case": "Brainstorm, tips",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-roughcorp",
+      "name": "Rough Corporate",
+      "description": "Business but relaxed: clean sans, rough lines.",
+      "use_case": "Presentasi internal",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-street",
+      "name": "Street Marker",
+      "description": "Thick marker on a dark background.",
+      "use_case": "Streetwear, event",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "h-oneline",
+      "name": "Single Line",
+      "description": "One calm hand-drawn line.",
+      "use_case": "Minimalis, seni",
+      "category": "Hand-Drawn & Cel"
+    },
+    {
+      "id": "p-push",
+      "name": "Slow Push-In",
+      "description": "The camera pushes in slowly; front layers move faster.",
+      "use_case": "Cinematic openers",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-pull",
+      "name": "Pull-Out Reveal",
+      "description": "The camera pulls back to reveal the whole composition.",
+      "use_case": "Product reveal",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-panl",
+      "name": "Pan Left Layers",
+      "description": "Layers slide left at different speeds.",
+      "use_case": "Sequential stories",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-panr",
+      "name": "Pan Right Layers",
+      "description": "Layers slide right.",
+      "use_case": "Journeys, processes",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-drift",
+      "name": "Floating Drift",
+      "description": "The camera drifts in a slow arc.",
+      "use_case": "Ambient, lifestyle",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-hero",
+      "name": "Product Hero Depth",
+      "description": "A dark spotlight; the product moves forward.",
+      "use_case": "Product ads",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-scenery",
+      "name": "Landscape Layers",
+      "description": "Layered mountains with a sideways camera.",
+      "use_case": "Travel, outdoor",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-cine",
+      "name": "Cinematic Letterbox",
+      "description": "Cinema bars, thin serif and grain.",
+      "use_case": "Film, brand story",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-paper",
+      "name": "Paper Layers",
+      "description": "Floating layers of paper.",
+      "use_case": "Creative, education",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-night",
+      "name": "Night Lights",
+      "description": "Points of light on a night background.",
+      "use_case": "Event malam",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-bokeh",
+      "name": "Bokeh Foreground",
+      "description": "Big blurred circles in front of the camera.",
+      "use_case": "Beauty, fashion",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-tilt",
+      "name": "Tilt Shift",
+      "description": "Strong vignette and soft light at the edges.",
+      "use_case": "Miniatures, cities",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-dolly",
+      "name": "Dolly Zoom",
+      "description": "A strong push in; text and background clearly separate.",
+      "use_case": "Dramatic",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-cards",
+      "name": "Floating Cards",
+      "description": "Image cards floating in space.",
+      "use_case": "Apps, portfolios",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-space",
+      "name": "Deep Space",
+      "description": "A galaxy behind and a camera flying through.",
+      "use_case": "Teknologi, sci-fi",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-window",
+      "name": "Window Frame",
+      "description": "A foreground frame adds depth.",
+      "use_case": "Properti, interior",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-planes",
+      "name": "Split Planes",
+      "description": "Color planes at several depths.",
+      "use_case": "Brand modern",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-photo",
+      "name": "Photo 2.5D",
+      "description": "Photos with a deep camera push.",
+      "use_case": "Product photos, documentary",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-sky",
+      "name": "Sky Layers",
+      "description": "Layered clouds in a clear sky.",
+      "use_case": "Travel, airlines",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "p-luxe",
+      "name": "Luxury Depth",
+      "description": "Elegant serif and a smooth pull out.",
+      "use_case": "Jewelry, hotels",
+      "category": "Parallax & 2.5D Depth"
+    },
+    {
+      "id": "c-clean",
+      "name": "Clean White",
+      "description": "Clean white, strong blue, smooth motion.",
+      "use_case": "Perusahaan, B2B",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-navy",
+      "name": "Navy Executive",
+      "description": "Dark navy with green accents.",
+      "use_case": "Konsultan, finance",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-sweep",
+      "name": "Light Sweep",
+      "description": "A light sweep across the product.",
+      "use_case": "Product launches",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-swiss",
+      "name": "Swiss Grid",
+      "description": "A strict grid, bold type, red accents.",
+      "use_case": "Desain, arsitektur",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-mono",
+      "name": "Monochrome",
+      "description": "Black and white, no distractions.",
+      "use_case": "Fashion, studio",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-lime",
+      "name": "Studio Lime",
+      "description": "Soft neutrals with a lime accent.",
+      "use_case": "Modern apps",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-glass",
+      "name": "Soft Glass",
+      "description": "Soft gradients and rounded cards.",
+      "use_case": "Digital products",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-tech",
+      "name": "Tech Startup",
+      "description": "Sky blue with accent dots.",
+      "use_case": "Startups, SaaS",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-trust",
+      "name": "Finance Trust",
+      "description": "A calm deep green.",
+      "use_case": "Bank, asuransi",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-care",
+      "name": "Healthcare Calm",
+      "description": "Soft mint, slow tempo.",
+      "use_case": "Klinik, farmasi",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-serif",
+      "name": "Serif Authority",
+      "description": "Authoritative serif on ivory.",
+      "use_case": "Law, education",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-dark",
+      "name": "Dark Minimal",
+      "description": "Dark, one accent, lots of space.",
+      "use_case": "Teknologi premium",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-brand",
+      "name": "Brand Gradient",
+      "description": "A brand-color gradient background.",
+      "use_case": "Kampanye brand",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-thin",
+      "name": "Thin Line",
+      "description": "Thin type and fine lines.",
+      "use_case": "Arsitek, desain",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-report",
+      "name": "Annual Report",
+      "description": "Accent bars and underlined keywords.",
+      "use_case": "Laporan, investor",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-warm",
+      "name": "Warm Neutral",
+      "description": "Warm sand and terracotta.",
+      "use_case": "Interiors, coffee",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-bold",
+      "name": "Bold Statement",
+      "description": "Big black type, one message.",
+      "use_case": "Rekrutmen, kampanye",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-pastel",
+      "name": "Pastel Pro",
+      "description": "Tidy pastels for friendly brands.",
+      "use_case": "Beauty, retail",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-smooth",
+      "name": "Smooth Motion",
+      "description": "Mask reveals and slides between scenes.",
+      "use_case": "Product presentations",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "c-zen",
+      "name": "Zen Space",
+      "description": "Thin type, slow tempo, generous space.",
+      "use_case": "Wellness, hotel",
+      "category": "Corporate & Clean SaaS"
+    },
+    {
+      "id": "ed-archive",
+      "name": "Paper Archive",
+      "description": "Layered paper sheets, photos, handwritten notes and highlighter.",
+      "use_case": "Research, brand history, education",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-collage",
+      "name": "Editorial Collage",
+      "description": "Big photo cutouts, strong type, asymmetric layout.",
+      "use_case": "Brand stories, products",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-info",
+      "name": "Infographic Motion",
+      "description": "Nodes, connecting lines and labels that appear in sequence.",
+      "use_case": "Features, processes, technology",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-object",
+      "name": "Bold Object Explainer",
+      "description": "One big object on a bold color with annotations.",
+      "use_case": "Products, concepts",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-type",
+      "name": "Minimal Editorial Type",
+      "description": "A big serif headline, generous space, one accent.",
+      "use_case": "Brand messages, quotes",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-data",
+      "name": "Data Editorial",
+      "description": "Clean charts, small labels and an editorial headline.",
+      "use_case": "Reports, SaaS, comparisons",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-dual",
+      "name": "Dual Perspective",
+      "description": "Two side-by-side panels for comparison.",
+      "use_case": "Before/after, choices",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-layered",
+      "name": "Layered Infographic Collage",
+      "description": "Title strips, photo cutouts and arrows over a grid.",
+      "use_case": "Education, explainers",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-screen",
+      "name": "Analog Screen",
+      "description": "A retro screen frame with soft scanlines.",
+      "use_case": "Teknologi lawas, media",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-archival",
+      "name": "Archival Photo Motion",
+      "description": "Sepia photos, captions and slow camera moves.",
+      "use_case": "Company history, case studies",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-historic",
+      "name": "Historical Cutout",
+      "description": "Duotone figure cutouts with geometric accents.",
+      "use_case": "History, culture",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-sketch",
+      "name": "Sketch Motion",
+      "description": "Hand-drawn lines, arrows and annotation circles.",
+      "use_case": "Ideas, tutorials",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-papercut",
+      "name": "Paper Cutout",
+      "description": "Cut color sheets with soft shadows.",
+      "use_case": "Creative, kids, promos",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-campaign",
+      "name": "Bold Campaign",
+      "description": "Big condensed type, diagonal patterns, color panels.",
+      "use_case": "Kampanye, sale, event",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-product",
+      "name": "Commercial Showcase",
+      "description": "The product on a podium with a light sweep and callouts.",
+      "use_case": "Product ads",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-depth",
+      "name": "2.5D Layered",
+      "description": "Background, middle and foreground move separately.",
+      "use_case": "Product heroes, cinematic",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-route",
+      "name": "Cartographic Route",
+      "description": "A map with pins and routes that draw on.",
+      "use_case": "Logistik, travel, cakupan",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-region",
+      "name": "Cartographic Region",
+      "description": "Highlight an area on a map with a pulsing ring.",
+      "use_case": "Wilayah layanan, pasar",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-annot",
+      "name": "Annotated Photo",
+      "description": "Photos with circles, arrows and editor notes.",
+      "use_case": "Product features, details",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "ed-timeline",
+      "name": "Editorial Timeline",
+      "description": "A timeline with dots and labels in sequence.",
+      "use_case": "Milestones, history",
+      "category": "Editorial & Data"
+    },
+    {
+      "id": "cut-collage",
+      "name": "Collage Explainer",
+      "description": "Crumpled paper, black and white cut-outs, coral and mint shapes, green tape. Moves on twos, photos tear apart.",
+      "use_case": "Explainers, finance, services, \"how it works\"",
+      "category": "Cut-Out & Stop-Motion"
+    },
+    {
+      "id": "cut-grid",
+      "name": "Grid Paper Stop Motion",
+      "description": "Graph paper, one mustard sun, objects stepped in by hand and torn open.",
+      "use_case": "Concepts, ideas, short stories, music",
+      "category": "Cut-Out & Stop-Motion"
+    },
+    {
+      "id": "cut-zine",
+      "name": "Zine Cut-up",
+      "description": "Newsprint, red and black, ransom-note headlines and torn photo strips.",
+      "use_case": "Opinions, culture, punchy announcements",
+      "category": "Cut-Out & Stop-Motion"
+    },
+    {
+      "id": "cut-bio",
+      "name": "Biography Cut-out",
+      "description": "Warm grey paper with faint handwriting, a cut-out photo rising from a dark card, stacked small, bold and script words.",
+      "use_case": "Biographies, founders, \"meet the expert\", portrait reels",
+      "category": "Cut-Out & Stop-Motion"
+    },
+    {
+      "id": "cut-scrap",
+      "name": "Taped Photo Story",
+      "description": "Grey scrapbook pages, black and white prints held with tape, circled words and typewriter lines.",
+      "use_case": "History, inspiring stories, quotes, timelines",
+      "category": "Cut-Out & Stop-Motion"
+    },
+    {
+      "id": "cut-kraft",
+      "name": "Kraft Paper Craft",
+      "description": "Brown kraft paper, white tape and hand-cut shapes moved frame by frame.",
+      "use_case": "Kids, crafts, food, handmade brands",
+      "category": "Cut-Out & Stop-Motion"
+    },
+    {
+      "id": "fx-archive",
+      "name": "Archive History",
+      "description": "Aged paper, sepia photos, red and blue pen marks, a highlighter on the key word.",
+      "use_case": "History, biographies, \"the story behind\"",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "fx-blueprint",
+      "name": "Blueprint Science",
+      "description": "Blue drafting paper, mono labels, boxed key words and diagram lines.",
+      "use_case": "Science, technology, how things work",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "fx-news",
+      "name": "Newsroom",
+      "description": "Newsprint, halftone photos, bold condensed headlines and a yellow marker.",
+      "use_case": "News, economy, current events",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "fx-chalk",
+      "name": "Chalkboard Lesson",
+      "description": "Chalk on a green board, handwriting, underlines and stepped hand-made motion.",
+      "use_case": "Lessons, school topics, quick tips",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "fx-atlas",
+      "name": "Atlas Journey",
+      "description": "Old maps, pins, routes and circled places on travel paper.",
+      "use_case": "Geography, culture, travel, migrations",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "fx-noir",
+      "name": "Mystery Noir",
+      "description": "Dark film frames, grain, red circles and slow push-ins.",
+      "use_case": "Mysteries, true stories, unsolved cases",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "fx-pop",
+      "name": "Pop Science",
+      "description": "Bright paper colors, bold type, playful pops and halftone dots.",
+      "use_case": "Fun facts, kids science, trivia",
+      "category": "Archival & FX Themes"
+    },
+    {
+      "id": "e-film",
+      "name": "Silent Film",
+      "description": "An old silent film: sepia world, grain, a flickering projector light and dust lines. Old stories told like they were filmed back then.",
+      "use_case": "Stories from long ago, history, legends",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-paper",
+      "name": "Paper Theater",
+      "description": "A paper-cut stage: every layer of the world is cut card that casts a soft shadow on the one behind it.",
+      "use_case": "Folk tales, nature, how things grow",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-pixq",
+      "name": "Pixel Quest",
+      "description": "The story world as 16-bit pixel art: blocky hills, pixel moon, a retro game feel.",
+      "use_case": "Games, science, fun facts, legends",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-noirw",
+      "name": "Noir Case File",
+      "description": "A black and white night world with deep shadows, made for mysteries and unsolved cases.",
+      "use_case": "Mysteries, true crime, ghost stories",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-pastb",
+      "name": "Pastel Storybook",
+      "description": "A soft pastel picture book, gentle light and rounded shapes.",
+      "use_case": "Kids, nature, the body, calm explainers",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-retrow",
+      "name": "Retro Print",
+      "description": "An old printed poster: warm paper, faded inks and fine print lines over the story world.",
+      "use_case": "Contoh: Teknologi · Historical Story",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-flatm",
+      "name": "Modern Flat",
+      "description": "Simple shapes and solid colors, clean and easy to read.",
+      "use_case": "Contoh: Tubuh Manusia · Single Explainer",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-clay",
+      "name": "Clay World",
+      "description": "Soft rounded objects with deep, soft shadows, like a clay miniature.",
+      "use_case": "Contoh: Alam & Hewan · Top List",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-linem",
+      "name": "Minimal Line",
+      "description": "Thin ink lines on white paper with lots of empty space.",
+      "use_case": "Contoh: Tubuh Manusia · Top List",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-comicp",
+      "name": "Comic Pop",
+      "description": "Thick outlines, halftone dots and bold contrast, like a comic page.",
+      "use_case": "Contoh: Sains · Quick Facts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-tilt",
+      "name": "Tilt-Shift Miniature",
+      "description": "The world looks like a tiny model city, sharp in the middle and soft at the edges.",
+      "use_case": "Contoh: Cara Kerja · Single Explainer",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-sketch",
+      "name": "Hand Drawn Sketch",
+      "description": "Pencil lines and hatching on notebook paper.",
+      "use_case": "Contoh: Sejarah · Historical Story",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-engrave",
+      "name": "Scientific Engraving",
+      "description": "An old encyclopedia plate: sepia paper and fine cross-hatched lines.",
+      "use_case": "Contoh: Alam & Hewan · Deep Dive",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-water",
+      "name": "Watercolor Storybook",
+      "description": "Soft watercolor washes on textured paper.",
+      "use_case": "Contoh: Alam & Hewan · Single Explainer",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-bauhaus",
+      "name": "Bauhaus Geometry",
+      "description": "Flat color with red circles, blue squares and yellow triangles moving at the edges.",
+      "use_case": "Contoh: Sains · Top List",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-riso",
+      "name": "Duo Ink Print",
+      "description": "Two inks, grain and slightly misaligned print layers.",
+      "use_case": "Contoh: Fakta Unik · Quick Facts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-synth",
+      "name": "Synthwave Neon",
+      "description": "Purple and pink neon glow with a moving grid on the ground.",
+      "use_case": "Contoh: Misteri · Mystery Story",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-lowp",
+      "name": "Low Poly World",
+      "description": "The world rebuilt from flat-colored triangles.",
+      "use_case": "Contoh: Sains · Single Explainer",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-swiss",
+      "name": "Swiss Editorial",
+      "description": "Flat color on a strict grid with a red accent bar.",
+      "use_case": "Contoh: Tubuh Manusia · Deep Dive",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-kawaii",
+      "name": "Kawaii Facts",
+      "description": "Soft pink pastel world with twinkling stars.",
+      "use_case": "Contoh: Alam & Hewan · Quick Facts",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-cine",
+      "name": "Cinematic Depth",
+      "description": "Teal and orange grading, dark edges and widescreen bars.",
+      "use_case": "Contoh: Tempat & Geografi · Deep Dive",
+      "category": "Explainer & 3D World"
+    },
+    {
+      "id": "e-wboard",
+      "name": "Whiteboard Explainer",
+      "description": "Blue marker lines on a clean whiteboard.",
+      "use_case": "Contoh: Cara Kerja · Single Explainer",
+      "category": "Explainer & 3D World"
+    }
+  ],
+  "scene_templates": [
+    {
+      "id": "logo-reveal",
+      "category": "logo",
+      "name": "Logo Reveal",
+      "description": "The logo pops in with a light sweep, then the brand name rises."
+    },
+    {
+      "id": "logo-minimal",
+      "category": "logo",
+      "name": "Minimal Logo Intro",
+      "description": "A slow zoom, a thin line, then the brand name. Calm and elegant."
+    },
+    {
+      "id": "logo-particle",
+      "category": "logo",
+      "name": "Particle Logo",
+      "description": "160 particles gather into the mark, then the brand name lights up."
+    },
+    {
+      "id": "logo-line",
+      "category": "logo",
+      "name": "Line Draw Logo",
+      "description": "The mark draws itself line by line, fills with color, then gets a light sweep."
+    },
+    {
+      "id": "logo-glow",
+      "category": "logo",
+      "name": "Glowing Logo",
+      "description": "A glowing logo pulses on a dark background."
+    },
+    {
+      "id": "logo-spin",
+      "category": "logo",
+      "name": "Logo Flip",
+      "description": "The logo flips over its shadow. A 2D flip of a flat image, not a 3D model."
+    },
+    {
+      "id": "brand-sting",
+      "category": "logo",
+      "name": "Brand Sting",
+      "description": "Three words slam the screen one after another. Made for the first 3 seconds."
+    },
+    {
+      "id": "logo-outro",
+      "category": "logo",
+      "name": "Logo Outro",
+      "description": "Video outro: logo, brand name and website, then a fade."
+    },
+    {
+      "id": "text-style",
+      "category": "text",
+      "name": "Styled Text",
+      "description": "Your text in the visual style you pick. Wrap keywords in *asterisks*."
+    },
+    {
+      "id": "kinetic",
+      "category": "text",
+      "name": "Kinetic Typography",
+      "description": "Words slam the screen with scale and overshoot."
+    },
+    {
+      "id": "text-reveal",
+      "category": "text",
+      "name": "Text Reveal",
+      "description": "The headline wipes in from the left, then the supporting text appears."
+    },
+    {
+      "id": "headline",
+      "category": "text",
+      "name": "Animated Headline",
+      "description": "An accent line, the headline pops in, then the subtitle rises."
+    },
+    {
+      "id": "typewriter",
+      "category": "text",
+      "name": "Typewriter Effect",
+      "description": "Text types out letter by letter with a cursor."
+    },
+    {
+      "id": "mask-reveal",
+      "category": "text",
+      "name": "Text Mask Reveal",
+      "description": "Lines rise from behind a mask, as if opening from below."
+    },
+    {
+      "id": "word-by-word",
+      "category": "text",
+      "name": "Word-by-Word",
+      "description": "Words appear one at a time, good for quotes and messages."
+    },
+    {
+      "id": "animated-cta",
+      "category": "text",
+      "name": "Animated CTA",
+      "description": "The call-to-action button pops in, then pulses gently."
+    },
+    {
+      "id": "title-intro",
+      "category": "text",
+      "name": "Title Intro",
+      "description": "Headline letters ripple with a slight rotation."
+    },
+    {
+      "id": "glitch-title",
+      "category": "text",
+      "name": "Glitch Title",
+      "description": "RGB split and random slices like a broken signal."
+    },
+    {
+      "id": "product-reveal",
+      "category": "product",
+      "name": "Product Reveal",
+      "description": "The product zooms in with shadow and shine, then its name appears."
+    },
+    {
+      "id": "floating",
+      "category": "product",
+      "name": "Floating Product",
+      "description": "The product floats gently above its shadow."
+    },
+    {
+      "id": "product-flip",
+      "category": "product",
+      "name": "Product Rotation",
+      "description": "The product spins with a 2D flip. A flat photo, not a 3D model."
+    },
+    {
+      "id": "spotlight",
+      "category": "product",
+      "name": "Product Spotlight",
+      "description": "A spotlight from above; the product glows on a dark background."
+    },
+    {
+      "id": "packaging",
+      "category": "product",
+      "name": "Packaging Showcase",
+      "description": "Packaging in the center with point labels left and right."
+    },
+    {
+      "id": "feature-highlight",
+      "category": "product",
+      "name": "Feature Highlight",
+      "description": "The product on one side, features appearing in turn on the other."
+    },
+    {
+      "id": "lower-third",
+      "category": "elements",
+      "name": "Lower Third",
+      "description": "A name and title bar at the bottom of the screen."
+    },
+    {
+      "id": "callout",
+      "category": "elements",
+      "name": "Callout Label",
+      "description": "Dots, lines and labels pointing at what matters."
+    },
+    {
+      "id": "loop-float",
+      "category": "loop",
+      "name": "Floating Logo Loop",
+      "description": "A floating logo with a shadow. 4 or 8 seconds loops seamlessly."
+    },
+    {
+      "id": "loop-badge",
+      "category": "loop",
+      "name": "Pulsing Badge",
+      "description": "A pulsing text badge for the corner of a video."
+    },
+    {
+      "id": "loop-spin",
+      "category": "loop",
+      "name": "Spinning Mark",
+      "description": "The mark spins a full turn every 4 seconds."
+    },
+    {
+      "id": "loop-bauhaus",
+      "category": "loop",
+      "name": "Geometric Loop",
+      "description": "A rotating grid of shapes that returns to the start."
+    },
+    {
+      "id": "loop-blob",
+      "category": "loop",
+      "name": "Bouncy Character",
+      "description": "A blob character hops and blinks."
+    },
+    {
+      "id": "loop-beat",
+      "category": "loop",
+      "name": "Beat Pulse",
+      "description": "A ripple on every beat at 120 BPM."
+    },
+    {
+      "id": "loop-galaxy",
+      "category": "loop",
+      "name": "Galaxy Loop",
+      "description": "A particle spiral that keeps turning."
+    }
+  ],
+  "sfx_manifest": [
+    {
+      "id": "pop",
+      "name": "Pop",
+      "use": "Element appears (cards, icons, stickers)",
+      "file": "sfx/pop.wav",
+      "seconds": 0.14,
+      "cat": "ui"
+    },
+    {
+      "id": "pop-soft",
+      "name": "Soft pop",
+      "use": "Small items, labels, dots on a timeline",
+      "file": "sfx/pop-soft.wav",
+      "seconds": 0.12,
+      "cat": "ui"
+    },
+    {
+      "id": "pop-bubble",
+      "name": "Bubble pop",
+      "use": "Playful pops (Pop Science theme)",
+      "file": "sfx/pop-bubble.wav",
+      "seconds": 0.18,
+      "cat": "ui"
+    },
+    {
+      "id": "whoosh",
+      "name": "Whoosh",
+      "use": "Scene transition (zoom, slide)",
+      "file": "sfx/whoosh.wav",
+      "seconds": 0.45,
+      "cat": "transisi"
+    },
+    {
+      "id": "whoosh-long",
+      "name": "Long whoosh",
+      "use": "Big reveal, title card",
+      "file": "sfx/whoosh-long.wav",
+      "seconds": 0.9,
+      "cat": "transisi"
+    },
+    {
+      "id": "swish",
+      "name": "Swish",
+      "use": "Quick slide or wipe",
+      "file": "sfx/swish.wav",
+      "seconds": 0.22,
+      "cat": "transisi"
+    },
+    {
+      "id": "paper-slide",
+      "name": "Paper slide",
+      "use": "A paper card slides in",
+      "file": "sfx/paper-slide.wav",
+      "seconds": 0.38,
+      "cat": "kertas"
+    },
+    {
+      "id": "paper-rustle",
+      "name": "Paper rustle",
+      "use": "Notes or clippings appear",
+      "file": "sfx/paper-rustle.wav",
+      "seconds": 0.3,
+      "cat": "kertas"
+    },
+    {
+      "id": "page-flip",
+      "name": "Page flip",
+      "use": "Turn to the next chapter / page",
+      "file": "sfx/page-flip.wav",
+      "seconds": 0.26,
+      "cat": "kertas"
+    },
+    {
+      "id": "tear",
+      "name": "Paper tear",
+      "use": "Torn-paper transition",
+      "file": "sfx/tear.wav",
+      "seconds": 0.42,
+      "cat": "kertas"
+    },
+    {
+      "id": "pencil-scribble",
+      "name": "Pencil scribble",
+      "use": "A circle or arrow draws on",
+      "file": "sfx/pencil-scribble.wav",
+      "seconds": 0.45,
+      "cat": "kertas"
+    },
+    {
+      "id": "pencil-tick",
+      "name": "Pencil tick",
+      "use": "A check mark is drawn",
+      "file": "sfx/pencil-tick.wav",
+      "seconds": 0.21,
+      "cat": "kertas"
+    },
+    {
+      "id": "marker",
+      "name": "Marker swipe",
+      "use": "Highlighter on the key word",
+      "file": "sfx/marker.wav",
+      "seconds": 0.3,
+      "cat": "kertas"
+    },
+    {
+      "id": "stamp",
+      "name": "Stamp",
+      "use": "A date or title stamps down",
+      "file": "sfx/stamp.wav",
+      "seconds": 0.3,
+      "cat": "kertas"
+    },
+    {
+      "id": "impact",
+      "name": "Impact",
+      "use": "Big number or hook word lands",
+      "file": "sfx/impact.wav",
+      "seconds": 0.6,
+      "cat": "sinematik"
+    },
+    {
+      "id": "ding",
+      "name": "Ding",
+      "use": "Highlighted fact, correct answer",
+      "file": "sfx/ding.wav",
+      "seconds": 1.1,
+      "cat": "ui"
+    },
+    {
+      "id": "sparkle",
+      "name": "Sparkle",
+      "use": "End card, reveal of the answer",
+      "file": "sfx/sparkle.wav",
+      "seconds": 0.9,
+      "cat": "magic"
+    },
+    {
+      "id": "click",
+      "name": "Click",
+      "use": "Button, UI tap, map pin",
+      "file": "sfx/click.wav",
+      "seconds": 0.03,
+      "cat": "ui"
+    },
+    {
+      "id": "typewriter",
+      "name": "Typewriter keys",
+      "use": "Typed text (kicker labels, documents)",
+      "file": "sfx/typewriter.wav",
+      "seconds": 0.64,
+      "cat": "foley"
+    },
+    {
+      "id": "typewriter-bell",
+      "name": "Typewriter bell",
+      "use": "End of a typed line",
+      "file": "sfx/typewriter-bell.wav",
+      "seconds": 0.9,
+      "cat": "foley"
+    },
+    {
+      "id": "clock-tick",
+      "name": "Clock tick",
+      "use": "Time, dates, countdowns",
+      "file": "sfx/clock-tick.wav",
+      "seconds": 1.51,
+      "cat": "tegang"
+    },
+    {
+      "id": "shutter",
+      "name": "Camera shutter",
+      "use": "An archive photo appears",
+      "file": "sfx/shutter.wav",
+      "seconds": 0.12,
+      "cat": "foley"
+    },
+    {
+      "id": "boing",
+      "name": "Boing",
+      "use": "Funny or surprising beat",
+      "file": "sfx/boing.wav",
+      "seconds": 0.45,
+      "cat": "lucu"
+    },
+    {
+      "id": "riser",
+      "name": "Riser",
+      "use": "Build-up before the big fact",
+      "file": "sfx/riser.wav",
+      "seconds": 1.4,
+      "cat": "sinematik"
+    },
+    {
+      "id": "glitch",
+      "name": "Glitch",
+      "use": "Mystery / noir cut, wrong fact",
+      "file": "sfx/glitch.wav",
+      "seconds": 0.35,
+      "cat": "transisi"
+    },
+    {
+      "id": "chalk",
+      "name": "Chalk stroke",
+      "use": "Chalkboard writing (Chalkboard theme)",
+      "file": "sfx/chalk.wav",
+      "seconds": 0.4,
+      "cat": "kertas"
+    },
+    {
+      "id": "blup",
+      "name": "Blup",
+      "use": "Benda muncul dari meja, gaya lucu",
+      "file": "sfx/blup.wav",
+      "seconds": 0.2,
+      "cat": "lucu"
+    },
+    {
+      "id": "chirp",
+      "name": "Cicit burung",
+      "use": "Burung, maskot lucu",
+      "file": "sfx/chirp.wav",
+      "seconds": 0.34,
+      "cat": "lucu"
+    },
+    {
+      "id": "coin",
+      "name": "Koin",
+      "use": "Uang, harga, angka",
+      "file": "sfx/coin.wav",
+      "seconds": 0.97,
+      "cat": "foley"
+    },
+    {
+      "id": "thud-soft",
+      "name": "Jatuh pelan",
+      "use": "Benda kecil mendarat",
+      "file": "sfx/thud-soft.wav",
+      "seconds": 0.34,
+      "cat": "foley"
+    },
+    {
+      "id": "whistle-drop",
+      "name": "Peluit jatuh",
+      "use": "Jatuh lucu, kartun",
+      "file": "sfx/whistle-drop.wav",
+      "seconds": 0.5,
+      "cat": "lucu"
+    },
+    {
+      "id": "amb-forest-calm",
+      "name": "Hutan tenang",
+      "use": "Alam, hutan, hewan",
+      "file": "sfx/amb-forest-calm.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-office-typing",
+      "name": "Kantor, ketikan pelan",
+      "use": "Kerja, teknologi, kantor",
+      "file": "sfx/amb-office-typing.mp3",
+      "seconds": 3.98,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-morning-village",
+      "name": "Pagi di desa",
+      "use": "Pagi, desa, kehidupan sehari-hari",
+      "file": "sfx/amb-morning-village.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-ocean-calm",
+      "name": "Laut tenang",
+      "use": "Laut, pantai, tenang",
+      "file": "sfx/amb-ocean-calm.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-ocean-storm",
+      "name": "Laut berbadai",
+      "use": "Laut, kapal, badai",
+      "file": "sfx/amb-ocean-storm.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-city-busy",
+      "name": "Kota ramai",
+      "use": "Kota, jalan, keramaian",
+      "file": "sfx/amb-city-busy.mp3",
+      "seconds": 15.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-wild-animals",
+      "name": "Hewan liar",
+      "use": "Hutan liar, satwa",
+      "file": "sfx/amb-wild-animals.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-thunderstorm",
+      "name": "Badai petir",
+      "use": "Cuaca, badai, misteri",
+      "file": "sfx/amb-thunderstorm.mp3",
+      "seconds": 14.64,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-thunder-rain",
+      "name": "Petir dan hujan",
+      "use": "Hujan, petir, suasana gelap",
+      "file": "sfx/amb-thunder-rain.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-magic-loop",
+      "name": "Suasana ajaib",
+      "use": "Dunia ajaib, luar angkasa, mimpi",
+      "file": "sfx/amb-magic-loop.mp3",
+      "seconds": 30.02,
+      "cat": "suasana"
+    },
+    {
+      "id": "amb-phone-call",
+      "name": "Suasana telepon",
+      "use": "Percakapan, kantor, berita",
+      "file": "sfx/amb-phone-call.mp3",
+      "seconds": 14.71,
+      "cat": "suasana"
+    },
+    {
+      "id": "tense-clock-ticking",
+      "name": "Jam berdetak panjang",
+      "use": "Waktu, hitung mundur, tegang",
+      "file": "sfx/tense-clock-ticking.mp3",
+      "seconds": 20.04,
+      "cat": "tegang"
+    },
+    {
+      "id": "music-glam-1",
+      "name": "Stinger hangat mewah 1",
+      "use": "Pembuka, gaya mewah",
+      "file": "sfx/music-glam-1.mp3",
+      "seconds": 10.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-glam-2",
+      "name": "Stinger hangat mewah 2",
+      "use": "Pembuka, gaya mewah",
+      "file": "sfx/music-glam-2.mp3",
+      "seconds": 10.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-glam-3",
+      "name": "Stinger hangat mewah 3",
+      "use": "Pembuka, gaya mewah",
+      "file": "sfx/music-glam-3.mp3",
+      "seconds": 10.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-glam-4",
+      "name": "Stinger hangat mewah 4",
+      "use": "Pembuka, gaya mewah",
+      "file": "sfx/music-glam-4.mp3",
+      "seconds": 10.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-action-1",
+      "name": "Stinger aksi 1",
+      "use": "Perang, sejarah, aksi",
+      "file": "sfx/music-action-1.mp3",
+      "seconds": 16.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-action-2",
+      "name": "Stinger aksi 2",
+      "use": "Perang, sejarah, aksi",
+      "file": "sfx/music-action-2.mp3",
+      "seconds": 16.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-action-3",
+      "name": "Stinger aksi 3",
+      "use": "Perang, sejarah, aksi",
+      "file": "sfx/music-action-3.mp3",
+      "seconds": 16.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-action-4",
+      "name": "Stinger aksi 4",
+      "use": "Perang, sejarah, aksi",
+      "file": "sfx/music-action-4.mp3",
+      "seconds": 16.03,
+      "cat": "musik"
+    },
+    {
+      "id": "music-tense-perc",
+      "name": "Perkusi tegang",
+      "use": "Misteri, tegang, serius",
+      "file": "sfx/music-tense-perc.mp3",
+      "seconds": 10.06,
+      "cat": "musik"
+    },
+    {
+      "id": "music-walking-intro",
+      "name": "Intro perkusi berjalan",
+      "use": "Pembuka, perjalanan",
+      "file": "sfx/music-walking-intro.mp3",
+      "seconds": 29.78,
+      "cat": "musik"
+    },
+    {
+      "id": "cine-boom-intense",
+      "name": "Boom intens panjang",
+      "use": "Momen besar, trailer",
+      "file": "sfx/cine-boom-intense.mp3",
+      "seconds": 30.02,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-boom-epic",
+      "name": "Boom epik",
+      "use": "Angka besar, momen penting",
+      "file": "sfx/cine-boom-epic.mp3",
+      "seconds": 6.02,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-boom-radio",
+      "name": "Boom radio",
+      "use": "Berita, siaran, sejarah",
+      "file": "sfx/cine-boom-radio.mp3",
+      "seconds": 4.51,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-boom-deep",
+      "name": "Boom dalam",
+      "use": "Penekanan, fakta mengejutkan",
+      "file": "sfx/cine-boom-deep.mp3",
+      "seconds": 5.04,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-intro-hit",
+      "name": "Hit pembuka",
+      "use": "Judul pertama, pembuka",
+      "file": "sfx/cine-intro-hit.mp3",
+      "seconds": 2.04,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-braam-trailer",
+      "name": "Braam trailer",
+      "use": "Pembuka dramatis, misteri",
+      "file": "sfx/cine-braam-trailer.mp3",
+      "seconds": 20.78,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-impact-heavy",
+      "name": "Impact berat",
+      "use": "Benda jatuh, angka besar",
+      "file": "sfx/cine-impact-heavy.mp3",
+      "seconds": 4.03,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-riser-elegant",
+      "name": "Riser elegan",
+      "use": "Menuju momen penting",
+      "file": "sfx/cine-riser-elegant.mp3",
+      "seconds": 2.04,
+      "cat": "sinematik"
+    },
+    {
+      "id": "cine-riser-tension",
+      "name": "Riser tegang",
+      "use": "Membangun ketegangan",
+      "file": "sfx/cine-riser-tension.mp3",
+      "seconds": 5.18,
+      "cat": "sinematik"
+    },
+    {
+      "id": "paper-book-flip",
+      "name": "Buku dibalik cepat",
+      "use": "Sejarah, buku, ganti bab",
+      "file": "sfx/paper-book-flip.mp3",
+      "seconds": 2.04,
+      "cat": "kertas"
+    },
+    {
+      "id": "tense-heartbeat-deep",
+      "name": "Detak jantung dalam",
+      "use": "Tubuh, tegang, misteri",
+      "file": "sfx/tense-heartbeat-deep.mp3",
+      "seconds": 9.02,
+      "cat": "tegang"
+    },
+    {
+      "id": "tense-heartbeat-close",
+      "name": "Detak jantung dekat",
+      "use": "Tubuh manusia, tegang",
+      "file": "sfx/tense-heartbeat-close.mp3",
+      "seconds": 10.03,
+      "cat": "tegang"
+    },
+    {
+      "id": "tense-heartbeat-1",
+      "name": "Detak jantung sinematik 1",
+      "use": "Tegang, horor ringan",
+      "file": "sfx/tense-heartbeat-1.mp3",
+      "seconds": 9.02,
+      "cat": "tegang"
+    },
+    {
+      "id": "tense-heartbeat-2",
+      "name": "Detak jantung sinematik 2",
+      "use": "Tegang, horor ringan",
+      "file": "sfx/tense-heartbeat-2.mp3",
+      "seconds": 9.02,
+      "cat": "tegang"
+    },
+    {
+      "id": "tense-heartbeat-3",
+      "name": "Detak jantung sinematik 3",
+      "use": "Tegang, horor ringan",
+      "file": "sfx/tense-heartbeat-3.mp3",
+      "seconds": 9.02,
+      "cat": "tegang"
+    },
+    {
+      "id": "tense-heartbeat-4",
+      "name": "Detak jantung sinematik 4",
+      "use": "Tegang, horor ringan",
+      "file": "sfx/tense-heartbeat-4.mp3",
+      "seconds": 9.02,
+      "cat": "tegang"
+    },
+    {
+      "id": "ui-typing-fast",
+      "name": "Ketikan cepat",
+      "use": "Teks muncul, teknologi",
+      "file": "sfx/ui-typing-fast.mp3",
+      "seconds": 4.03,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-mouse-click",
+      "name": "Klik mouse",
+      "use": "Klik, aplikasi, teknologi",
+      "file": "sfx/ui-mouse-click.mp3",
+      "seconds": 1.18,
+      "cat": "ui"
+    },
+    {
+      "id": "foley-camera-flash",
+      "name": "Kamera dan flash",
+      "use": "Foto muncul, dokumentasi",
+      "file": "sfx/foley-camera-flash.mp3",
+      "seconds": 1.03,
+      "cat": "foley"
+    },
+    {
+      "id": "magic-reveal-epic",
+      "name": "Reveal ajaib epik",
+      "use": "Fakta terungkap, hasil akhir",
+      "file": "sfx/magic-reveal-epic.mp3",
+      "seconds": 3.0,
+      "cat": "magic"
+    },
+    {
+      "id": "magic-reveal-mystic",
+      "name": "Reveal mistis",
+      "use": "Misteri, legenda",
+      "file": "sfx/magic-reveal-mystic.mp3",
+      "seconds": 4.03,
+      "cat": "magic"
+    },
+    {
+      "id": "magic-portal-soft",
+      "name": "Portal ajaib lembut",
+      "use": "Transisi ke dunia lain",
+      "file": "sfx/magic-portal-soft.mp3",
+      "seconds": 3.6,
+      "cat": "magic"
+    },
+    {
+      "id": "magic-whimsical",
+      "name": "Kilau ceria",
+      "use": "Anak, hal lucu, keajaiban kecil",
+      "file": "sfx/magic-whimsical.mp3",
+      "seconds": 10.08,
+      "cat": "magic"
+    },
+    {
+      "id": "foley-door-open",
+      "name": "Pintu terbuka",
+      "use": "Masuk ke tempat baru",
+      "file": "sfx/foley-door-open.mp3",
+      "seconds": 2.04,
+      "cat": "foley"
+    },
+    {
+      "id": "toon-pop-satisfying",
+      "name": "Pop memuaskan",
+      "use": "Benda muncul, gaya lucu",
+      "file": "sfx/toon-pop-satisfying.mp3",
+      "seconds": 1.32,
+      "cat": "lucu"
+    },
+    {
+      "id": "ui-alert-clean",
+      "name": "Notifikasi bersih",
+      "use": "Info muncul",
+      "file": "sfx/ui-alert-clean.mp3",
+      "seconds": 1.51,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-alert-seamless",
+      "name": "Nada notifikasi panjang",
+      "use": "Info penting, pengumuman",
+      "file": "sfx/ui-alert-seamless.mp3",
+      "seconds": 5.52,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-notif-minimal",
+      "name": "Notifikasi minimal",
+      "use": "Label kecil muncul",
+      "file": "sfx/ui-notif-minimal.mp3",
+      "seconds": 0.84,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-alert-premium",
+      "name": "Notifikasi premium",
+      "use": "Angka atau hasil muncul",
+      "file": "sfx/ui-alert-premium.mp3",
+      "seconds": 1.7,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-pop-icon",
+      "name": "Pop ikon",
+      "use": "Ikon atau stiker muncul",
+      "file": "sfx/ui-pop-icon.mp3",
+      "seconds": 1.03,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-click-computer",
+      "name": "Klik komputer",
+      "use": "Teknologi, aplikasi",
+      "file": "sfx/ui-click-computer.mp3",
+      "seconds": 1.03,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-click-friendly",
+      "name": "Klik ramah",
+      "use": "Tombol, pilihan",
+      "file": "sfx/ui-click-friendly.mp3",
+      "seconds": 0.96,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-click-soft",
+      "name": "Klik lembut",
+      "use": "Elemen kecil muncul",
+      "file": "sfx/ui-click-soft.mp3",
+      "seconds": 2.04,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-click-bubble",
+      "name": "Klik gelembung",
+      "use": "Elemen kecil, gaya lucu",
+      "file": "sfx/ui-click-bubble.mp3",
+      "seconds": 0.5,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-blip",
+      "name": "Blip",
+      "use": "Penanda kecil",
+      "file": "sfx/ui-blip.mp3",
+      "seconds": 1.32,
+      "cat": "ui"
+    },
+    {
+      "id": "ui-reveal-soft",
+      "name": "Reveal lembut",
+      "use": "Kartu atau panel muncul",
+      "file": "sfx/ui-reveal-soft.mp3",
+      "seconds": 2.04,
+      "cat": "ui"
+    },
+    {
+      "id": "whoosh-paper-swipe",
+      "name": "Sapuan kertas",
+      "use": "Ganti scene gaya kertas",
+      "file": "sfx/whoosh-paper-swipe.mp3",
+      "seconds": 1.03,
+      "cat": "transisi"
+    },
+    {
+      "id": "whoosh-sharp-fast",
+      "name": "Whoosh tajam cepat",
+      "use": "Transisi cepat",
+      "file": "sfx/whoosh-sharp-fast.mp3",
+      "seconds": 1.01,
+      "cat": "transisi"
+    },
+    {
+      "id": "whoosh-soft-short",
+      "name": "Whoosh lembut pendek",
+      "use": "Transisi halus",
+      "file": "sfx/whoosh-soft-short.mp3",
+      "seconds": 2.04,
+      "cat": "transisi"
+    },
+    {
+      "id": "whoosh-soft",
+      "name": "Whoosh lembut",
+      "use": "Transisi halus",
+      "file": "sfx/whoosh-soft.mp3",
+      "seconds": 2.04,
+      "cat": "transisi"
+    },
+    {
+      "id": "whoosh-zoom-fast",
+      "name": "Whoosh zoom cepat",
+      "use": "Kamera mendekat",
+      "file": "sfx/whoosh-zoom-fast.mp3",
+      "seconds": 1.7,
+      "cat": "transisi"
+    },
+    {
+      "id": "whoosh-slow-gentle",
+      "name": "Whoosh pelan",
+      "use": "Transisi panjang, tenang",
+      "file": "sfx/whoosh-slow-gentle.mp3",
+      "seconds": 2.04,
+      "cat": "transisi"
+    }
+  ]
+}

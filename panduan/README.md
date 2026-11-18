@@ -20,6 +20,7 @@ Setiap fitur dipisahkan ke dalam filenya masing-masing agar Anda dapat mempelaja
 | **07** | [07_MULTI_PLATFORM_POSTING_STUDIO.md](file:///E:/PROJECTS/kajian_clipper/panduan/07_MULTI_PLATFORM_POSTING_STUDIO.md) | Publikasi serentak 1-klik ke YouTube Shorts, TikTok, dan Facebook Reels, serta integrasi e-learning Web Kursus dn-zy Kreatif. |
 | **08** | [08_MOBILE_REMOTE_SUITE_DAN_ADB.md](file:///E:/PROJECTS/kajian_clipper/panduan/08_MOBILE_REMOTE_SUITE_DAN_ADB.md) | Koneksi ponsel Android ADB, mirroring layar HP dengan Scrcpy, Seamless Video Looper, dan High-Contrast Hook Text Overlay. |
 | **09** | [09_TIPS_TRIK_DAN_TROUBLESHOOTING.md](file:///E:/PROJECTS/kajian_clipper/panduan/09_TIPS_TRIK_DAN_TROUBLESHOOTING.md) | Alur kerja kilat 5 menit, pemecahan masalah teknis umum, dan glosarium istilah audio-visual penting. |
+| **10** | [10_BIG_DATA_VIDEO_REA_DAN_ANYMOTION.md](file:///E:/PROJECTS/kajian_clipper/panduan/10_BIG_DATA_VIDEO_REA_DAN_ANYMOTION.md) | Panduan penggunaan 11 Blueprint Video Viral hasil ekstraksi Big Data REA, 212 Gaya AnyMotion, 18 Shader Visual, dan Z-Order Particle Morph. |
 
 ---
 

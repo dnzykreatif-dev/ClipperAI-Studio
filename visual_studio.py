@@ -976,25 +976,52 @@ class ProgressLineElement(Element):
 # ---------------------------------------------------------------------------
 
 class VisualTimeline:
-    def __init__(self, total_dur: float, elements: List[Element], background_theme: str = "mint"):
+    def __init__(self, total_dur: float, elements: List[Element], background_theme: str = "mint",
+                 visual_look: str = "auto", use_particle_morph: bool = False):
         self.total_dur = total_dur
         self.elements = elements
+        self.visual_look = (visual_look or "auto").strip().lower()
+        self.use_particle_morph = use_particle_morph or (background_theme == "particle_morph") or (self.visual_look == "particle_morph")
         self.bg_frame = render_mesh_gradient_background(theme=background_theme)
+        self.particle_engine = None
+        if self.use_particle_morph:
+            try:
+                import rea_video_bigdata as rbd
+                self.particle_engine = rbd.ReaParticleRedrawEngine(W, H)
+            except Exception:
+                self.particle_engine = None
 
-    def frame(self, i: int) -> bytes:
-        t = i / FPS
-        canvas = self.bg_frame.copy()
+    def _render_pil_at(self, t: float) -> Image.Image:
+        if self.particle_engine is not None:
+            bgr = self.particle_engine.render_frame_bgr(t)
+            rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+            canvas = Image.fromarray(rgb).convert("RGBA")
+        else:
+            canvas = self.bg_frame.copy()
+
         for e in self.elements:
             if e.active(t):
                 e.draw(canvas, t)
-        return canvas.tobytes()
+
+        if self.visual_look not in ("auto", "none", "clean", "particle_morph", ""):
+            try:
+                import rea_video_bigdata as rbd
+                arr_rgba = np.array(canvas)
+                bgr_in = cv2.cvtColor(arr_rgba[..., :3], cv2.COLOR_RGB2BGR)
+                bgr_out = rbd.apply_visual_look_shader(bgr_in, self.visual_look, t)
+                rgb_out = cv2.cvtColor(bgr_out, cv2.COLOR_BGR2RGB)
+                arr_rgba[..., :3] = rgb_out
+                canvas = Image.fromarray(arr_rgba, "RGBA")
+            except Exception:
+                pass
+        return canvas
+
+    def frame(self, i: int) -> bytes:
+        t = i / FPS
+        return self._render_pil_at(t).tobytes()
 
     def n_frames(self) -> int:
         return int(math.ceil(self.total_dur * FPS))
 
     def preview(self, t: float) -> Image.Image:
-        canvas = self.bg_frame.copy()
-        for e in self.elements:
-            if e.active(t):
-                e.draw(canvas, t)
-        return canvas
+        return self._render_pil_at(t)
