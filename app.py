@@ -1597,20 +1597,18 @@ async def generate_rea_director_prompt(payload: ReaDirectorPromptPayload):
         aspect_ratio=payload.aspect_ratio,
         language=payload.language,
     )
-    if payload.execute_ai:
-        cfg = ai_brain.load_config()
-        if cfg.get("enabled") and (cfg.get("api_key") or cfg.get("provider") in ("9router", "custom")):
-            ai_out = ai_brain.chat_completion(
-                messages=[
-                    {"role": "system", "content": "You are an award-winning Creative Director and JSON Storyboard Architect."},
-                    {"role": "user", "content": res["prompt"]},
-                ],
-                temperature=0.7,
-                max_tokens=2200,
+    if payload.execute_ai and ai_brain.is_ai_ready():
+        try:
+            raw_res = ai_brain.generate_text(
+                system_prompt="You are an award-winning Creative Director and JSON Storyboard Architect.",
+                user_prompt=res["prompt"],
                 json_mode=True,
+                timeout=60,
             )
-            if ai_out:
-                res["ai_storyboard"] = ai_out
+            parsed = ai_brain.extract_json(raw_res) if hasattr(ai_brain, "extract_json") else None
+            res["ai_storyboard"] = parsed or raw_res
+        except Exception as e:
+            res["ai_error"] = str(e)
     return res
 
 

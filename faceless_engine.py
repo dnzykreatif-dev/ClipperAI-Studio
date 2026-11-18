@@ -501,11 +501,17 @@ def _render_with_visual_studio(
 
     narration_text = sb.get("narration_script") or script_text
     sb_scenes = sb.get("scenes") or []
-    chosen_palette = sb.get("theme_palette") or palette_hint
+    chosen_palette = (sb.get("theme_palette") if palette_hint == "auto" else palette_hint) or sb.get("theme_palette") or "mint"
     if chosen_palette == "auto":
         chosen_palette = "mint"
-    is_dark = chosen_palette in ("obsidian", "dark")
-    accent_rgb = _parse_accent_tuple(sb.get("accent_hex") or theme.get("header_bg", "0x10B981"))
+    is_dark = (
+        chosen_palette in ("obsidian", "dark")
+        or bool(theme.get("use_particle_morph"))
+        or theme.get("visual_look") in ("synth", "blueprint", "cine")
+    )
+    accent_rgb = _parse_accent_tuple(
+        (sb.get("accent_hex") if palette_hint == "auto" else None) or theme.get("header_bg", "0x10B981")
+    )
 
     # Step 2: TTS Audio Generation
     if progress_callback:
