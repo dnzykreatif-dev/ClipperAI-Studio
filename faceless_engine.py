@@ -154,6 +154,18 @@ THEMES = {
         "highlight_color": "&H000B9EF5",
         "border_color": "&H00000000",
         "engine": "visual_studio",
+    },
+    "cyber": {
+        "name": "⚡ Cyber Tech & Neon Blue (Modern SaaS & Facts)",
+        "theme_palette": "azure",
+        "visual_look": "synth",
+        "bg_color1": "0x0F172A",
+        "bg_color2": "0x1E293B",
+        "header_tag": "⚡ CYBER TECH & INSIGHT",
+        "header_bg": "0x38BDF8",
+        "highlight_color": "&H00F8BD38",
+        "border_color": "&H00000000",
+        "engine": "visual_studio",
     }
 }
 
@@ -286,36 +298,108 @@ def direct_ai_storyboard(script_text: str, theme_key: str = "vox") -> Dict[str, 
     except Exception as e:
         print(f"[AI Director Warning] AI Storyboard fallback triggered: {e}")
 
-    # Heuristic Fallback Storyboard jika AI sedang offline
-    tokens = script_text.split()
-    scenes = []
-    scenes.append({
-        "scene_num": 1,
-        "style": "torn_headline",
-        "tag": "MASALAH UTAMA",
-        "headline": " ".join(tokens[:5]).upper() if tokens else "INSIGHT PENTING"
-    })
-    scenes.append({
-        "scene_num": 2,
-        "style": "comparison" if len(tokens) > 20 else "checklist",
-        "tag": "SOLUSI TERPADU",
-        "headline": "TRANSFORMASI TOTAL",
-        "compare_left": "Sebelum: Manual & Pusing",
-        "compare_right": "Sesudah: 1 Klik HP Beres",
-        "items": ["Absensi Otomatis", "Data Terpusat", "Akses Mudah"]
-    })
-    scenes.append({
-        "scene_num": 3,
-        "style": "cta_slam",
-        "tag": "LANGKAH SEKARANG",
-        "headline": "SIAP TINGKATKAN KUALITAS?",
-        "cta_text": "HUBUNGI KAMI SEKARANG"
-    })
-    return {
-        "narration_script": script_text,
-        "scenes": scenes
+    # Heuristic Fallback Storyboard jika AI sedang offline (100% dinamis dari kalimat naskah pengguna)
+    clean_txt = script_text.strip()
+    raw_sents = [s.strip() for s in re.split(r'[\.\?!;\n]+', clean_txt) if len(s.strip()) > 6]
+    if len(raw_sents) < 3:
+        chunks = []
+        for s in (raw_sents or [clean_txt]):
+            subs = [sc.strip() for sc in re.split(r'[,]+', s) if len(sc.strip()) > 8]
+            chunks.extend(subs if len(subs) >= 2 else [s])
+        raw_sents = chunks
+    if not raw_sents:
+        raw_sents = [clean_txt or "Insight Penting Hari Ini"]
+
+    target_n = min(5, max(3, len(raw_sents)))
+    if len(raw_sents) > target_n:
+        step_f = len(raw_sents) / target_n
+        sampled = [raw_sents[int(i * step_f)] for i in range(target_n)]
+        if raw_sents[-1] not in sampled:
+            sampled[-1] = raw_sents[-1]
+        raw_sents = sampled
+
+    num_words_map = {
+        "delapan puluh": "80+",
+        "lima puluh": "50 HARI",
+        "tiga sahabat": "3 SAHABAT",
+        "tiga fakta": "3 FAKTA",
+        "empat babak": "4 BABAK",
+        "seratus": "100%",
     }
 
+    scenes = []
+    styles_cycle = ["torn_headline", "stat_shock", "comparison", "checklist", "cta_slam"]
+    prev_style = None
+
+    for idx_s, sent in enumerate(raw_sents):
+        low_s = sent.lower()
+        words_s = [w for w in re.sub(r'[^\w\s\'\-]', '', sent).split() if w]
+        short_head = " ".join(words_s[:7]).upper() if words_s else "POIN UTAMA"
+        is_last_s = (idx_s == len(raw_sents) - 1)
+
+        # Deteksi angka eksplisit atau angka kata
+        stat_val = None
+        m_num = re.search(r'(\d+[\+%]?(?:\s*(?:hari|orang|tahun|kali|fakta|sahabat|juta|ribu))?)', sent, re.IGNORECASE)
+        if m_num:
+            stat_val = m_num.group(1).upper()
+        else:
+            for k_word, v_num in num_words_map.items():
+                if k_word in low_s:
+                    stat_val = v_num
+                    break
+
+        if is_last_s:
+            st = "cta_slam"
+        elif stat_val and prev_style != "stat_shock":
+            st = "stat_shock"
+        elif any(w in low_s for w in ("tapi", "namun", "alasan palsu", "vs", "sebelum", "sesudah", "sedangkan", "justru")) and prev_style != "comparison":
+            st = "comparison"
+        elif any(w in low_s for w in ("fakta", "pertama", "kedua", "ketiga", "langkah", "kunci", "babak")) and prev_style != "checklist":
+            st = "checklist"
+        else:
+            st = "torn_headline"
+            if st == prev_style:
+                st = styles_cycle[(idx_s + 1) % (len(styles_cycle) - 1)]
+
+        prev_style = st
+
+        # Siapkan bagian perbandingan & checklist yang diambil langsung dari klausa kalimat
+        clauses = [c.strip() for c in re.split(r'\b(?:tapi|namun|sedangkan|justru|karena)\b|,', sent, flags=re.IGNORECASE) if len(c.strip()) > 4]
+        comp_left = clauses[0][:48] if len(clauses) >= 2 else " ".join(words_s[:5])
+        comp_right = clauses[1][:48] if len(clauses) >= 2 else " ".join(words_s[5:11] or words_s[:5])
+
+        item_list = []
+        for s_item in raw_sents[max(0, idx_s - 1):min(len(raw_sents), idx_s + 2)]:
+            w_it = [w for w in re.sub(r'[^\w\s\'\-]', '', s_item).split() if w]
+            if w_it:
+                item_list.append(" ".join(w_it[:5]))
+        while len(item_list) < 3:
+            item_list.append(short_head[:28])
+
+        cta_label = "SIMPAN & BAGIKAN KISAH INI"
+        if any(w in low_s for w in ("komen", "tulis", "pendapat")):
+            cta_label = "TULIS PENDAPATMU DI KOMENTAR"
+        elif any(w in low_s for w in ("demo", "hubungi", "klik", "daftar")):
+            cta_label = "COBA & BUKTIKAN SEKARANG"
+
+        scenes.append({
+            "scene_num": idx_s + 1,
+            "style": st,
+            "tag": f"BABAK 0{idx_s + 1}" if not is_last_s else "INTI & KESIMPULAN",
+            "headline": short_head,
+            "stat_number": stat_val or f"0{idx_s + 1}",
+            "stat_label": short_head,
+            "compare_left": comp_left,
+            "compare_right": comp_right,
+            "items": item_list[:3],
+            "cta_text": cta_label,
+            "narration_line": sent
+        })
+
+    return {
+        "narration_script": clean_txt,
+        "scenes": scenes
+    }
 
 
 def format_ass_time(seconds: float) -> str:
@@ -332,7 +416,7 @@ def format_ass_time(seconds: float) -> str:
 def create_faceless_ass(
     words: List[Dict[str, Any]],
     ass_path: str,
-    theme_key: str = "cyber",
+    theme_key: str = "anymotion",
     header_title: Optional[str] = None
 ) -> Tuple[str, List[float], List[Dict[str, Any]]]:
     """
@@ -341,7 +425,7 @@ def create_faceless_ass(
     """
     import re
     import pro_editor
-    theme = THEMES.get(theme_key, THEMES["cyber"])
+    theme = THEMES.get(theme_key) or THEMES["anymotion"]
     highlight_color = theme["highlight_color"]
 
     header = f"""[Script Info]
@@ -965,24 +1049,39 @@ def render_faceless_video(
     # Satu adegan menampilkan SATU Hero Visual Card terpusat (stat_shock, comparison, checklist, cta_slam, atau headline)
     # Card is_paper=True jika tema Vox, is_paper=False (Remotion Glassmorphic) jika tema modern!
     n_scenes = max(1, len(sb_scenes))
+    comp_to_vox_style = {
+        "stat_shock": "stat_shock",
+        "metric_counter": "stat_shock",
+        "split_vs": "comparison",
+        "comparison": "comparison",
+        "feature_list": "checklist",
+        "checklist": "checklist",
+        "cta_slam": "cta_slam",
+        "torn_headline": "torn_headline",
+    }
 
     for s_idx, sc in enumerate(sb_scenes):
         t0 = round(s_idx * (total_dur / n_scenes), 2)
         t1 = round((s_idx + 1) * (total_dur / n_scenes) + (0.12 if s_idx < n_scenes - 1 else 0.0), 2)
-        style = sc.get("style", "torn_headline")
+        raw_style = sc.get("style") or sc.get("component_type") or "torn_headline"
+        style = comp_to_vox_style.get(raw_style, "torn_headline")
         tag = sc.get("tag") or f"SCENE 0{s_idx + 1} • {raw_header}"
-        head = sc.get("headline") or ""
+        combined_title = " ".join(
+            p.strip() for p in (sc.get("title_regular", ""), sc.get("title_italic", ""), sc.get("title_trailing", "")) if p and p.strip()
+        ).strip()
+        narr_fallback = " ".join((sc.get("narration_line") or "").split()[:7]).upper()
+        head = (sc.get("headline") or combined_title or narr_fallback or clean_header).upper()
 
         # Whoosh transisi antar adegan
         if s_idx > 0:
             sfx_events.append(dict(id=whoosh_ids[s_idx % len(whoosh_ids)], t=max(0.0, t0 - 0.06), gain=0.32))
 
         if style == "stat_shock":
-            stat_n = sc.get("stat_number") or "100%"
+            stat_n = sc.get("stat_number") or sc.get("counter_target") or f"0{s_idx + 1}"
             elements.append(mg.VoxBigStatCard(
                 tag=tag,
                 stat_num=stat_n,
-                headline=head or sc.get("stat_label", "Fakta Mengejutkan"),
+                headline=head or sc.get("stat_label") or sc.get("counter_label") or clean_header,
                 t0=t0, t1=t1,
                 accent=accent_rgb,
                 y_top=700,
@@ -992,8 +1091,8 @@ def render_faceless_video(
             sfx_events.append(dict(id="VL0511", t=t0 + 0.05, gain=0.34))
 
         elif style == "comparison":
-            left_t = sc.get("compare_left") or "SEBELUM: CARA LAMA MANUAL"
-            right_t = sc.get("compare_right") or "SESUDAH: SOLUSI OTOMATIS"
+            left_t = sc.get("compare_left") or sc.get("vs_left_title") or sc.get("compare_before") or head[:35]
+            right_t = sc.get("compare_right") or sc.get("vs_right_title") or sc.get("compare_after") or (sc.get("narration_line") or head)[:35]
             elements.append(mg.VoxComparisonCard(
                 tag=tag,
                 left_text=left_t,
@@ -1008,11 +1107,14 @@ def render_faceless_video(
             sfx_events.append(dict(id="VL0542" if is_vox_style else "VL0504", t=t0 + 0.20, gain=0.36))
 
         elif style == "checklist":
-            items = sc.get("items") or ["Poin 1", "Poin 2", "Poin 3"]
+            raw_items = sc.get("items")
+            if not raw_items and isinstance(sc.get("features"), list):
+                raw_items = [f.get("title") or f.get("subtitle") or "" for f in sc["features"] if isinstance(f, dict)]
+            items = [it for it in (raw_items or []) if it] or [head[:28], clean_header[:28], "Inti Pembahasan"]
             elements.append(mg.VoxChecklistCard(
                 tag=tag,
-                headline=head or "FITUR UTAMA",
-                items=items,
+                headline=head or clean_header,
+                items=items[:3],
                 t0=t0, t1=t1,
                 accent=accent_rgb,
                 y_top=700,
@@ -1020,14 +1122,14 @@ def render_faceless_video(
                 is_paper=is_vox_style
             ))
             sfx_events.append(dict(id="VL0541" if is_vox_style else "VL0502", t=t0 + 0.02, gain=0.34))
-            for item_i in range(len(items)):
+            for item_i in range(len(items[:3])):
                 sfx_events.append(dict(id="VL0531", t=t0 + 0.22 + item_i * 0.28, gain=0.28))
 
         elif style == "cta_slam":
-            cta_txt = sc.get("cta_text") or "COBA SEKARANG!"
+            cta_txt = sc.get("cta_text") or sc.get("cta_button_text") or "SIMPAN & BAGIKAN"
             elements.append(mg.VoxCtaCard(
-                tag=tag or "LANGKAH SEKARANG",
-                headline=head or "SIAP MEMULAI?",
+                tag=tag or "INTI & KESIMPULAN",
+                headline=head or sc.get("cta_headline") or clean_header,
                 cta_text=cta_txt,
                 t0=t0, t1=t1,
                 accent=accent_rgb,
@@ -1081,8 +1183,8 @@ def render_faceless_video(
     if progress_callback:
         progress_callback(70, "Merender video 9:16 dengan Motion Graphics Remotion-Style, Argon Light-Leak & Audio -14 LUFS...")
 
-    c1 = theme["bg_color1"]
-    c2 = theme["bg_color2"]
+    c1 = theme.get("bg_color1", "0x0F172A")
+    c2 = theme.get("bg_color2", "0x1E293B")
     ov_name = "VL0201" if theme_key in ("islamic", "motivation") else "VL0281"
     ov_path = BASE_DIR / "assets" / "argon" / "overlays" / f"{ov_name}.mp4"
     has_ov = ov_path.exists() and not is_vox_style
@@ -1141,6 +1243,12 @@ def render_faceless_video(
         except Exception:
             pass
 
+    # Step 5.5: Automated Visual QA Contact Sheet
+    qa_sheet_path = output_mp4.replace(".mp4", "_qa_montage.jpg")
+    qa_url = None
+    if generate_visual_qa_contact_sheet(output_mp4, qa_sheet_path):
+        qa_url = f"/outputs/{Path(qa_sheet_path).name}"
+
     # Clean up temp files
     for p in [audio_path, ass_path, str(sfx_wav)]:
         if os.path.exists(p):
@@ -1172,7 +1280,9 @@ def render_faceless_video(
         "video_path": output_mp4,
         "filename": Path(output_mp4).name,
         "duration": round(total_dur, 2),
-        "seo": seo_package
+        "seo": seo_package,
+        "qa_montage_path": qa_sheet_path if qa_url else None,
+        "qa_montage_url": qa_url
     }
 
 

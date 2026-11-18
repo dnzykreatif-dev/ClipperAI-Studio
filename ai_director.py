@@ -148,77 +148,107 @@ def build_dynamic_heuristic_storyboard(script_text: str, theme_hint: Optional[st
             "narration_line": sentence
         }
 
-        # Isi field spesifik komponen dari isi naskah
+        # Isi field spesifik komponen 100% dari isi kalimat naskah pengguna
+        short_phrase = " ".join(words[:6]) if words else "Inti Pembahasan"
+        second_phrase = " ".join(words[6:13]) if len(words) > 6 else short_phrase
+        clauses = [c.strip() for c in re.split(r'\b(?:tapi|namun|sedangkan|justru|karena|daripada)\b|,', sentence, flags=re.IGNORECASE) if len(c.strip()) > 4]
+
+        num_words_map = {
+            "delapan puluh": "80+",
+            "lima puluh": "50 HARI",
+            "tiga sahabat": "3 SAHABAT",
+            "tiga fakta": "3 FAKTA",
+            "empat babak": "4 BABAK",
+            "seratus": "100%",
+        }
+        detected_num = None
+        match_num = re.search(r'(\d+[\+%]?(?:\s*(?:hari|orang|tahun|kali|fakta|sahabat|juta|ribu))?)', sentence, re.IGNORECASE)
+        if match_num:
+            detected_num = match_num.group(1).upper()
+        else:
+            for kw_num, val_num in num_words_map.items():
+                if kw_num in lower_s:
+                    detected_num = val_num
+                    break
+
         if comp_type == "cta_slam":
-            sc_data["cta_headline"] = "Siap Mencoba Sekarang?" if "demo" not in lower_s else "Ingin Coba Akun Demo?"
+            sc_data["cta_headline"] = short_phrase
             if "inbox" in lower_s or "dm" in lower_s:
                 sc_data["cta_button_text"] = "KIRIM INBOX SEKARANG"
             elif "demo" in lower_s:
                 sc_data["cta_button_text"] = "COBA AKUN DEMO"
+            elif any(w in lower_s for w in ("komen", "tulis", "pendapat")):
+                sc_data["cta_button_text"] = "TULIS DI KOMENTAR"
             else:
-                sc_data["cta_button_text"] = "HUBUNGI KAMI SEKARANG"
+                sc_data["cta_button_text"] = "SIMPAN & BAGIKAN"
 
         elif comp_type == "split_vs":
-            sc_data["vs_left_title"] = "Sistem Lama / Manual"
-            sc_data["vs_left_desc"] = "Format berbeda & data tercecer"
-            sc_data["vs_right_title"] = "Solusi Otomatis"
-            sc_data["vs_right_desc"] = "Tersentralisasi & fleksibel di HP"
+            left_c = clauses[0] if len(clauses) >= 2 else " ".join(words[:5])
+            right_c = clauses[1] if len(clauses) >= 2 else " ".join(words[5:11] or words[:5])
+            sc_data["vs_left_title"] = " ".join(left_c.split()[:3]).title() or "Kondisi Awal"
+            sc_data["vs_left_desc"] = left_c[:52]
+            sc_data["vs_right_title"] = " ".join(right_c.split()[:3]).title() or "Fakta & Hasil"
+            sc_data["vs_right_desc"] = right_c[:52]
 
         elif comp_type == "feature_list":
-            # Ekstrak peran jika ada
             feats = []
-            if "admin" in lower_s:
-                feats.append({"title": "Akses Admin", "subtitle": "Kelola data & sistem pesantren", "icon": "✓"})
-            if "ustadz" in lower_s or "guru" in lower_s:
-                feats.append({"title": "Akses Guru / Ustadz", "subtitle": "Pantau santri & agenda harian", "icon": "✓"})
-            if "wali" in lower_s or "santri" in lower_s:
-                feats.append({"title": "Akses Wali Santri", "subtitle": "Laporan perkembangan realtime", "icon": "✓"})
-            
-            if not feats:
-                tokens = [w.capitalize() for w in words if w.lower() not in STOP_WORDS][:3]
-                feats = [
-                    {"title": tokens[0] if len(tokens) > 0 else "Data Terpusat", "subtitle": "Tersimpan aman di cloud", "icon": "✓"},
-                    {"title": tokens[1] if len(tokens) > 1 else "Akses Mudah", "subtitle": "Bisa dibuka lewat smartphone", "icon": "✓"},
-                    {"title": tokens[2] if len(tokens) > 2 else "Laporan Cepat", "subtitle": "Pantau aktivitas secara instan", "icon": "✓"}
-                ]
+            if len(clauses) >= 2:
+                for cl in clauses[:3]:
+                    cl_words = cl.split()
+                    feats.append({
+                        "title": " ".join(cl_words[:3]).title(),
+                        "subtitle": cl[:50],
+                        "icon": "✓"
+                    })
+            if len(feats) < 2:
+                feats = []
+                for s_near in raw_sentences[max(0, idx - 1):min(len(raw_sentences), idx + 2)]:
+                    sn_words = [w for w in re.sub(r'[^\w\s\'\-]', '', s_near).split() if w]
+                    if sn_words:
+                        feats.append({
+                            "title": " ".join(sn_words[:3]).title(),
+                            "subtitle": " ".join(sn_words[:8]),
+                            "icon": "✓"
+                        })
+            while len(feats) < 3:
+                feats.append({"title": short_phrase[:24].title(), "subtitle": sentence[:48], "icon": "✓"})
             sc_data["features"] = feats[:3]
 
         elif comp_type in ("metric_counter", "stat_shock"):
-            match = re.search(r'(\d+%?|\b(?:100%|99\.8%|10x|24/7)\b)', sentence, re.IGNORECASE)
-            num_val = match.group(1).upper() if match else "100%"
+            num_val = detected_num or f"0{idx + 1}"
             sc_data["counter_target"] = num_val
-            sc_data["counter_label"] = "Akurasi & Efisiensi"
-            sc_data["counter_sublabel"] = "Disesuaikan dengan kebutuhan Anda"
+            sc_data["counter_label"] = short_phrase.title()
+            sc_data["counter_sublabel"] = sentence[:58]
             sc_data["stat_number"] = num_val
-            sc_data["stat_label"] = "Efisiensi Sistem Terbukti"
+            sc_data["stat_label"] = short_phrase.title()
 
         elif comp_type == "app_window":
-            sc_data["window_title"] = "Sistem Terpadu"
-            sc_data["window_headline"] = "Pengaturan Fleksibel"
-            sc_data["window_subtext"] = sentence[:60] + ("..." if len(sentence) > 60 else "")
+            sc_data["window_title"] = f"Babak 0{idx + 1} • Sorotan Utama"
+            sc_data["window_headline"] = short_phrase.title()
+            sc_data["window_subtext"] = sentence[:72] + ("..." if len(sentence) > 72 else "")
 
         elif comp_type == "tweet_quote":
-            sc_data["quote_author"] = "Pengguna Terverifikasi"
-            sc_data["quote_handle"] = "mitra_resmi"
-            sc_data["quote_text"] = sentence[:80] + ("..." if len(sentence) > 80 else "")
-            sc_data["quote_role"] = "Pimpinan Lembaga"
+            sc_data["quote_author"] = "Sorotan Kisah & Hikmah" if any(k in lower_all for k in ("nabi", "sahabat", "ka'ab", "kaab", "allah", "taubat")) else "Catatan Penting"
+            sc_data["quote_handle"] = f"babak_0{idx + 1}"
+            sc_data["quote_text"] = sentence[:90] + ("..." if len(sentence) > 90 else "")
+            sc_data["quote_role"] = short_phrase.title()[:32]
 
         elif comp_type == "code_terminal":
-            sc_data["term_cmd"] = "cloud-sync --pondok live"
-            sc_data["term_line1"] = "Database tersinkronisasi 100%"
-            sc_data["term_line2"] = "Semua akun siap digunakan"
-            sc_data["term_status"] = "Live & Aktif"
+            sc_data["term_cmd"] = f"analyze --scene 0{idx + 1}"
+            sc_data["term_line1"] = short_phrase[:46]
+            sc_data["term_line2"] = second_phrase[:46]
+            sc_data["term_status"] = detected_num or "Fakta Utama"
 
         elif comp_type == "floating_badge":
-            sc_data["badge_title"] = "Sistem Teruji"
-            sc_data["badge_sub"] = "Dipercaya berbagai lembaga"
+            sc_data["badge_title"] = short_phrase.title()[:30]
+            sc_data["badge_sub"] = sentence[:52]
 
         else:  # phone_hero
-            sc_data["screen_title"] = "Data Terpusat"
-            sc_data["screen_stat_title"] = "PENGGUNA"
-            sc_data["screen_stat_value"] = "Aktif"
-            sc_data["screen_card2_title"] = "STATUS"
-            sc_data["screen_card2_value"] = "Fleksibel"
+            sc_data["screen_title"] = short_phrase.title()[:26]
+            sc_data["screen_stat_title"] = "SOROTAN"
+            sc_data["screen_stat_value"] = detected_num or f"0{idx + 1}"
+            sc_data["screen_card2_title"] = "INTI"
+            sc_data["screen_card2_value"] = (" ".join(words[3:6]) or words[-1]).title()[:18] if words else "Utama"
 
         scenes.append(sc_data)
 
