@@ -124,25 +124,39 @@ Untuk mengaktifkan fitur upload langsung 1-klik ke channel YouTube Anda:
 
 ---
 
+## 🧪 Pengujian Otomatis (Quality Assurance)
+ClipperAI Studio dilengkapi automated testing suite berbasis Playwright E2E:
+```powershell
+python run_comprehensive_tests.py
+```
+Suite ini memverifikasi port TCP 8000, readiness HTTP watcher, integritas shortcut desktop, endpoint REST API, dan alur pembuatan naskah AI pada antarmuka browser tanpa error.
+
+📖 **Pusat Panduan Seluruh Fitur**: Kunjungi folder [panduan/](panduan/) untuk dokumentasi terperinci per fitur (11 bab lengkap).
+
+---
+
 ## 📁 Struktur Repositori
 
 ```
 ClipperAI-Studio/
-├── app.py                  # Server FastAPI, Router API & Integrasi Modul
-├── clipper_engine.py       # Engine Video: Faster-Whisper, Dynamic Zoom, SFX & Subtitle ASS
-├── yt_seo_engine.py        # Engine SEO: Riset Tren YouTube & Generator Metadata Viral
-├── yt_uploader.py          # Uploader: Google OAuth2 & YouTube Data API v3 Upload Resumable
-├── Start_ClipperAI.bat     # File peluncur otomatis untuk Windows
-├── install_requirements.bat# Script instalasi dependensi otomatis
-├── create_shortcut.ps1     # Script pembuat shortcut Desktop
-├── requirements.txt        # Daftar pustaka Python yang dibutuhkan
+├── app.py                     # Server FastAPI, Router API & Integrasi Modul
+├── faceless_engine.py         # AI Script & Offline Narrative Generator (Gemini Fallback)
+├── clipper_engine.py          # Engine Video: Faster-Whisper, Dynamic Zoom, SFX & Subtitle ASS
+├── yt_seo_engine.py           # Engine SEO: Riset Tren YouTube & Generator Metadata Viral
+├── yt_uploader.py             # Uploader: Google OAuth2 & YouTube Data API v3 Upload Resumable
+├── Start_ClipperAI.bat        # Launcher cerdas Windows (Smart Port Detection & Zero Error Screen)
+├── open_browser_when_ready.py # Watcher otomatis: membuka browser hanya saat HTTP 200 OK
+├── run_comprehensive_tests.py # Test runner otomatis Playwright E2E & REST API
+├── create_shortcut.ps1        # Script pembuat shortcut Desktop Windows
+├── panduan/                   # Dokumentasi lengkap 11 fitur (1 file per fitur)
 ├── templates/
-│   └── index.html          # Web GUI Modern Dark Glassmorphism + YouTube Studio Modal
+│   └── index.html             # Web GUI Modern Dark Glassmorphism + YouTube Studio Modal
 ├── static/
-│   ├── gui_preview.png     # Screenshot tampilan antarmuka
-│   └── sfx/                # Efek suara transisi (whoosh, pop, chime)
-├── uploads/                # Direktori sementara video input
-└── outputs/                # Direktori penyimpanan hasil video Shorts/Reels MP4 & Metadata SEO
+│   ├── gui_preview.png        # Screenshot tampilan antarmuka
+│   ├── clipper_icon.ico       # Icon resmi aplikasi
+│   └── sfx/                   # Efek suara transisi (whoosh, pop, chime)
+├── uploads/                   # Direktori sementara video input
+└── outputs/                   # Direktori penyimpanan hasil video Shorts/Reels MP4 & Metadata SEO
 ```
 
 ---

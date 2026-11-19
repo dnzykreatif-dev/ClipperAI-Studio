@@ -21,6 +21,7 @@ Setiap fitur dipisahkan ke dalam filenya masing-masing agar Anda dapat mempelaja
 | **08** | [08_MOBILE_REMOTE_SUITE_DAN_ADB.md](file:///E:/PROJECTS/kajian_clipper/panduan/08_MOBILE_REMOTE_SUITE_DAN_ADB.md) | Koneksi ponsel Android ADB, mirroring layar HP dengan Scrcpy, Seamless Video Looper, dan High-Contrast Hook Text Overlay. |
 | **09** | [09_TIPS_TRIK_DAN_TROUBLESHOOTING.md](file:///E:/PROJECTS/kajian_clipper/panduan/09_TIPS_TRIK_DAN_TROUBLESHOOTING.md) | Alur kerja kilat 5 menit, pemecahan masalah teknis umum, dan glosarium istilah audio-visual penting. |
 | **10** | [10_BIG_DATA_VIDEO_REA_DAN_ANYMOTION.md](file:///E:/PROJECTS/kajian_clipper/panduan/10_BIG_DATA_VIDEO_REA_DAN_ANYMOTION.md) | Panduan penggunaan 11 Blueprint Video Viral hasil ekstraksi Big Data REA, 212 Gaya AnyMotion, 18 Shader Visual, dan Z-Order Particle Morph. |
+| **11** | [11_PENGUJIAN_OTOMATIS_DAN_QUALITY_ASSURANCE.md](file:///E:/PROJECTS/kajian_clipper/panduan/11_PENGUJIAN_OTOMATIS_DAN_QUALITY_ASSURANCE.md) | Panduan pengujian otomatis E2E Playwright, pemeriksaan TCP port, verifikasi shortcut desktop, dan pencegahan error regresi. |
 
 ---
 

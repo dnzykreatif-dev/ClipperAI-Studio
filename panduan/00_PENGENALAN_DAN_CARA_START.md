@@ -27,23 +27,31 @@ Panduan ini dirancang untuk membimbing Anda dari nol agar dapat menguasai seluru
 
 ## 🖥️ Cara Menjalankan Aplikasi
 
-Ada dua cara mudah untuk menyalakan ClipperAI Studio di komputer Anda:
+Ada tiga cara praktis untuk menyalakan ClipperAI Studio di komputer Anda:
 
-### Cara 1: Menggunakan File Shortcut Launcher (Paling Mudah)
+### Cara 1: Menggunakan Shortcut Desktop (Paling Direkomendasikan)
+Di layar Desktop Windows Anda telah tersedia 2 shortcut resmi:
+1. **`ClipperAI Studio.lnk`**:
+   - Dilengkapi teknologi *Smart Port Detection* dan *Zero Error Screen*.
+   - Jika server belum aktif, script akan memuat modul AI di latar belakang dan **baru membuka browser persis saat server sudah 100% siap** (tidak akan muncul layar error `ERR_CONNECTION_REFUSED`).
+   - Jika server sudah menyala sebelumnya, shortcut ini akan langsung membuka browser seketika tanpa bentrok port.
+2. **`ClipperAI Studio Web.url`**:
+   - Shortcut web instan 1-klik untuk langsung mengakses `http://127.0.0.1:8000` di browser default Anda saat server sedang berjalan.
+
+### Cara 2: Menggunakan File Batch Launcher di Folder Proyek
 1. Buka folder proyek di: `E:\PROJECTS\kajian_clipper`.
-2. Klik ganda (*double-click*) pada salah satu file batch berikut:
-   - **`Start_ClipperAI.bat`**: Menyalakan server utama dan otomatis membuka browser ke antarmuka studio.
+2. Klik ganda (*double-click*) pada:
+   - **`Start_ClipperAI.bat`**: Menyalakan server utama FastAPI dan otomatis membuka browser saat siap.
    - **`Start_3D_Studio.bat`**: Menyalakan server pendukung Remotion 3D.
-3. Jendela konsol hitam akan muncul menandakan server lokal Uvicorn aktif di port `8000`.
 
-### Cara 2: Menjalankan via Terminal (PowerShell / Command Prompt)
+### Cara 3: Menjalankan via Terminal (PowerShell / Command Prompt)
 1. Buka terminal PowerShell.
 2. Ketikkan perintah berikut:
    ```powershell
    cd E:\PROJECTS\kajian_clipper
    python -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload
    ```
-3. Buka peramban (*web browser*) Chrome atau Edge, lalu akses alamat:
+3. Akses alamat di peramban browser:
    👉 **http://127.0.0.1:8000/**
 
 ---

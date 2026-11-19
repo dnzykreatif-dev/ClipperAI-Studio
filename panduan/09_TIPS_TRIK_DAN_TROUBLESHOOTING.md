@@ -27,14 +27,24 @@ Agar proses kerja harian Anda sangat cepat dan efisien, ikuti alur standar berik
 
 ## 🔧 Pemecahan Masalah Umum (*Troubleshooting*)
 
-### 1. Masalah: "Alamat http://127.0.0.1:8000/ Tidak Bisa Diakses"
-- **Penyebab**: Server Uvicorn belum berjalan atau proses tertutup tanpa sengaja.
+### 1. Masalah: "Alamat http://127.0.0.1:8000/ Tidak Bisa Diakses atau Shortcut Tidak Bereaksi"
+- **Penyebab**: Server Uvicorn belum berjalan, port 8000 mengalami bentrok proses ganda, atau browser dibuka terlalu cepat sebelum inisialisasi AI selesai.
 - **Solusi**:
-  1. Buka folder `E:\PROJECTS\kajian_clipper`.
-  2. Klik ganda pada file `Start_ClipperAI.bat`.
-  3. Pastikan jendela Command Prompt tetap terbuka dan menampilkan log:  
-     `Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)`.
-  4. Refresh peramban browser Anda.
+  1. Klik ganda pada icon **`ClipperAI Studio`** di Desktop Anda.
+  2. Launcher versi terbaru sudah dilengkapi **Smart Port Detection** & **Zero Error Screen**:
+     - Jika server sudah aktif di background, browser langsung dibuka seketika.
+     - Jika baru dinyalakan, modul `open_browser_when_ready.py` akan menunggu sampai server berstatus `HTTP 200 OK`, lalu membuka browser tanpa memicu layar `ERR_CONNECTION_REFUSED`.
+  3. Jika ingin menyegarkan shortcut desktop, jalankan:
+     ```powershell
+     pwsh -ExecutionPolicy Bypass -File "E:\PROJECTS\kajian_clipper\create_shortcut.ps1"
+     ```
+
+### 1B. Masalah: "Popup Gagal Membuat Naskah AI: Unexpected token 'I' Internal Server Error"
+- **Penyebab**: Terjadi kegagalan komunikasi dengan API eksternal atau kunci API Gemini offline sementara modul offline fallback belum terhubung.
+- **Solusi**:
+  1. Sistem sekarang sudah dilengkapi **Offline Narrative Engine** di [faceless_engine.py](file:///E:/PROJECTS/kajian_clipper/faceless_engine.py).
+  2. Sekalipun internet lambat atau API Key habis batas kuotanya, AI tetap otomatis menghasilkan naskah narasi lengkap (khususnya tema Islami, sejarah Sahabat Nabi seperti Ka'ab bin Malik, perang Tabuk, bisnis, maupun edukasi).
+  3. Pastikan API key Anda terisi di menu **🧠 AI Router** navbar atas jika ingin menggunakan model live Gemini Flash.
 
 ### 2. Masalah: "Error HTTP 429: Quota Exceeded / Too Many Requests"
 - **Penyebab**: API Key Google Gemini Anda mencapai batas kuota per menit.
